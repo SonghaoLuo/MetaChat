@@ -9,10 +9,10 @@ sphinx:
 # 构建工具
 build:
   os: ubuntu-20.04
-  image: latest
+  tools:
+    python: "3.9"
 
 # 安装依赖
 python:
-  version: 3.9
   install:
     - requirements: docs/requirements.txt
