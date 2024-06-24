@@ -5,6 +5,7 @@
 
 import os
 import sys
+from recommonmark.parser import CommonMarkParser
 sys.path.insert(0, os.path.abspath('../metachat'))
 
 # -- Project information -----------------------------------------------------
@@ -22,7 +23,13 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
+    'recommonmark',
     ]
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -34,3 +41,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+# -- Setup the parser --------------------------------------------------------
+def setup(app):
+    app.add_source_parser('.md', CommonMarkParser)
