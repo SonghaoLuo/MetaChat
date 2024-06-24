@@ -22,12 +22,23 @@ MetaChat was developed using python 3.9.
 We suggest setting up MetaChat in a separate mamba or conda environment to prevent conflicts with other software dependencies. Create a new Python environment specifically for MetaChat and install the required libraries within it.
 
 ```bash
-mamba create -n metachat_env python=3.9 r-base=4.3.3
+mamba create -n metachat_env python=3.9 r-base=4.3.2
 mamba activate metachat_env
 pip install metachat
 ```
 
+### Troubleshooting
+
+**Problem: Unable to install gseapy**
+
+If you get `error: can't find Rust compiler` during the installation of gseapy, please try installing the rust compiler via `mamba install rust`.
+
+**Problem: Unable to install pydpc**
+
+If you get error during the installation of pydpc, please try `pip install --use-pep517 pydpc==0.1.3`
+
 ## Documentation, and Tutorials
+
 For more realistic and simulation examples, please see MetaChat documentation that is available through the link below.
 https://metachat.readthedocs.io/en/latest/
 
