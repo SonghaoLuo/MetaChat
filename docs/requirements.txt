@@ -4,4 +4,4 @@ sphinx_mdinclude
 sphinx_autodoc_typehints
 sphinx_rtd_size
 nbsphinx
-sphinx_gallery.load_style
+sphinx_gallery
