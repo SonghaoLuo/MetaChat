@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toy example 1 &mdash; MetaChat 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="../tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MetaChat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Toy example 1</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Data-preprocessing">Data preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Multi-omics-data-from-simulation">Multi-omics data from simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Metabolite-sensor-database-construction">Metabolite-sensor database construction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Long-range-channels">Long-range channels</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MetaChat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">&lt;no title&gt;</a></li>
+      <li class="breadcrumb-item active">Toy example 1</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/toy_example1.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Toy-example-1">
+<h1>Toy example 1<a class="headerlink" href="#Toy-example-1" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>import os
+import numpy as np
+import pandas as pd
+import scanpy as sc
+import squidpy as sq
+import matplotlib.pyplot as plt
+
+import metachat as mc
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span># setting work dictionary
+os.chdir(&quot;/home/Project/MetaChat_test/toy_example&quot;)
+</pre></div>
+</div>
+</div>
+<section id="Data-preprocessing">
+<h2>Data preprocessing<a class="headerlink" href="#Data-preprocessing" title="Link to this heading"></a></h2>
+<section id="Multi-omics-data-from-simulation">
+<h3>Multi-omics data from simulation<a class="headerlink" href="#Multi-omics-data-from-simulation" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata = sc.read(&quot;data/example1/adata_example1.h5ad&quot;)
+adata
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 2500 × 2
+    obsm: &#39;spatial&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize = (8,4))
+sq.pl.spatial_scatter(adata = adata,
+                      color = &quot;M1&quot;,
+                      size = 80,
+                      cmap = &quot;Blues&quot;,
+                      shape = None,
+                      ax = ax[0])
+ax[0].invert_yaxis()
+ax[0].set_box_aspect(1)
+
+sq.pl.spatial_scatter(adata = adata,
+                      color = &quot;S1&quot;,
+                      size = 80,
+                      cmap = &quot;Reds&quot;,
+                      shape = None,
+                      ax = ax[1])
+ax[1].invert_yaxis()
+ax[1].set_box_aspect(1)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING: Please specify a valid `library_id` or set it permanently in `adata.uns[&#39;spatial&#39;]`
+WARNING: Please specify a valid `library_id` or set it permanently in `adata.uns[&#39;spatial&#39;]`
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_toy_example1_6_1.png" src="../_images/notebooks_toy_example1_6_1.png" />
+</div>
+</div>
+</section>
+<section id="Metabolite-sensor-database-construction">
+<h3>Metabolite-sensor database construction<a class="headerlink" href="#Metabolite-sensor-database-construction" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>M_S_pair = [[&#39;M1&#39;, &#39;S1&#39;, &#39;type1&#39;]]
+df_MetaSen = pd.DataFrame(M_S_pair)
+df_MetaSen.columns = [&#39;Metabolite&#39;, &#39;Sensor&#39;, &#39;Long.Range.Channel&#39;]
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Long-range-channels">
+<h3>Long-range channels<a class="headerlink" href="#Long-range-channels" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>LRC_channel = np.load(&#39;data/example1/LRC_channel.npy&#39;)
+adata.obs[&#39;LRC_type1_filtered&#39;] = LRC_channel.flatten()
+adata.obs[&#39;LRC_type1_filtered&#39;] = adata.obs[&#39;LRC_type1_filtered&#39;].astype(&#39;category&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(figsize = (4,4))
+sq.pl.spatial_scatter(adata = adata,
+                      color = &quot;LRC_type1_filtered&quot;,
+                      size = 80,
+                      shape = None,
+                      ax = ax)
+ax.invert_yaxis()
+ax.set_box_aspect(1)
+
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING: Please specify a valid `library_id` or set it permanently in `adata.uns[&#39;spatial&#39;]`
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_toy_example1_11_1.png" src="../_images/notebooks_toy_example1_11_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.pp.compute_longRangeDistance(adata = adata,
+                                database_name = &quot;msdb_example1&quot;,
+                                df_MetaSen = df_MetaSen,
+                                LRC_name = [&quot;type1&quot;],
+                                dis_thr = 10,
+                                k_neighb = 5,
+                                LRC_strength = 4,
+                                plot = True,
+                                spot_size = 1)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Compute spatial distance without long-range channel...
+There are 1 pairs were found from the spatial data.
+Compute new spatial distance incorporating long-range channel of type1
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_toy_example1_12_1.png" src="../_images/notebooks_toy_example1_12_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  Construct network graph of long-range channel among 5 neighborhoods...
+  Calculate the shortest path distance from the source to the target using the shortest path algorithm...
+    For the long-range case of cluster 1...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 500/500 [03:56&lt;00:00,  2.11it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  Rearrange distance matrix...
+    For the long-range case of cluster 1...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1400/1400 [00:05&lt;00:00, 264.27it/s]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Finished!
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span># In the case of with LR Channel
+mc.tl.metabolic_communication(adata = adata,
+                              database_name = &#39;msdb_example1&#39;,
+                              df_MetaSen = df_MetaSen,
+                              LRC_type = [&quot;type1&quot;],
+                              dis_thr = 15,
+                              cot_weights = (1.0,0.0,0.0,0.0),
+                              cot_eps_p = 0.25,
+                              cot_rho = 1.0,
+                              cost_type = &#39;euc&#39;)
+adata.write(&#39;data/example1/inference_result.h5ad&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+There are 1 pairs were found from the spatial data.
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>MCC_PDE = np.load(&#39;data/example1/pde_result.npy&#39;)
+MCC_infer = adata.obsm[&#39;MetaChat-msdb_example1-sum-receiver&#39;][&#39;r-M1-S1&#39;].values.reshape(50,50)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1,2, figsize = (7,14))
+ax[0].imshow(MCC_PDE[2].T, cmap=&#39;viridis&#39;, origin=&#39;lower&#39;)
+ax[0].set_xlabel(&#39;x&#39;)
+ax[0].set_ylabel(&#39;y&#39;)
+ax[0].set_title(&#39;M1-S1 distribution from PDE&#39;)
+ax[0].set_box_aspect(1)
+ax[1].imshow(MCC_infer.T, cmap=&#39;viridis&#39;, origin=&#39;lower&#39;)
+ax[1].set_xlabel(&#39;x&#39;)
+ax[1].set_ylabel(&#39;y&#39;)
+ax[1].set_title(&#39;M1-S1 distribution with LRC&#39;)
+ax[1].set_box_aspect(1)
+plt.tight_layout()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_toy_example1_15_0.png" src="../_images/notebooks_toy_example1_15_0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorials.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Songhao Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
