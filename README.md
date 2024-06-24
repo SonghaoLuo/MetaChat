@@ -29,6 +29,7 @@ pip install metachat
 
 ## Documentation, and Tutorials
 For more realistic and simulation examples, please see MetaChat documentation that is available through the link below.
+https://metachat.readthedocs.io/en/latest/
 
 ## Quick start
 Let's get a quick start on using metachat to infer MCC by using simulation data generated from a PDE dynamic model.
