@@ -1,0 +1,17 @@
+# .readthedocs.yaml
+
+version: 2
+
+# 设置构建工具和文档格式
+sphinx:
+  configuration: docs/conf.py
+
+# 构建工具
+build:
+  image: latest
+
+# 安装依赖
+python:
+  version: 3.9
+  install:
+    - requirements: docs/requirements.txt
