@@ -19,7 +19,7 @@ Recommended operating systems: macOS or Linux. MetaChat was developed and tested
 ### Python requirements
 MetaChat was developed using python 3.9.
 ### Installation using `pip`
-We suggest setting up MetaChat in a separate mamba or conda environment to prevent conflicts with other software dependencies. Create a new Python environment specifically for MetaChat and install the required libraries within it.
+We suggest setting up MetaChat in a separate `mamba` or `conda` environment to prevent conflicts with other software dependencies. Create a new Python environment specifically for MetaChat and install the required libraries within it.
 
 ```bash
 mamba create -n metachat_env python=3.9 r-base=4.3.2
