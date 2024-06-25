@@ -4,41 +4,41 @@ from scipy import sparse
 from ._unot import unot 
 
 
-def cot_combine_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, 
+def fot_combine_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, 
                        eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, weights=(0.25,0.25,0.25,0.25), nitermax=1e4, stopthr=1e-8, verbose=False):
     if isinstance(eps_p, tuple):
-        eps_p_cot, eps_p_row, eps_p_col, eps_p_blk = eps_p
+        eps_p_fot, eps_p_row, eps_p_col, eps_p_blk = eps_p
     else:
-        eps_p_cot = eps_p_row = eps_p_col = eps_p_blk = eps_p
+        eps_p_fot = eps_p_row = eps_p_col = eps_p_blk = eps_p
     if isinstance(rho, tuple):
-        rho_cot, rho_row, rho_col, rho_blk = rho
+        rho_fot, rho_row, rho_col, rho_blk = rho
     else:
-        rho_cot = rho_row = rho_col = rho_blk = rho
+        rho_fot = rho_row = rho_col = rho_blk = rho
     if eps_mu is None:
-        eps_mu_cot = eps_p_cot; eps_mu_row = eps_p_row
+        eps_mu_fot = eps_p_fot; eps_mu_row = eps_p_row
         eps_mu_col = eps_p_col; eps_mu_blk = eps_p_blk
     elif isinstance(eps_mu, tuple):
-        eps_mu_cot, eps_mu_row, eps_mu_col, eps_mu_blk = eps_mu
+        eps_mu_fot, eps_mu_row, eps_mu_col, eps_mu_blk = eps_mu
     else:
-        eps_mu_cot = eps_mu_row = eps_mu_col = eps_mu_blk = eps_mu
+        eps_mu_fot = eps_mu_row = eps_mu_col = eps_mu_blk = eps_mu
     if eps_nu is None:
-        eps_nu_cot = eps_p_cot; eps_nu_row = eps_p_row
+        eps_nu_fot = eps_p_fot; eps_nu_row = eps_p_row
         eps_nu_col = eps_p_col; eps_nu_blk = eps_p_blk
     elif isinstance(eps_nu, tuple):
-        eps_nu_cot, eps_nu_row, eps_nu_col, eps_nu_blk = eps_nu
+        eps_nu_fot, eps_nu_row, eps_nu_col, eps_nu_blk = eps_nu
     else:
-        eps_nu_cot = eps_nu_row = eps_nu_col = eps_nu_blk = eps_nu
+        eps_nu_fot = eps_nu_row = eps_nu_col = eps_nu_blk = eps_nu
 
-    P_cot = cot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
-        eps_p=eps_p_cot, eps_mu=eps_mu_cot, eps_nu=eps_nu_cot, rho=rho_cot, \
+    P_fot = fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+        eps_p=eps_p_fot, eps_mu=eps_mu_fot, eps_nu=eps_nu_fot, rho=rho_fot, \
         nitermax=nitermax, stopthr=stopthr, verbose=False)
-    P_row = cot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+    P_row = fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
         eps_p=eps_p_row, eps_mu=eps_mu_row, eps_nu=eps_nu_row, rho=rho_row, \
         nitermax=nitermax, stopthr=stopthr, verbose=False)
-    P_col = cot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+    P_col = fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
         eps_p=eps_p_col, eps_mu=eps_mu_col, eps_nu=eps_nu_col, rho=rho_col, \
         nitermax=nitermax, stopthr=stopthr, verbose=False)
-    P_blk = cot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+    P_blk = fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
         eps_p=eps_p_blk, eps_mu=eps_mu_blk, eps_nu=eps_nu_blk, rho=rho_blk, \
         nitermax=nitermax, stopthr=stopthr, verbose=False)
 
@@ -46,11 +46,11 @@ def cot_combine_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff,
     for i in range(A.shape[0]):
         for j in range(A.shape[1]):
             if not np.isinf(A[i,j]):
-                P[(i,j)] = float(weights[0]) * P_cot[(i,j)] + float(weights[1]) * P_row[(i,j)] \
+                P[(i,j)] = float(weights[0]) * P_fot[(i,j)] + float(weights[1]) * P_row[(i,j)] \
                     + float(weights[2]) * P_col[(i,j)] + float(weights[3]) * P_blk[(i,j)]
     return(P)
 
-def cot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
     """ Solve the collective optimal transport problem with distance limits in sparse format.
     
     Parameters
@@ -169,7 +169,7 @@ def cot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=
 
     return P_expand    
 
-def cot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
     """Solve for each sender species separately.
     """
     if eps_mu is None: eps_mu = eps_p
@@ -263,7 +263,7 @@ def cot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
 
     return P_expand
 
-def cot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
     """Solve for each destination species separately.
     """
     if eps_mu is None: eps_mu = eps_p
@@ -358,7 +358,7 @@ def cot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
 
     return P_expand
 
-def cot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
     if eps_mu is None: eps_mu = eps_p
     if eps_nu is None: eps_nu = eps_p
     if max(abs(eps_p-eps_mu), abs(eps_p-eps_nu)) > 1e-8:

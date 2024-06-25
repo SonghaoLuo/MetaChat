@@ -113,7 +113,9 @@ mc.pp.compute_longRangeDistance(adata = adata,
                                 LRC_name = ["type1"],
                                 dis_thr = 10,
                                 k_neighb = 5,
-                                LRC_strength = 4)
+                                LRC_strength = 4,
+                                plot = True,
+                                spot_size = 1)
 ```
 
 ### Run the inference function

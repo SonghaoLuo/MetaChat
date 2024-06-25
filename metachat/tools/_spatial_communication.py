@@ -6,7 +6,7 @@ import pandas as pd
 from scipy import sparse
 from scipy.spatial import distance_matrix
 
-from .._optimal_transport import cot_combine_sparse
+from .._optimal_transport import fot_combine_sparse
 
 
 ### MetaChat cell communication
@@ -14,28 +14,28 @@ class CellCommunication(object):
 
     def __init__(self,
         adata,
-        df_MetaSen,
+        df_metasen,
         LRC_type,
         dis_thr,
         cost_scale,
         cost_type
     ):
         
-        # Find overlap metabolites and sensors in df_MetaSen
+        # Find overlap metabolites and sensors in df_metasen
         data_var = set(adata.var_names)
-        self.mets = list(set(df_MetaSen["Metabolite"]).intersection(data_var))
-        self.sens = list(set(df_MetaSen["Sensor"]).intersection(data_var))
+        self.mets = list(set(df_metasen["Metabolite"]).intersection(data_var))
+        self.sens = list(set(df_metasen["Sensor"]).intersection(data_var))
 
         # Generate an infinite matrix A. If the metabolite and the sensor can interact, 
         # let the corresponding position be 1
         A = np.inf * np.ones([len(self.mets), len(self.sens)], float)
         
         LRC = {}
-        for i in range(len(df_MetaSen)):
-            tmp_met = df_MetaSen.loc[i,"Metabolite"]
-            tmp_sen = df_MetaSen.loc[i,"Sensor"]
+        for i in range(len(df_metasen)):
+            tmp_met = df_metasen.loc[i,"Metabolite"]
+            tmp_sen = df_metasen.loc[i,"Sensor"]
             ## plus
-            LRC[tmp_met] = df_MetaSen.loc[i,"Long.Range.Channel"]
+            LRC[tmp_met] = df_metasen.loc[i,"Long.Range.Channel"]
             if tmp_met in self.mets and tmp_sen in self.sens:
                 if cost_scale is None:
                     A[self.mets.index(tmp_met), self.sens.index(tmp_sen)] = 1.0
@@ -80,42 +80,35 @@ class CellCommunication(object):
         self.nmet = self.S.shape[1]; self.nsen = self.D.shape[1]
         self.npts = adata.shape[0]
 
-    def run_cot_signaling(self,
-        cot_eps_p=1e-1, 
-        cot_eps_mu=None, 
-        cot_eps_nu=None, 
-        cot_rho=1e1, 
-        cot_nitermax=1e4, 
-        cot_weights=(0.25,0.25,0.25,0.25)
+    def run_fot_signaling(self,
+        fot_eps_p=1e-1, 
+        fot_eps_mu=None, 
+        fot_eps_nu=None, 
+        fot_rho=1e1, 
+        fot_nitermax=1e4, 
+        fot_weights=(0.25,0.25,0.25,0.25)
     ):
-        self.comm_network = cot_combine_sparse(self.S, self.mets, self.D, self.A, self.M, self.LRC, self.LRC_type, self.cutoff, \
-            eps_p=cot_eps_p, eps_mu=cot_eps_mu, eps_nu=cot_eps_nu, rho=cot_rho, weights=cot_weights, nitermax=cot_nitermax)
-
-
-def assign_distance(adata, dmat=None):
-    if dmat is None:
-        adata.obsp["spatial_distance"] = distance_matrix(adata.obsm["spatial"], adata.obsm["spatial"])
-    else:
-        adata.obsp["spatial_distance"] = dmat
+        self.comm_network = fot_combine_sparse(self.S, self.mets, self.D, self.A, self.M, self.LRC, self.LRC_type, self.cutoff, \
+            eps_p=fot_eps_p, eps_mu=fot_eps_mu, eps_nu=fot_eps_nu, rho=fot_rho, weights=fot_weights, nitermax=fot_nitermax)
 
 def metabolic_communication(
     adata: anndata.AnnData, 
     database_name: str = None, 
-    df_MetaSen: pd.DataFrame = None,
+    df_metasen: pd.DataFrame = None,
     LRC_type: list = None,
     dis_thr: Optional[float] = None, 
     cost_scale: Optional[dict] = None, 
     cost_type: str = 'euc',
-    cot_eps_p: float = 1e-1, 
-    cot_eps_mu: Optional[float] = None, 
-    cot_eps_nu: Optional[float] = None, 
-    cot_rho: float =1e1, 
-    cot_nitermax: int = 10000, 
-    cot_weights: tuple = (0.25,0.25,0.25,0.25),
+    fot_eps_p: float = 1e-1, 
+    fot_eps_mu: Optional[float] = None, 
+    fot_eps_nu: Optional[float] = None, 
+    fot_rho: float =1e1, 
+    fot_nitermax: int = 10000, 
+    fot_weights: tuple = (0.25,0.25,0.25,0.25),
     copy: bool = False
 ):
     """
-    Infer spatial communication.
+    Function for inferring spatial metabolic cell communication.
 
     Parameters
     ----------
@@ -124,17 +117,11 @@ def metabolic_communication(
         Rows correspond to cells or spots and columns to genes.
         If the spatial distance is absent in ``.obsp['spatial_distance']``, Euclidean distance determined from ``.obsm['spatial']`` will be used.
     database_name
-        Name of the ligand-receptor interaction database. Will be included in the keywords for anndata slots.
-    df_ligrec
+        Name of the Metabolite-Receptor interaction database. Will be included in the keywords for anndata slots.
+    df_metasen
         A data frame where each row corresponds to a ligand-receptor pair with ligands, receptors, and the associated signaling pathways in the three columns, respectively.
-    pathway_sum
-        Whether to sum over all ligand-receptor pairs of each pathway.
-    heteromeric
-        Whether the ligands or receptors are made of heteromeric complexes.
-    heteromeric_rule
-        Use either 'min' (minimum) or 'ave' (average) expression of the components as the level for the heteromeric complex.
-    heteromeric_delimiter
-        The character in ligand and receptor names separating individual components.
+    LRC_type
+
     dis_thr
         The threshold of spatial distance of signaling.
     cost_scale
@@ -142,27 +129,19 @@ def metabolic_communication(
         If None, all pairs have the same weight. 
     cost_type
         If 'euc', the original Euclidean distance will be used as cost matrix. If 'euc_square', the square of the Euclidean distance will be used.
-    cot_eps_p
+    fot_eps_p
         The coefficient of entropy regularization for transport plan.
-    cot_eps_mu
-        The coefficient of entropy regularization for untransported source (ligand). Set to equal to cot_eps_p for fast algorithm.
-    cot_eps_nu
-        The coefficient of entropy regularization for unfulfilled target (receptor). Set to equal to cot_eps_p for fast algorithm.
-    cot_rho
+    fot_eps_mu
+        The coefficient of entropy regularization for untransported source (ligand). Set to equal to fot_eps_p for fast algorithm.
+    fot_eps_nu
+        The coefficient of entropy regularization for unfulfilled target (receptor). Set to equal to fot_eps_p for fast algorithm.
+    fot_rho
         The coefficient of penalty for unmatched mass.
-    cot_nitermax
+    fot_nitermax
         Maximum iteration for collective optimal transport algorithm.
-    cot_weights
+    fot_weights
         A tuple of four weights that add up to one. The weights corresponds to four setups of collective optimal transport: 
         1) all ligands-all receptors, 2) each ligand-all receptors, 3) all ligands-each receptor, 4) each ligand-each receptor.
-    smooth
-        Whether to (spatially) smooth the gene expression for identifying more global signaling trend.
-    smth_eta
-        Kernel bandwidth for smoothing
-    smth_nu
-        Kernel sharpness for smoothing
-    smth_kernel
-        'exp' exponential kernel. 'lorentz' Lorentz kernel.
     copy
         Whether to return a copy of the :class:`anndata.AnnData`.
 
@@ -227,36 +206,36 @@ def metabolic_communication(
     """
 
     assert database_name is not None, "Please give a database_name"
-    assert df_MetaSen is not None, "Please give a Metabolite-Sensor database"
+    assert df_metasen is not None, "Please give a Metabolite-Sensor database"
 
-    # remove unavailable genes or metabolites from df_MetaSen
+    # remove unavailable genes or metabolites from df_metasen
     data_var = list(adata.var_names)
-    tmp_MetaSen = []
-    for i in range(df_MetaSen.shape[0]):
-        if df_MetaSen.loc[i,"Metabolite"] in data_var and df_MetaSen.loc[i,"Sensor"] in data_var:
-            tmp_MetaSen.append(df_MetaSen.loc[i,:])
-    tmp_MetaSen = np.array(tmp_MetaSen, str)
-    df_MetaSen_filtered = pd.DataFrame(data = tmp_MetaSen)
-    df_MetaSen_filtered.columns = df_MetaSen.columns.copy()
+    tmp_metasen = []
+    for i in range(df_metasen.shape[0]):
+        if df_metasen.loc[i,"Metabolite"] in data_var and df_metasen.loc[i,"Sensor"] in data_var:
+            tmp_metasen.append(df_metasen.loc[i,:])
+    tmp_metasen = np.array(tmp_metasen, str)
+    df_metasen_filtered = pd.DataFrame(data = tmp_metasen)
+    df_metasen_filtered.columns = df_metasen.columns.copy()
 
     # Drop duplicate pairs
-    df_MetaSen_filtered = df_MetaSen_filtered.drop_duplicates()
-    adata.uns["Metabolite_Sensor_filtered"] = df_MetaSen_filtered.copy()
-    print("There are %d pairs were found from the spatial data." %df_MetaSen_filtered.shape[0])
+    df_metasen_filtered = df_metasen_filtered.drop_duplicates()
+    adata.uns["Metabolite_Sensor_filtered"] = df_metasen_filtered.copy()
+    print("There are %d pairs were found from the spatial data." %df_metasen_filtered.shape[0])
 
     model = CellCommunication(adata,
-        df_MetaSen_filtered,
+        df_metasen_filtered,
         LRC_type,
         dis_thr,
         cost_scale, 
         cost_type
     )
-    model.run_cot_signaling(cot_eps_p=cot_eps_p, 
-        cot_eps_mu = cot_eps_mu, 
-        cot_eps_nu = cot_eps_nu, 
-        cot_rho = cot_rho, 
-        cot_nitermax = cot_nitermax, 
-        cot_weights = cot_weights
+    model.run_fot_signaling(fot_eps_p=fot_eps_p, 
+        fot_eps_mu = fot_eps_mu, 
+        fot_eps_nu = fot_eps_nu, 
+        fot_rho = fot_rho, 
+        fot_nitermax = fot_nitermax, 
+        fot_weights = fot_weights
     )
 
     adata.uns['MetaChat-'+database_name+'-info'] = {}
