@@ -192,7 +192,7 @@ def LRC_filtered(adata: anndata.AnnData,
     return adata if copy else None
 
 def compute_costDistance(adata: anndata.AnnData,
-                         LRC_name: list = None,
+                         LRC_type: list = None,
                          dis_thr: float = 50.0,
                          k_neighb: int = 5,
                          LRC_strength: float = 100.0,
@@ -207,7 +207,7 @@ def compute_costDistance(adata: anndata.AnnData,
     adata
         The data matrix with shape ``n_obs`` × ``n_var``, provided as an `anndata` object.
         Rows correspond to cells or spots and columns to genes.
-    LRC_name
+    LRC_type
         The name of all possible long-range channel, provided as a `list`, such as ["Blood"] or ["CSF"] or ["Blood","CSF"].
     dis_thr
         The farthest distance from a nearby cell to the LRC indicates the range of cells in which long-range communication can occur, provided as a `float`.
@@ -225,13 +225,13 @@ def compute_costDistance(adata: anndata.AnnData,
     Returns
     -------
     adata : anndata.AnnData
-        The points which belongs to LRC are added to ``.obs['LRC_' + LRC_name + '_filtered']``, with non-"0" indicating the cluster of LRC and "0" indicating not a LRC. 
+        The calculated distance will be saved in ``adata.obsp['spatial_distance_LRC_No']`` and ``adata.obsp['spatial_distance_LRC_X']`` for each LRC, where 'X' is the LRC name.
         If copy=True, return the AnnData object and return None otherwise.    
     """
     
     # Check inputs
-    if LRC_name is None: 
-        print("You didn't input LRC_name, so long-range communication will not be consider in subsequence analysis")
+    if LRC_type is None: 
+        print("You didn't input LRC_type, so long-range communication will not be consider in subsequence analysis")
     
     print("Compute spatial cost distance without long-range channel...")
     if not 'spatial_distance' in adata.obsp.keys():
@@ -242,25 +242,25 @@ def compute_costDistance(adata: anndata.AnnData,
         adata.obsp['spatial_distance_LRC_No'] = dis_mat
 
     # Compute spatial cost distance incorporating long-range channel
-    if LRC_name is not None:
-        for LR_element in LRC_name:
+    if LRC_type is not None:
+        for LRC_element in LRC_type:
 
             # Check inputs
-            key = 'LRC_' + LR_element + '_filtered'
+            key = 'LRC_' + LRC_element + '_filtered'
             if not key in adata.obs.keys():
                 raise KeyError(f"Can't find the adata.obs[{key}], Please run the 'mc.pp.LRC_unfiltered' function, 'mc.pp.LRC_cluster' function and 'mc.pp.LRC_filtered' function first")
             
-            print("Compute spatial cost distance incorporating long-range channel of " + LR_element)
+            print("Compute spatial cost distance incorporating long-range channel of " + LRC_element)
             spot_close_LR = []
             spot_close_LR_type = []
-            LR_set = set(adata.obs['LRC_' + LR_element + '_filtered'])
+            LR_set = set(adata.obs['LRC_' + LRC_element + '_filtered'])
             LR_set.remove(0)
 
             # Find out the points that close to LRC
-            record_closepoint = np.zeros((len(adata.obs['LRC_' + LR_element + '_filtered']), len(LR_set)))
+            record_closepoint = np.zeros((len(adata.obs['LRC_' + LRC_element + '_filtered']), len(LR_set)))
             for ispot in range(dis_mat.shape[0]):
                 spot_close_ind = dis_mat[ispot,:] < dis_thr
-                temp_spot_close = adata.obs['LRC_' + LR_element + '_filtered'][spot_close_ind]
+                temp_spot_close = adata.obs['LRC_' + LRC_element + '_filtered'][spot_close_ind]
                 if np.any(temp_spot_close != 0):
                     spot_close_LR.append(ispot)   
                     LR_type = set(temp_spot_close[temp_spot_close!=0])
@@ -269,20 +269,19 @@ def compute_costDistance(adata: anndata.AnnData,
             spot_close_LR = np.array(spot_close_LR)
 
             # plot close points
-            
             for itype in LR_set:
-                adata.obs['LRC_' + LR_element + '_closepoint_cluster%d' %itype] = record_closepoint[:,int(itype-1)]
+                adata.obs['LRC_' + LRC_element + '_closepoint_cluster%d' %itype] = record_closepoint[:,int(itype-1)]
                 if plot:
                     print('The points that can occur long-range communication is...')
                     if spot_size is not None:
-                        sc.pl.spatial(adata, color='LRC_' + LR_element + '_closepoint_cluster%d' %itype, spot_size=spot_size)
+                        sc.pl.spatial(adata, color='LRC_' + LRC_element + '_closepoint_cluster%d' %itype, spot_size=spot_size)
                     else:
-                        sc.pl.spatial(adata, color='LRC_' + LR_element + '_closepoint_cluster%d' %itype)
+                        sc.pl.spatial(adata, color='LRC_' + LRC_element + '_closepoint_cluster%d' %itype)
                 else: 
                     pass 
 
             # Compute the distance between two arbitary point for each long-range channel
-            LR_set = set(adata.obs['LRC_' + LR_element + '_filtered'])
+            LR_set = set(adata.obs['LRC_' + LRC_element + '_filtered'])
             LR_set.remove(0)
             G_list = []
             
@@ -290,7 +289,7 @@ def compute_costDistance(adata: anndata.AnnData,
             for itype in LR_set:
                 itype = int(itype)
                 G = nx.Graph()
-                LR_channel_coords = adata.obsm['spatial'][adata.obs['LRC_' + LR_element + '_filtered'] == itype]
+                LR_channel_coords = adata.obsm['spatial'][adata.obs['LRC_' + LRC_element + '_filtered'] == itype]
 
                 # Add nodes
                 for iLR in range(LR_channel_coords.shape[0]):
@@ -330,7 +329,7 @@ def compute_costDistance(adata: anndata.AnnData,
                 itype = int(itype)
                 dis_LR_path = {}
                 
-                LR_channel_coords = adata.obsm['spatial'][adata.obs['LRC_' + LR_element + '_filtered'] == itype]
+                LR_channel_coords = adata.obsm['spatial'][adata.obs['LRC_' + LRC_element + '_filtered'] == itype]
                 G = G_list[itype-1]
                 
                 print("    For the long-range case of cluster %s..." %itype)
@@ -346,7 +345,7 @@ def compute_costDistance(adata: anndata.AnnData,
                 dis_LR_path_list.append(dis_LR_path)
             
             print("  Rearrange distance matrix...")
-            LR_set = set(adata.obs['LRC_' + LR_element + '_filtered'])
+            LR_set = set(adata.obs['LRC_' + LRC_element + '_filtered'])
             dis_mat_LR = np.zeros((len(LR_set), dis_mat.shape[0], dis_mat.shape[0]))
 
             for itype in LR_set:
@@ -365,7 +364,7 @@ def compute_costDistance(adata: anndata.AnnData,
                     closest_spot = []
                     for ispot in spot_close_LR_itype:
                             spot_close_ind = dis_mat[ispot,:] < dis_thr
-                            spot_itype_ind = adata.obs['LRC_' + LR_element + '_filtered'] == itype
+                            spot_itype_ind = adata.obs['LRC_' + LRC_element + '_filtered'] == itype
                             dis2LR_temp = np.min(dis_mat[ispot,spot_close_ind & spot_itype_ind])
                             dis2LR.append(dis2LR_temp)
 
@@ -393,7 +392,7 @@ def compute_costDistance(adata: anndata.AnnData,
                     dis_mat_temp.iloc[spot_close_LR_itype,spot_close_LR_itype] = dis_LR + dis_mat_LR_path/LRC_strength
                     dis_mat_LR[itype,:,:] = np.array(dis_mat_temp)
             dis_mat_LR_min = np.min(dis_mat_LR, axis=0)
-            adata.obsp['spatial_distance_LRC_' + LR_element] = dis_mat_LR_min
+            adata.obsp['spatial_distance_LRC_' + LRC_element] = dis_mat_LR_min
     print("Finished!")
 
     return adata if copy else None
