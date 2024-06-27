@@ -1,3 +1,10 @@
+"""
+Tools Module
+============
+
+This module contains various utility functions.
+"""
+
 from typing import Optional
 import gc
 import anndata
