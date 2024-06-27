@@ -1,2 +1,2 @@
 .. toctree::
-   notebooks/toy_example1
+   notebooks/Multi_omics_data

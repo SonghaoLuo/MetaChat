@@ -682,7 +682,7 @@ def summary_pathway(adata: anndata.AnnData,
 ################## MCC remodelling ##################
 def communication_responseGenes(
     adata: anndata.AnnData,
-    adata_deg: anndata.AnnData,
+    adata_raw: anndata.AnnData,
     database_name: str = None,
     metabolite_name: str = None,
     metapathway_name: str = None,
@@ -702,7 +702,7 @@ def communication_responseGenes(
     ----------
     adata
         adata.AnnData object after running inference function ``mc.tl.metabolic_communication``.
-    adata_deg
+    adata_raw
         adata.AnnData object with raw spatial transcriptome data.
     database_name
         Name of the Metabolite-Sensor interaction database.
@@ -751,8 +751,8 @@ def communication_responseGenes(
     ro.numpy2ri.activate()
     ro.pandas2ri.activate()
 
-    adata_deg_raw = adata_deg.copy()
-    adata_deg_var = adata_deg.copy()
+    adata_deg_raw = adata_raw.copy()
+    adata_deg_var = adata_raw.copy()
     sc.pp.filter_genes(adata_deg_var, min_cells=3)
     sc.pp.filter_genes(adata_deg_raw, min_cells=3)
     sc.pp.normalize_total(adata_deg_var, target_sum=1e4)

@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example of spatial multi-omics data (mouse brain with Parkinson’s disease) &mdash; MetaChat 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=e3a6060d"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API" href="../api/index.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="../tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MetaChat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Data-preprocessing">Data preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Preprocessing-for-transcriptomics-data">Preprocessing for transcriptomics data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Preprocessing-for-metabolomics-data">Preprocessing for metabolomics data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Combine-the-transcriptomics-and-metabolomics-data">Combine the transcriptomics and metabolomics data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#MCC-Inference">MCC Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Import-MetaChatDB">Import MetaChatDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Identify-long-range-channels">Identify long-range channels</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Downstream-analysis">Downstream analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Summary-communication-among-different-scales">Summary communication among different scales</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Identifing-MCC-flow">Identifing MCC flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Constructing-group-level-MCC">Constructing group-level MCC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#MCC-remodelling-in-receiver-cells">MCC remodelling in receiver cells</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MetaChat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">&lt;no title&gt;</a></li>
+      <li class="breadcrumb-item active">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Multi_omics_data.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Example-of-spatial-multi-omics-data-(mouse-brain-with-Parkinson's-disease)">
+<h1>Example of spatial multi-omics data (mouse brain with Parkinson’s disease)<a class="headerlink" href="#Example-of-spatial-multi-omics-data-(mouse-brain-with-Parkinson's-disease)" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">import</span> <span class="nn">squidpy</span> <span class="k">as</span> <span class="nn">sq</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">metachat</span> <span class="k">as</span> <span class="nn">mc</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting work dictionary</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/home/Project/MetaChat_test/mouse_brain&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Data-preprocessing">
+<h2>Data preprocessing<a class="headerlink" href="#Data-preprocessing" title="Link to this heading"></a></h2>
+<section id="Preprocessing-for-transcriptomics-data">
+<h3>Preprocessing for transcriptomics data<a class="headerlink" href="#Preprocessing-for-transcriptomics-data" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_RNA</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;</span><span class="p">)</span>
+<span class="n">adata_RNA</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 3011 × 32285
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;
+    var: &#39;gene_ids&#39;, &#39;feature_types&#39;, &#39;genome&#39;
+    uns: &#39;spatial&#39;
+    obsm: &#39;spatial&#39;
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_RNA</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
+<span class="n">adata_RNA</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">adata_RNA</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">normalize_total</span><span class="p">(</span><span class="n">adata_RNA</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">adata_RNA</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_visual</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">random_seed</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">highly_variable_genes</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">min_mean</span><span class="o">=</span><span class="mf">0.0125</span><span class="p">,</span> <span class="n">max_mean</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_disp</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">adata_visual</span> <span class="o">=</span> <span class="n">adata_visual</span><span class="p">[:,</span> <span class="n">adata_visual</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">highly_variable</span><span class="p">]</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">svd_solver</span><span class="o">=</span><span class="s1">&#39;arpack&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_pcs</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">leiden</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;leiden&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_7_0.png" src="../_images/notebooks_Multi_omics_data_7_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cluster_to_cell_type</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;0&#39;</span><span class="p">:</span> <span class="s1">&#39;Striatum dorsal region&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="s1">&#39;Striatum ventral region&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;4&#39;</span><span class="p">:</span> <span class="s1">&#39;Lateral septal complex&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;5&#39;</span><span class="p">:</span> <span class="s1">&#39;Fiber tracts&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7&#39;</span><span class="p">:</span> <span class="s1">&#39;Fiber tracts&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="s1">&#39;Striatum dorsal region&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;11&#39;</span><span class="p">:</span> <span class="s1">&#39;Striatum ventral region&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;12&#39;</span><span class="p">:</span> <span class="s1">&#39;Ventricular systems&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;13&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">adata_RNA</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;tissue_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata_visual</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;leiden&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">cluster_to_cell_type</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
+                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_9_0.png" src="../_images/notebooks_Multi_omics_data_9_0.png" />
+</div>
+</div>
+</section>
+<section id="Preprocessing-for-metabolomics-data">
+<h3>Preprocessing for metabolomics data<a class="headerlink" href="#Preprocessing-for-metabolomics-data" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_MSI</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_MSI.h5ad&#39;</span><span class="p">)</span>
+<span class="n">adata_MSI</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span>
+<span class="n">adata_MSI</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span>
+<span class="n">adata_MSI</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 3011 × 3015
+    obs: &#39;orig.ident&#39;, &#39;nCount_RNA&#39;, &#39;nFeature_RNA&#39;
+    var: &#39;features&#39;
+    uns: &#39;spatial&#39;
+    obsm: &#39;spatial&#39;
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_MSI</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
+<span class="n">adata_RNA</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">adata_RNA</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">normalize_total</span><span class="p">(</span><span class="n">adata_MSI</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Combine-the-transcriptomics-and-metabolomics-data">
+<h3>Combine the transcriptomics and metabolomics data<a class="headerlink" href="#Combine-the-transcriptomics-and-metabolomics-data" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">hstack</span>
+<span class="n">X_combined</span> <span class="o">=</span> <span class="n">hstack</span><span class="p">([</span><span class="n">adata_RNA</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">adata_MSI</span><span class="o">.</span><span class="n">X</span><span class="p">])</span>
+<span class="n">X_combined</span> <span class="o">=</span> <span class="n">X_combined</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+<span class="n">var_combined</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;features&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adata_RNA</span><span class="o">.</span><span class="n">var_names</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adata_MSI</span><span class="o">.</span><span class="n">var_names</span><span class="p">)))})</span>
+<span class="n">var_combined</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">var_combined</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+<span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">AnnData</span><span class="p">(</span><span class="n">X_combined</span><span class="p">,</span> <span class="n">obs</span><span class="o">=</span><span class="n">adata_RNA</span><span class="o">.</span><span class="n">obs</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var_combined</span><span class="p">)</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obsm</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">obsm</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">uns</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">uns</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="MCC-Inference">
+<h2>MCC Inference<a class="headerlink" href="#MCC-Inference" title="Link to this heading"></a></h2>
+<section id="Import-MetaChatDB">
+<h3>Import MetaChatDB<a class="headerlink" href="#Import-MetaChatDB" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_metasen</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">MetaChatDB</span><span class="p">(</span><span class="n">species</span><span class="o">=</span><span class="s1">&#39;mouse&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Identify-long-range-channels">
+<h3>Identify long-range channels<a class="headerlink" href="#Identify-long-range-channels" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span>
+<span class="n">LRC_marker_gene</span> <span class="o">=</span> <span class="s2">&quot;Gfap&quot;</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="n">LRC_marker_gene</span><span class="p">],</span>
+                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_&quot; + LRC_marker_gene + &quot;.pdf&quot;)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_19_0.png" src="../_images/notebooks_Multi_omics_data_19_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_unfiltered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                     <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
+                     <span class="n">LRC_marker_gene</span> <span class="o">=</span> <span class="n">LRC_marker_gene</span><span class="p">,</span>
+                     <span class="n">quantile</span> <span class="o">=</span> <span class="mi">85</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Cells with Gfap expression above the 85% have been selected as candidates and stored in &#39;adata.obs[&#39;LRC_CSF_unfiltered&#39;]&#39;.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_unfiltered&#39;</span><span class="p">,</span>
+                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_unfiltered.pdf&quot;)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_21_0.png" src="../_images/notebooks_Multi_omics_data_21_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># There is a clear long-range channel as CSF vessel, so we perform density peak clustering on points with high marker expression in CSF vessel.</span>
+<span class="n">LRC_cluster_CSF</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_cluster</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                    <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
+                                    <span class="n">density_cutoff</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+                                    <span class="n">delta_cutoff</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">,</span>
+                                    <span class="n">outlier_cutoff</span> <span class="o">=</span> <span class="mf">4.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_22_0.png" src="../_images/notebooks_Multi_omics_data_22_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_filtered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                   <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
+                   <span class="n">LRC_cluster</span> <span class="o">=</span> <span class="n">LRC_cluster_CSF</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Candidate points for CSF LRC are clustered and outliers are removed. LRC points are stored in &#39;adata.obs[&#39;LRC_CSF_filtered&#39;]&#39;.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">,</span>
+                      <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_filtered.pdf&quot;)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_24_0.png" src="../_images/notebooks_Multi_omics_data_24_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">compute_costDistance</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                           <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CSF&quot;</span><span class="p">],</span>
+                           <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+                           <span class="n">k_neighb</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                           <span class="n">LRC_strength</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
+                           <span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Compute spatial cost distance without long-range channel...
+Compute spatial cost distance incorporating long-range channel of CSF
+The points that can occur long-range communication is...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_25_1.png" src="../_images/notebooks_Multi_omics_data_25_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The points that can occur long-range communication is...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_25_3.png" src="../_images/notebooks_Multi_omics_data_25_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  Construct network graph of long-range channel among 5 neighborhoods...
+  Calculate the shortest path distance from the source to the target using the shortest path algorithm...
+    For the long-range case of cluster 1...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 190/190 [00:14&lt;00:00, 13.05it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    For the long-range case of cluster 2...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 14/14 [00:00&lt;00:00, 1925.51it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  Rearrange distance matrix...
+    For the long-range case of cluster 1...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 448/448 [00:00&lt;00:00, 676.06it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    For the long-range case of cluster 2...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 36/36 [00:00&lt;00:00, 8275.06it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Finished!
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">metabolic_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                              <span class="n">df_metasen</span> <span class="o">=</span> <span class="n">df_metasen</span><span class="p">,</span>
+                              <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CSF&quot;</span><span class="p">],</span>
+                              <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;results/inference_results.h5ad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+There are 327 pairs were found from the spatial data.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Downstream-analysis">
+<h2>Downstream analysis<a class="headerlink" href="#Downstream-analysis" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;results/inference_results.h5ad&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Summary-communication-among-different-scales">
+<h3>Summary communication among different scales<a class="headerlink" href="#Summary-communication-among-different-scales" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sum_metabolites</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HMDB0000216&#39;</span><span class="p">,</span><span class="s1">&#39;HMDB0000073&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">summary_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                            <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                            <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Identifing-MCC-flow">
+<h3>Identifing MCC flow<a class="headerlink" href="#Identifing-MCC-flow" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                         <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                         <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
+                         <span class="n">k</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                              <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
+                              <span class="n">plot_method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span>
+                              <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span><span class="p">,</span>
+                              <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
+                              <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                              <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+                              <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.0000000000003</span><span class="p">,</span>
+                              <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                              <span class="n">grid_density</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
+                              <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Image&#39;</span><span class="p">,</span>
+                              <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                              <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
+                              <span class="n">plot_method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span>
+                              <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;group&#39;</span><span class="p">,</span>
+                              <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
+                              <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                              <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+                              <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.0000000000003</span><span class="p">,</span>
+                              <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                              <span class="n">grid_density</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
+                              <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Group types&#39;</span><span class="p">,</span>
+                              <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                              <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
+                              <span class="n">plot_method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span>
+                              <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;summary&#39;</span><span class="p">,</span>
+                              <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
+                              <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                              <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;YlOrRd&#39;</span><span class="p">,</span>
+                              <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+                              <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.0000000000003</span><span class="p">,</span>
+                              <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                              <span class="n">grid_density</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
+                              <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;MCC Signals&#39;</span><span class="p">,</span>
+                              <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_34_0.png" src="../_images/notebooks_Multi_omics_data_34_0.png" />
+</div>
+</div>
+</section>
+<section id="Constructing-group-level-MCC">
+<h3>Constructing group-level MCC<a class="headerlink" href="#Constructing-group-level-MCC" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_group</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                          <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                          <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
+                          <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
+                          <span class="n">n_permutations</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;MetaChat_group-tissue_type-MetaChatDB-HMDB0000073&#39;</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Cerebral cortex</th>
+      <th>Fiber tracts</th>
+      <th>Lateral septal complex</th>
+      <th>Striatum dorsal region</th>
+      <th>Striatum ventral region</th>
+      <th>Ventricular systems</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Cerebral cortex</th>
+      <td>1.060052e-11</td>
+      <td>5.985997e-12</td>
+      <td>5.367747e-12</td>
+      <td>3.851556e-12</td>
+      <td>5.980569e-12</td>
+      <td>1.108535e-11</td>
+    </tr>
+    <tr>
+      <th>Fiber tracts</th>
+      <td>8.941187e-12</td>
+      <td>1.756259e-11</td>
+      <td>1.813045e-17</td>
+      <td>1.101182e-11</td>
+      <td>1.427381e-11</td>
+      <td>2.586341e-11</td>
+    </tr>
+    <tr>
+      <th>Lateral septal complex</th>
+      <td>1.827025e-12</td>
+      <td>5.856315e-13</td>
+      <td>1.715571e-11</td>
+      <td>3.597803e-13</td>
+      <td>3.308491e-13</td>
+      <td>1.257162e-12</td>
+    </tr>
+    <tr>
+      <th>Striatum dorsal region</th>
+      <td>5.726325e-12</td>
+      <td>1.436869e-11</td>
+      <td>8.287509e-18</td>
+      <td>3.606240e-10</td>
+      <td>3.068785e-11</td>
+      <td>1.409258e-11</td>
+    </tr>
+    <tr>
+      <th>Striatum ventral region</th>
+      <td>2.451099e-12</td>
+      <td>3.763631e-12</td>
+      <td>3.598783e-18</td>
+      <td>1.658457e-11</td>
+      <td>2.576112e-10</td>
+      <td>3.478752e-12</td>
+    </tr>
+    <tr>
+      <th>Ventricular systems</th>
+      <td>7.851767e-12</td>
+      <td>2.412584e-11</td>
+      <td>1.282194e-17</td>
+      <td>9.945576e-12</td>
+      <td>1.285908e-11</td>
+      <td>4.135405e-10</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;MetaChat_group-tissue_type-MetaChatDB-HMDB0000073&#39;</span><span class="p">][</span><span class="s1">&#39;communication_pvalue&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Cerebral cortex</th>
+      <th>Fiber tracts</th>
+      <th>Lateral septal complex</th>
+      <th>Striatum dorsal region</th>
+      <th>Striatum ventral region</th>
+      <th>Ventricular systems</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Cerebral cortex</th>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>0.37</td>
+    </tr>
+    <tr>
+      <th>Fiber tracts</th>
+      <td>0.93</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.48</td>
+      <td>0.18</td>
+      <td>0.13</td>
+    </tr>
+    <tr>
+      <th>Lateral septal complex</th>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.78</td>
+    </tr>
+    <tr>
+      <th>Striatum dorsal region</th>
+      <td>1.00</td>
+      <td>0.18</td>
+      <td>1.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.26</td>
+    </tr>
+    <tr>
+      <th>Striatum ventral region</th>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.01</td>
+      <td>0.00</td>
+      <td>0.73</td>
+    </tr>
+    <tr>
+      <th>Ventricular systems</th>
+      <td>0.72</td>
+      <td>0.13</td>
+      <td>1.00</td>
+      <td>0.40</td>
+      <td>0.26</td>
+      <td>0.97</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_group_spatial</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                  <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                  <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
+                                  <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
+                                  <span class="n">n_permutations</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Computing group-level MCC for MetaChatDB-HMDB0000216
+Computing group-level MCC for MetaChatDB-HMDB0000073
+Computing group-level MCC for MetaChatDB-total-total
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Processing pairs: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 36/36 [08:56&lt;00:00, 14.90s/it]
+</pre></div></div>
+</div>
+<p>Correspondingly, the group-level MCC results considering the spatial distance distribution are stored in <code class="docutils literal notranslate"><span class="pre">adata.uns['MetaChat_group_spatial-tissue_type-MetaChatDB-HMDB0000073']</span></code></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span> <span class="s1">&#39;polar&#39;</span><span class="p">})</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_chord</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                     <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                     <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
+                                     <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
+                                     <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">p_value_cutoff</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                                     <span class="n">space</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                     <span class="n">self_communication_off</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;With Self Communication&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_chord</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                     <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                     <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
+                                     <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
+                                     <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">p_value_cutoff</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                                     <span class="n">space</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                     <span class="n">self_communication_off</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                     <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Without Self Communication&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Without Self Communication&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_41_1.png" src="../_images/notebooks_Multi_omics_data_41_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_heatmap</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                       <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                       <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
+                                       <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
+                                       <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span>
+                                       <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_heatmap</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                       <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                       <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
+                                       <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000216&#39;</span><span class="p">,</span>
+                                       <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+                                       <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HMDB0000216&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;HMDB0000216&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_42_1.png" src="../_images/notebooks_Multi_omics_data_42_1.png" />
+</div>
+</div>
+</section>
+<section id="MCC-remodelling-in-receiver-cells">
+<h3>MCC remodelling in receiver cells<a class="headerlink" href="#MCC-remodelling-in-receiver-cells" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_raw</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span>
+<span class="n">df_deg</span><span class="p">,</span> <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                                    <span class="n">adata_raw</span> <span class="o">=</span> <span class="n">adata_raw</span><span class="p">,</span>
+                                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;receiver&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+  |                                                  | 0 % ~calculating   |+                                                 | 1 % ~58m 04s       |++                                                | 2 % ~30m 13s       |++                                                | 3 % ~21m 09s       |+++                                               | 4 % ~16m 21s       |+++                                               | 5 % ~13m 31s       |++++                                              | 6 % ~11m 37s       |++++                                              | 7 % ~10m 20s       |+++++                                             | 8 % ~09m 23s       |+++++                                             | 9 % ~08m 31s       |++++++                                            | 10% ~07m 51s       |++++++                                            | 11% ~07m 17s       |+++++++                                           | 12% ~06m 49s       |+++++++                                           | 13% ~06m 25s       |++++++++                                          | 14% ~06m 05s       |++++++++                                          | 15% ~05m 50s       |+++++++++                                         | 16% ~05m 34s       |+++++++++                                         | 17% ~05m 20s       |++++++++++                                        | 18% ~05m 07s       |++++++++++                                        | 19% ~04m 54s       |+++++++++++                                       | 20% ~04m 43s       |+++++++++++                                       | 21% ~04m 32s       |++++++++++++                                      | 22% ~04m 22s       |++++++++++++                                      | 23% ~04m 16s       |+++++++++++++                                     | 24% ~04m 08s       |+++++++++++++                                     | 25% ~04m 01s       |++++++++++++++                                    | 26% ~03m 53s       |++++++++++++++                                    | 27% ~03m 47s       |+++++++++++++++                                   | 28% ~03m 40s       |+++++++++++++++                                   | 29% ~03m 34s       |++++++++++++++++                                  | 30% ~03m 31s       |++++++++++++++++                                  | 31% ~03m 25s       |+++++++++++++++++                                 | 32% ~03m 19s       |+++++++++++++++++                                 | 33% ~03m 13s       |++++++++++++++++++                                | 34% ~03m 09s       |++++++++++++++++++                                | 35% ~03m 04s       |+++++++++++++++++++                               | 36% ~02m 59s       |+++++++++++++++++++                               | 37% ~02m 54s       |++++++++++++++++++++                              | 38% ~02m 50s       |++++++++++++++++++++                              | 39% ~02m 46s       |+++++++++++++++++++++                             | 40% ~02m 41s       |+++++++++++++++++++++                             | 41% ~02m 39s       |++++++++++++++++++++++                            | 42% ~02m 35s       |++++++++++++++++++++++                            | 43% ~02m 31s       |+++++++++++++++++++++++                           | 44% ~02m 27s       |+++++++++++++++++++++++                           | 45% ~02m 23s       |++++++++++++++++++++++++                          | 46% ~02m 20s       |++++++++++++++++++++++++                          | 47% ~02m 16s       |+++++++++++++++++++++++++                         | 48% ~02m 13s       |+++++++++++++++++++++++++                         | 49% ~02m 09s       |++++++++++++++++++++++++++                        | 51% ~02m 06s       |++++++++++++++++++++++++++                        | 52% ~02m 03s       |+++++++++++++++++++++++++++                       | 53% ~01m 60s       |+++++++++++++++++++++++++++                       | 54% ~01m 57s       |++++++++++++++++++++++++++++                      | 55% ~01m 54s       |++++++++++++++++++++++++++++                      | 56% ~01m 51s       |+++++++++++++++++++++++++++++                     | 57% ~01m 48s       |+++++++++++++++++++++++++++++                     | 58% ~01m 45s       |++++++++++++++++++++++++++++++                    | 59% ~01m 42s       |++++++++++++++++++++++++++++++                    | 60% ~01m 39s       |+++++++++++++++++++++++++++++++                   | 61% ~01m 36s       |+++++++++++++++++++++++++++++++                   | 62% ~01m 33s       |++++++++++++++++++++++++++++++++                  | 63% ~01m 31s       |++++++++++++++++++++++++++++++++                  | 64% ~01m 28s       |+++++++++++++++++++++++++++++++++                 | 65% ~01m 25s       |+++++++++++++++++++++++++++++++++                 | 66% ~01m 22s       |++++++++++++++++++++++++++++++++++                | 67% ~01m 19s       |++++++++++++++++++++++++++++++++++                | 68% ~01m 17s       |+++++++++++++++++++++++++++++++++++               | 69% ~01m 14s       |+++++++++++++++++++++++++++++++++++               | 70% ~01m 11s       |++++++++++++++++++++++++++++++++++++              | 71% ~01m 09s       |++++++++++++++++++++++++++++++++++++              | 72% ~01m 07s       |+++++++++++++++++++++++++++++++++++++             | 73% ~01m 04s       |+++++++++++++++++++++++++++++++++++++             | 74% ~01m 02s       |++++++++++++++++++++++++++++++++++++++            | 75% ~60s           |++++++++++++++++++++++++++++++++++++++            | 76% ~57s           |+++++++++++++++++++++++++++++++++++++++           | 77% ~54s           |+++++++++++++++++++++++++++++++++++++++           | 78% ~52s           |++++++++++++++++++++++++++++++++++++++++          | 79% ~49s           |++++++++++++++++++++++++++++++++++++++++          | 80% ~47s           |+++++++++++++++++++++++++++++++++++++++++         | 81% ~44s           |+++++++++++++++++++++++++++++++++++++++++         | 82% ~42s           |++++++++++++++++++++++++++++++++++++++++++        | 83% ~39s           |++++++++++++++++++++++++++++++++++++++++++        | 84% ~37s           |+++++++++++++++++++++++++++++++++++++++++++       | 85% ~35s           |+++++++++++++++++++++++++++++++++++++++++++       | 86% ~32s           |++++++++++++++++++++++++++++++++++++++++++++      | 87% ~30s           |++++++++++++++++++++++++++++++++++++++++++++      | 88% ~28s           |+++++++++++++++++++++++++++++++++++++++++++++     | 89% ~25s           |+++++++++++++++++++++++++++++++++++++++++++++     | 90% ~23s           |++++++++++++++++++++++++++++++++++++++++++++++    | 91% ~21s           |++++++++++++++++++++++++++++++++++++++++++++++    | 92% ~18s           |+++++++++++++++++++++++++++++++++++++++++++++++   | 93% ~16s           |+++++++++++++++++++++++++++++++++++++++++++++++   | 94% ~14s           |++++++++++++++++++++++++++++++++++++++++++++++++  | 95% ~11s           |++++++++++++++++++++++++++++++++++++++++++++++++  | 96% ~09s           |+++++++++++++++++++++++++++++++++++++++++++++++++ | 97% ~07s           |+++++++++++++++++++++++++++++++++++++++++++++++++ | 98% ~05s           |++++++++++++++++++++++++++++++++++++++++++++++++++| 99% ~02s           |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=03m 42s
+2 parameter combinations, 2 use sequential method, 2 use subsampling method
+Running Clustering on Parameter Combinations...
+done.
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="n">deg_result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;df_deg&quot;</span><span class="p">:</span> <span class="n">df_deg</span><span class="p">,</span> <span class="s2">&quot;df_yhat&quot;</span><span class="p">:</span> <span class="n">df_yhat</span><span class="p">}</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;results/responseGenes_&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span> <span class="o">+</span> <span class="s2">&quot;.pkl&quot;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">deg_result</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;results/responseGenes_&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span> <span class="o">+</span> <span class="s2">&quot;.pkl&quot;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="n">deg_result</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+<span class="n">df_deg</span> <span class="o">=</span> <span class="n">deg_result</span><span class="p">[</span><span class="s2">&quot;df_deg&quot;</span><span class="p">]</span>
+<span class="n">df_yhat</span> <span class="o">=</span> <span class="n">deg_result</span><span class="p">[</span><span class="s2">&quot;df_yhat&quot;</span><span class="p">]</span>
+<span class="n">df_deg_clus</span><span class="p">,</span> <span class="n">df_yhat_clus</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_cluster</span><span class="p">(</span><span class="n">df_deg</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="mi">3</span><span class="p">],</span> <span class="n">df_yhat</span><span class="p">,</span> <span class="n">deg_clustering_res</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes</span><span class="p">(</span><span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_deg_clus</span><span class="p">,</span>
+                                       <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">df_yhat_clus</span><span class="p">,</span>
+                                       <span class="n">top_ngene_per_cluster</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+                                       <span class="n">colormap</span> <span class="o">=</span> <span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+                                       <span class="n">color_range</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+                                       <span class="n">font_scale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                                       <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+                                       <span class="n">return_genes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_48_0.png" src="../_images/notebooks_Multi_omics_data_48_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_result</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_keggEnrich</span><span class="p">(</span><span class="n">gene_list</span> <span class="o">=</span> <span class="n">df_deg</span><span class="p">[</span><span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;pvalue&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[:</span><span class="mi">1000</span><span class="p">],</span>
+                                                         <span class="n">gene_sets</span> <span class="o">=</span> <span class="s2">&quot;KEGG_2019_Mouse&quot;</span><span class="p">,</span>
+                                                         <span class="n">organism</span> <span class="o">=</span> <span class="s2">&quot;Mouse&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_result</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;results/responseGenes_keggEnrich_&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes_keggEnrich</span><span class="p">(</span><span class="n">df_result</span> <span class="o">=</span> <span class="n">df_result</span><span class="p">,</span>
+                                                  <span class="n">show_term_order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span>
+                                                  <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+                                                  <span class="n">maxshow_gene</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                                  <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Multi_omics_data_51_0.png" src="../_images/notebooks_Multi_omics_data_51_0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorials.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/index.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Songhao Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

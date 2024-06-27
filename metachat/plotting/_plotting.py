@@ -33,7 +33,7 @@ def plot_communication_flow(
     normalize_summary_quantile: float = 0.995,
     normalize_v: bool = False,
     normalize_v_quantile: float = 0.95,
-    arrow_color: str = "#333333",
+    arrow_color: str = "#000000",
     grid_density: float = 1.0,
     grid_knn: int = None,
     grid_scale: float = 1.0,
@@ -296,7 +296,8 @@ def plot_communication_responseGenes(
         figsize = figsize)
     g.ax_heatmap.invert_yaxis()
     g.cax.set_position([.1, .2, .03, .45])
-    plt.savefig(plot_savepath, dpi=300)
+    if plot_savepath is not None:
+        plt.savefig(plot_savepath, dpi=300)
 
     if return_genes:
         return list( df_deg.iloc[idx].index )
@@ -315,7 +316,9 @@ def plot_group_communication_chord(
     highlight_group_receiver: str = None,
     space: int = 5,
     group_cmap: str = None,
-    plot_savepath: str = None ):
+    figsize: tuple = (5,5),
+    plot_savepath: str = None,
+    ax: Optional[mpl.axes.Axes] = None):
 
     """
     Plot chord diagram for group-level MCC.
@@ -354,7 +357,13 @@ def plot_group_communication_chord(
         A dictionary that maps group names to colors. 
     plot_savepath
         Filename for saving the figure. Set the name to end with '.pdf' or 'png' to specify format.  
+    ax
+        An existing matplotlib ax (`matplotlib.axis.Axis`).
 
+    Returns
+    -------
+    ax : matplotlib.axis.Axis
+        The matplotlib ax object of the plot.
     """
     # Check inputs
     assert database_name is not None, "Please at least specify database_name."
@@ -415,10 +424,15 @@ def plot_group_communication_chord(
             label_kws = dict(size=12),
             link_kws = dict(ec="black", lw=0.5, direction=1),
             link_kws_handler = link_kws_handler
-            )   
-        circos.savefig(plot_savepath)
+            )
+        if plot_savepath is not None:
+            circos.savefig(plot_savepath, figsize=figsize)
+        else:
+            circos.plotfig(figsize=figsize, ax=ax)
     else:
         print("There is no significant group communication in " + uns_names)
+    
+    return ax
 
 def plot_group_communication_heatmap(
     adata: anndata.AnnData,

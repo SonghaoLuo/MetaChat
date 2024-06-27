@@ -104,11 +104,11 @@ def plot_cell_signaling(X,
         cmap = plotly.colors.qualitative.Alphabet
 
     idx = np.argsort(ndcolor)
-    if background == 'summary' or background == 'cluster':
+    if background == 'summary' or background == 'group':
         if not ndsize==0:
             if background == 'summary':
                 ax.scatter(X[idx,0], X[idx,1], s=ndsize, c=ndcolor[idx], cmap=cmap, linewidth=0)
-            elif background == 'cluster':
+            elif background == 'group':
                 labels = np.array( adata.obs[group_name], str )
                 unique_labels = np.sort(list(set(list(labels))))
                 for i_label in range(len(unique_labels)):
