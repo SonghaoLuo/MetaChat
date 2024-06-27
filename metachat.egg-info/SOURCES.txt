@@ -10,7 +10,7 @@ metachat.egg-info/not-zip-safe
 metachat.egg-info/requires.txt
 metachat.egg-info/top_level.txt
 metachat/_optimal_transport/__init__.py
-metachat/_optimal_transport/_cot.py
+metachat/_optimal_transport/_fot.py
 metachat/_optimal_transport/_unot.py
 metachat/_optimal_transport/_usot.py
 metachat/_utils/__init__.py

@@ -13,4 +13,11 @@ Welcome to MetaChat's documentation!
    :caption: Contents:
 
    tutorials
+   api/index
 
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

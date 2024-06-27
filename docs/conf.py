@@ -16,7 +16,7 @@ sys.path[:0] = [str(HERE.parent)]
 project = 'MetaChat'
 copyright = '2024, Songhao Luo'
 author = 'Songhao Luo'
-release = '0.0.1'
+release = '0.0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
