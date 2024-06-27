@@ -1,8 +1,8 @@
-import numpy as np
 import plotly
+import numpy as np
+from scipy.stats import norm
 import matplotlib.pyplot as plt
 from sklearn.neighbors import NearestNeighbors
-from scipy.stats import norm
 
 def get_cmap_qualitative(cmap_name):
     if cmap_name == "Plotly":
@@ -13,28 +13,22 @@ def get_cmap_qualitative(cmap_name):
         cmap = plotly.colors.qualitative.Light24
     elif cmap_name == "Dark24":
         cmap = plotly.colors.qualitative.Dark24
-    # Safe and Vivid are strings of form "rbg(...)"
-    # Handle this later.
-    elif cmap_name == "Safe":
-        cmap = plotly.colors.qualitative.Safe
-    elif cmap_name == "Vivid":
-        cmap = plotly.colors.qualitative.Vivid
     return cmap
 
 def plot_cell_signaling(X,
     V,
     signal_sum,
-    cmap="coolwarm",
-    cluster_cmap = None,
-    arrow_color="tab:blue",
-    plot_method="cell",
-    background='summary',
-    clustering=None,
-    background_legend=False,
-    library_id=None,
-    adata=None,
-    summary='sender',
-    normalize_summary_quantile = 0.95,
+    cmap = "coolwarm",
+    group_cmap = None,
+    arrow_color = "tab:blue",
+    plot_method = "cell",
+    background = 'summary',
+    group_name = None,
+    background_legend = False,
+    library_id = None,
+    adata = None,
+    summary = 'sender',
+    normalize_summary_quantile = 0.995,
     ndsize = 1,
     scale = 1.0,
     grid_density = 1,
@@ -46,7 +40,7 @@ def plot_cell_signaling(X,
     stream_linewidth = 1,
     stream_cutoff_perc = 5,
     title = None,
-    filename=None,
+    plot_savepath = None,
     ax = None
 ):
     ndcolor = signal_sum.copy()
@@ -98,7 +92,6 @@ def plot_cell_signaling(X,
             length = np.sum(np.mean(np.abs(V[nbs]),axis=1),axis=1).T
             length = length.reshape(ngrid_y, ngrid_x)
             cutoff |= length < np.percentile(length, stream_cutoff_perc)
-
             V_grid[0][cutoff] = np.nan
 
     if cmap == 'Plotly':
@@ -116,14 +109,14 @@ def plot_cell_signaling(X,
             if background == 'summary':
                 ax.scatter(X[idx,0], X[idx,1], s=ndsize, c=ndcolor[idx], cmap=cmap, linewidth=0)
             elif background == 'cluster':
-                labels = np.array( adata.obs[clustering], str )
+                labels = np.array( adata.obs[group_name], str )
                 unique_labels = np.sort(list(set(list(labels))))
                 for i_label in range(len(unique_labels)):
                     idx = np.where(labels == unique_labels[i_label])[0]
-                    if cluster_cmap is None:
+                    if group_cmap is None:
                         ax.scatter(X[idx,0], X[idx,1], s=ndsize, c=cmap[i_label], linewidth=0, label=unique_labels[i_label])
-                    elif not cluster_cmap is None:
-                        ax.scatter(X[idx,0], X[idx,1], s=ndsize, c=cluster_cmap[unique_labels[i_label]], linewidth=0, label=unique_labels[i_label])
+                    elif not group_cmap is None:
+                        ax.scatter(X[idx,0], X[idx,1], s=ndsize, c=group_cmap[unique_labels[i_label]], linewidth=0, label=unique_labels[i_label])
                 if background_legend:
                     ax.legend(markerscale=2.0, loc=[1.0,0.0])
         if plot_method == "cell":
@@ -134,9 +127,9 @@ def plot_cell_signaling(X,
             lengths = np.sqrt((V_grid ** 2).sum(0))
             stream_linewidth *= 2 * lengths / lengths[~np.isnan(lengths)].max()
             ax.streamplot(x_grid, y_grid, V_grid[0], -V_grid[1], color=arrow_color, density=stream_density, linewidth=stream_linewidth)
+    
     elif background == 'image':
         spatial_mapping = adata.uns.get("spatial", {})
-
         if library_id is None:
             library_id = list(spatial_mapping.keys())[0]
         spatial_data = spatial_mapping[library_id]
@@ -157,5 +150,5 @@ def plot_cell_signaling(X,
     ax.invert_yaxis()
     ax.axis("equal")
     ax.axis("off")
-    if not filename is None:
-        plt.savefig(filename, dpi=500, bbox_inches = 'tight', transparent=True)
+    if not plot_savepath is None:
+        plt.savefig(plot_savepath, dpi=500, bbox_inches = 'tight', transparent=True)

@@ -6,4 +6,4 @@ from ._downstream_analysis import communication_group_spatial
 from ._downstream_analysis import summary_pathway
 from ._downstream_analysis import communication_responseGenes
 from ._downstream_analysis import communication_responseGenes_cluster
-from ._downstream_analysis import communication_deg_keggEnrich
+from ._downstream_analysis import communication_responseGenes_keggEnrich
