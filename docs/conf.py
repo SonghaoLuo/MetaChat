@@ -25,6 +25,7 @@ extensions = [
     'sphinx_mdinclude',
     'sphinx_rtd_theme',
     'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinx.ext.mathjax',

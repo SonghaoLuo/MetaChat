@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metachat.plotting._plotting &mdash; MetaChat 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=e3a6060d"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MetaChat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/toy_example1.html">Toy example 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MetaChat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">metachat.plotting._plotting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for metachat.plotting._plotting</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plotting Module</span>
+<span class="sd">===============</span>
+
+<span class="sd">This module contains functions for plotting.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">anndata</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">pycirclize</span> <span class="kn">import</span> <span class="n">Circos</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
+ 
+<span class="kn">from</span> <span class="nn">.._utils</span> <span class="kn">import</span> <span class="n">plot_cell_signaling</span>
+<span class="kn">from</span> <span class="nn">.._utils</span> <span class="kn">import</span> <span class="n">get_cmap_qualitative</span>
+
+<div class="viewcode-block" id="plot_communication_flow">
+<a class="viewcode-back" href="../../../api/metachat.pl.plot_communication_flow.html#metachat.pl.plot_communication_flow">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_communication_flow</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metabolite_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metapathway_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">customerlist_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">plot_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cell&quot;</span><span class="p">,</span>
+    <span class="n">background</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;summary&quot;</span><span class="p">,</span>
+    <span class="n">background_legend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">library_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">summary</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sender&quot;</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;coolwarm&quot;</span><span class="p">,</span>
+    <span class="n">group_cmap</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pos_idx</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="nb">int</span><span class="p">),</span>
+    <span class="n">ndsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">normalize_summary_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+    <span class="n">normalize_v</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">normalize_v_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="n">arrow_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;#333333&quot;</span><span class="p">,</span>
+    <span class="n">grid_density</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">grid_knn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">grid_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">grid_thresh</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">grid_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="n">stream_density</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">stream_linewidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">stream_cutoff_perc</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">plot_savepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">mpl</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for plotting spatial metabolic cell flow.</span>
+<span class="sd">    </span>
+<span class="sd">    The metabolic cell communication should have been computed by the function :func:`mc.tl.metabolic_communication`.</span>
+<span class="sd">    The metabolic cell communication for some specific metabolite, metabolic pathway and customerlist should have been summarized by the function :func:`mc.tl.summary_communication`.</span>
+<span class="sd">    The metabolic cell communication flow should have been computed by the function :func:`mc.tl.communication_flow`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var``.</span>
+<span class="sd">        Rows correspond to cells or positions and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    metabolite_name</span>
+<span class="sd">        Name of a specific metabolite to detect response genes. For example, metabolite_name = &#39;HMDB0000148&#39;.</span>
+<span class="sd">    metapathway_name</span>
+<span class="sd">        Name of a specific metabolic pathways to detect response genes. For example, metabolite_name = &#39;Alanine, aspartate and glutamate metabolism&#39;.</span>
+<span class="sd">    customerlist_name</span>
+<span class="sd">        Name of a specific customerlist to detect response genes. For example, customerlist_name = &#39;CustomerA&#39;.</span>
+<span class="sd">    plot_method</span>
+<span class="sd">        &#39;cell&#39; plot vectors on individual cells. </span>
+<span class="sd">        &#39;grid&#39; plot interpolated vectors on regular grids.</span>
+<span class="sd">        &#39;stream&#39; streamline plot.</span>
+<span class="sd">    background</span>
+<span class="sd">        &#39;summary&#39;: scatter plot with color representing total sent or received signal.</span>
+<span class="sd">        &#39;image&#39;: the image in Visium data.</span>
+<span class="sd">        &#39;group&#39;: scatter plot with color representing cell groups.</span>
+<span class="sd">    background_legend</span>
+<span class="sd">        Whether to include the background legend when background is set to `summary` or `group`.</span>
+<span class="sd">    library_id</span>
+<span class="sd">        library_id to specify image when background is set to &#39;image&#39;.</span>
+<span class="sd">    group_name</span>
+<span class="sd">        The key for cell group annotation. Needed if background is set to `group`.</span>
+<span class="sd">        For example, if ``group_name==&#39;leiden&#39;``, the group annotation should be available in ``.obs[&#39;leiden&#39;]``.</span>
+<span class="sd">    summary</span>
+<span class="sd">        If background is set to &#39;summary&#39;, the numerical value to plot for background.</span>
+<span class="sd">        &#39;sender&#39;: node color represents sender weight.</span>
+<span class="sd">        &#39;receiver&#39;: node color represents receiver weight.</span>
+<span class="sd">    cmap</span>
+<span class="sd">        matplotlib colormap name for node summary if numerical (background set to &#39;summary&#39;), e.g., &#39;coolwarm&#39;.</span>
+<span class="sd">        plotly colormap name for node color if summary is (background set to &#39;group&#39;). e.g., &#39;Alphabet&#39;.</span>
+<span class="sd">    group_cmap</span>
+<span class="sd">        A dictionary that maps group names to colors when setting background to &#39;group&#39;. If given, ``cmap`` will be ignored.</span>
+<span class="sd">    pos_idx</span>
+<span class="sd">        The coordinates to use for plotting (2D plot).</span>
+<span class="sd">    ndsize</span>
+<span class="sd">        The node size of the spots.</span>
+<span class="sd">    scale</span>
+<span class="sd">        The scale parameter passed to the matplotlib quiver function :func:`matplotlib.pyplot.quiver` for vector field plots.</span>
+<span class="sd">        The smaller the value, the longer the arrows.</span>
+<span class="sd">    normalize_summary_quantile</span>
+<span class="sd">        If background is set to &#39;summary&#39;, the numerical value greater than a quantile will be the same as that quantile.</span>
+<span class="sd">    normalize_v</span>
+<span class="sd">        Whether the normalize the vector field to uniform lengths to highlight the directions without showing magnitudes.</span>
+<span class="sd">    normalize_v_quantile</span>
+<span class="sd">        The vector length quantile to use to normalize the vector field.</span>
+<span class="sd">    arrow_color</span>
+<span class="sd">        The color of the arrows.</span>
+<span class="sd">    grid_density</span>
+<span class="sd">        The density of grid if ``plot_method==&#39;grid&#39;``.</span>
+<span class="sd">    grid_knn</span>
+<span class="sd">        If ``plot_method==&#39;grid&#39;``, the number of nearest neighbors to interpolate the signaling directions from spots to grid points.</span>
+<span class="sd">    grid_scale</span>
+<span class="sd">        The scale parameter (relative to grid size) for the kernel function of mapping directions of spots to grid points.</span>
+<span class="sd">    grid_thresh</span>
+<span class="sd">        The threshold of interpolation weights determining whether to include a grid point. A smaller value gives a tighter cover of the tissue by the grid points.</span>
+<span class="sd">    grid_width</span>
+<span class="sd">        The value passed to the ``width`` parameter of the function :func:`matplotlib.pyplot.quiver` when ``plot_method==&#39;grid&#39;``.</span>
+<span class="sd">    stream_density</span>
+<span class="sd">        The density of stream lines passed to the ``density`` parameter of the function :func:`matplotlib.pyplot.streamplot` when ``plot_method==&#39;stream&#39;``.</span>
+<span class="sd">    stream_linewidth</span>
+<span class="sd">        The width of stream lines passed to the ``linewidth`` parameter of the function :func:`matplotlib.pyplot.streamplot` when ``plot_method==&#39;stream&#39;``.</span>
+<span class="sd">    stream_cutoff_perc</span>
+<span class="sd">        The quantile cutoff to ignore the weak vectors. Default to 5 that the vectors shorter than the 5% quantile will not be plotted.</span>
+<span class="sd">    title</span>
+<span class="sd">        The title of diagram.</span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        If given, save to the plot_savepath. For example &#39;mcc_flow.pdf&#39;.</span>
+<span class="sd">    ax</span>
+<span class="sd">        An existing matplotlib ax (`matplotlib.axis.Axis`).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : matplotlib.axis.Axis</span>
+<span class="sd">        The matplotlib ax object of the plot.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="n">not_none_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">metabolite_name</span><span class="p">,</span> <span class="n">metapathway_name</span><span class="p">,</span> <span class="n">customerlist_name</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">not_none_count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Please don&#39;t not enter all three tasks (metabolite_name, sum_metapathway, sum_customerlist) at the same time.&quot;</span>
+
+    <span class="k">if</span> <span class="n">summary</span> <span class="o">==</span> <span class="s1">&#39;sender&#39;</span><span class="p">:</span>
+        <span class="n">summary_abbr</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
+    <span class="k">elif</span> <span class="n">summary</span> <span class="o">==</span> <span class="s1">&#39;receiver&#39;</span><span class="p">:</span>
+        <span class="n">summary_abbr</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span>
+
+    <span class="k">if</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">vf_name</span> <span class="o">=</span> <span class="s1">&#39;total-total&#39;</span>
+        <span class="n">sum_name</span> <span class="o">=</span> <span class="s1">&#39;total-total&#39;</span>
+        <span class="n">obsm_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">elif</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">vf_name</span> <span class="o">=</span> <span class="n">metabolite_name</span>
+        <span class="n">sum_name</span> <span class="o">=</span> <span class="n">metabolite_name</span>
+        <span class="n">obsm_name</span> <span class="o">=</span> <span class="s1">&#39;-metabolite&#39;</span>
+    <span class="k">elif</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">vf_name</span> <span class="o">=</span> <span class="n">metapathway_name</span>
+        <span class="n">sum_name</span> <span class="o">=</span> <span class="n">metapathway_name</span>
+        <span class="n">obsm_name</span> <span class="o">=</span> <span class="s1">&#39;-pathway&#39;</span>
+    <span class="k">elif</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">vf_name</span> <span class="o">=</span> <span class="n">customerlist_name</span>
+        <span class="n">sum_name</span> <span class="o">=</span> <span class="n">customerlist_name</span>
+        <span class="n">obsm_name</span> <span class="o">=</span> <span class="s1">&#39;-customer&#39;</span>
+
+    <span class="n">V</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat&#39;</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">summary</span> <span class="o">+</span> <span class="s1">&#39;_vf-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">vf_name</span><span class="p">][:,</span><span class="n">pos_idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">signal_sum</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s2">&quot;-sum-&quot;</span> <span class="o">+</span> <span class="n">summary</span> <span class="o">+</span> <span class="n">obsm_name</span><span class="p">][</span><span class="n">summary_abbr</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">sum_name</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">background</span><span class="o">==</span><span class="s1">&#39;group&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cmap</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Plotly&#39;</span><span class="p">,</span><span class="s1">&#39;Light24&#39;</span><span class="p">,</span><span class="s1">&#39;Dark24&#39;</span><span class="p">,</span><span class="s1">&#39;Alphabet&#39;</span><span class="p">]:</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Alphabet&#39;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">normalize_v</span><span class="p">:</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">V</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">normalize_v_quantile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">group_cmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">group_cmap</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">group_name</span> <span class="o">+</span> <span class="s1">&#39;_colors&#39;</span><span class="p">]))</span>
+
+    <span class="n">plot_cell_signaling</span><span class="p">(</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial&quot;</span><span class="p">][:,</span><span class="n">pos_idx</span><span class="p">],</span>
+        <span class="n">V</span><span class="p">,</span>
+        <span class="n">signal_sum</span><span class="p">,</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">,</span>
+        <span class="n">group_cmap</span> <span class="o">=</span> <span class="n">group_cmap</span><span class="p">,</span>
+        <span class="n">arrow_color</span> <span class="o">=</span> <span class="n">arrow_color</span><span class="p">,</span>
+        <span class="n">plot_method</span> <span class="o">=</span> <span class="n">plot_method</span><span class="p">,</span>
+        <span class="n">background</span> <span class="o">=</span> <span class="n">background</span><span class="p">,</span>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="n">group_name</span><span class="p">,</span>
+        <span class="n">background_legend</span> <span class="o">=</span> <span class="n">background_legend</span><span class="p">,</span>
+        <span class="n">library_id</span> <span class="o">=</span> <span class="n">library_id</span><span class="p">,</span>
+        <span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span><span class="p">,</span>
+        <span class="n">normalize_summary_quantile</span> <span class="o">=</span> <span class="n">normalize_summary_quantile</span><span class="p">,</span>
+        <span class="n">ndsize</span> <span class="o">=</span> <span class="n">ndsize</span><span class="p">,</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span><span class="p">,</span>       
+        <span class="n">grid_density</span> <span class="o">=</span> <span class="n">grid_density</span><span class="p">,</span>
+        <span class="n">grid_knn</span> <span class="o">=</span> <span class="n">grid_knn</span><span class="p">,</span>
+        <span class="n">grid_scale</span> <span class="o">=</span> <span class="n">grid_scale</span><span class="p">,</span>
+        <span class="n">grid_thresh</span> <span class="o">=</span> <span class="n">grid_thresh</span><span class="p">,</span>
+        <span class="n">grid_width</span> <span class="o">=</span> <span class="n">grid_width</span><span class="p">,</span>
+        <span class="n">stream_density</span> <span class="o">=</span> <span class="n">stream_density</span><span class="p">,</span>
+        <span class="n">stream_linewidth</span> <span class="o">=</span> <span class="n">stream_linewidth</span><span class="p">,</span>
+        <span class="n">stream_cutoff_perc</span> <span class="o">=</span> <span class="n">stream_cutoff_perc</span><span class="p">,</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">title</span><span class="p">,</span>
+        <span class="n">plot_savepath</span> <span class="o">=</span> <span class="n">plot_savepath</span><span class="p">,</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span></div>
+
+
+
+<div class="viewcode-block" id="plot_communication_responseGenes">
+<a class="viewcode-back" href="../../../api/metachat.pl.plot_communication_responseGenes.html#metachat.pl.plot_communication_responseGenes">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_communication_responseGenes</span><span class="p">(</span>
+    <span class="n">df_deg</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">df_yhat</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">show_gene_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">top_ngene_per_cluster</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;magma&#39;</span><span class="p">,</span>
+    <span class="n">cluster_colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Plotly&#39;</span><span class="p">,</span>
+    <span class="n">color_range</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">font_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+    <span class="n">plot_savepath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_genes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot smoothed gene expression of the detected metabolic cell communication response genes.</span>
+<span class="sd">    Takes input from the function :func:`metachat.tl.communication_responseGenes` and the function :func:`metachat.tl.communication_responseGenes_cluster`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_deg</span>
+<span class="sd">        A data frame where each row is a gene and the columns should include &#39;waldStat&#39;, &#39;pvalue&#39;, &#39;cluster&#39;.</span>
+<span class="sd">        Output of ``mc.tl.communication_responseGenes_cluster``</span>
+<span class="sd">    df_yhat</span>
+<span class="sd">        A data frame where each row is the smoothed expression of a gene.</span>
+<span class="sd">        Output of ``mc.tl.communication_responseGenes_cluster``.</span>
+<span class="sd">    show_gene_names</span>
+<span class="sd">        Whether to plot the gene names.</span>
+<span class="sd">    top_ngene_per_cluster</span>
+<span class="sd">        If non-negative, plot the top_ngene_per_cluster genes </span>
+<span class="sd">        with highest wald statistics.</span>
+<span class="sd">    colormap</span>
+<span class="sd">        The colormap for the heatmap. Choose from available colormaps from ``seaborn``.</span>
+<span class="sd">    cluster_colormap</span>
+<span class="sd">        The qualitative colormap for annotating gene cluster labels.</span>
+<span class="sd">        Choose from &#39;Plotly&#39;, &#39;Alphabet&#39;, &#39;Light24&#39;, &#39;Dark24&#39;.</span>
+<span class="sd">    color_range</span>
+<span class="sd">        If specify, df_yhat will be truncated to this range. For example, color_range = (-2,2).</span>
+<span class="sd">    font_scale</span>
+<span class="sd">        Font size.</span>
+<span class="sd">    figsize</span>
+<span class="sd">        Fig size to plot the diagram.</span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        Filename for saving the figure. Set the name to end with &#39;.pdf&#39; or &#39;png&#39; to specify format.   </span>
+<span class="sd">    return_genes</span>
+<span class="sd">        Whether to return the list of plotted genes.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    genes</span>
+<span class="sd">        Returns the gene list being plotted if return_genes is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">get_cmap_qualitative</span><span class="p">(</span><span class="n">cluster_colormap</span><span class="p">)</span>
+    <span class="n">wald_stats</span> <span class="o">=</span> <span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;waldStat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;cluster&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="n">nlabel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    <span class="n">yhat_mat</span> <span class="o">=</span> <span class="n">df_yhat</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="k">if</span> <span class="n">color_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">yhat_mat</span><span class="p">[</span><span class="n">yhat_mat</span> <span class="o">&gt;</span> <span class="n">color_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">color_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">yhat_mat</span><span class="p">[</span><span class="n">yhat_mat</span> <span class="o">&lt;</span> <span class="n">color_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">color_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">peak_locs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nlabel</span><span class="p">):</span>
+        <span class="n">tmp_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">labels</span><span class="o">==</span><span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tmp_y</span> <span class="o">=</span> <span class="n">yhat_mat</span><span class="p">[</span><span class="n">tmp_idx</span><span class="p">,:]</span>
+        <span class="n">peak_locs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">tmp_y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="n">cluster_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">peak_locs</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+    <span class="n">col_colors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cluster_order</span><span class="p">:</span>
+        <span class="n">tmp_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">labels</span><span class="o">==</span><span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tmp_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">wald_stats</span><span class="p">[</span><span class="n">tmp_idx</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">top_ngene_per_cluster</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">top_ngene</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_idx</span><span class="p">),</span> <span class="n">top_ngene_per_cluster</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">top_ngene</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_idx</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">idx</span><span class="p">,</span> <span class="n">tmp_idx</span><span class="p">[</span><span class="n">tmp_order</span><span class="p">][:</span><span class="n">top_ngene</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">top_ngene</span><span class="p">):</span>
+            <span class="n">col_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmap</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cmap</span><span class="p">)])</span>
+
+    <span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="n">font_scale</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">clustermap</span><span class="p">(</span><span class="n">df_yhat</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> 
+        <span class="n">row_cluster</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">col_cluster</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">col_colors</span> <span class="o">=</span> <span class="n">col_colors</span><span class="p">,</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">colormap</span><span class="p">,</span>
+        <span class="n">xticklabels</span> <span class="o">=</span> <span class="n">show_gene_names</span><span class="p">,</span>
+        <span class="n">yticklabels</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">linewidths</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">figsize</span> <span class="o">=</span> <span class="n">figsize</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">ax_heatmap</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">cax</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.2</span><span class="p">,</span> <span class="mf">.03</span><span class="p">,</span> <span class="mf">.45</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_savepath</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_genes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span> <span class="n">df_deg</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="plot_group_communication_chord">
+<a class="viewcode-back" href="../../../api/metachat.pl.plot_group_communication_chord.html#metachat.pl.plot_group_communication_chord">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_group_communication_chord</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metabolite_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metapathway_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">customerlist_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">permutation_spatial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_value_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">self_communication_off</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">highlight_group_sender</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">highlight_group_receiver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">space</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">group_cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">plot_savepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot chord diagram for group-level MCC.</span>
+<span class="sd">    The metabolic cell communication should have been computed by the function :func:`mc.tl.metabolic_communication`.</span>
+<span class="sd">    The metabolic cell communication for some specific metabolite, metabolic pathway and customerlist should have been summarized by the function :func:`mc.tl.summary_communication`.</span>
+<span class="sd">    The group-level metabolic cell communication flow should have been computed by the function :func:`mc.tl.communication_group` or :func:`mc.tl.communication_group_spatial`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var``.</span>
+<span class="sd">        Rows correspond to cells or positions and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    group_name</span>
+<span class="sd">        Group name of the cell annotation previously saved in ``adata.obs``. </span>
+<span class="sd">    metabolite_name</span>
+<span class="sd">        Name of a specific metabolite to detect response genes. For example, metabolite_name = &#39;HMDB0000148&#39;.</span>
+<span class="sd">    metapathway_name</span>
+<span class="sd">        Name of a specific metabolic pathways to detect response genes. For example, metabolite_name = &#39;Alanine, aspartate and glutamate metabolism&#39;.</span>
+<span class="sd">    customerlist_name</span>
+<span class="sd">        Name of a specific customerlist to detect response genes. For example, customerlist_name = &#39;CustomerA&#39;.</span>
+<span class="sd">    permutation_spatial</span>
+<span class="sd">        Whether to use results from ``mc.tl.communication_group_spatial``.</span>
+<span class="sd">    p_value_cutoff</span>
+<span class="sd">        Significance thresholds for Group-level MCC to plot.</span>
+<span class="sd">    self_communication_off</span>
+<span class="sd">        Whether to plot self-communication of cell group. If True, self-communication will not display.</span>
+<span class="sd">    highlight_group_sender</span>
+<span class="sd">        The group name of sender cells that be highlighted and others group is transparent. Can be specified at the same time as highlight_group_receiver.</span>
+<span class="sd">    highlight_group_receiver</span>
+<span class="sd">        The group name of receiver cells that be highlighted and others group is transparent. Can be specified at the same time as highlight_group_sender.</span>
+<span class="sd">    space</span>
+<span class="sd">        Distance space between groups.</span>
+<span class="sd">    group_cmap</span>
+<span class="sd">        A dictionary that maps group names to colors. </span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        Filename for saving the figure. Set the name to end with &#39;.pdf&#39; or &#39;png&#39; to specify format.  </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify group_name.&quot;</span>
+    <span class="n">not_none_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">metabolite_name</span><span class="p">,</span> <span class="n">metapathway_name</span><span class="p">,</span> <span class="n">customerlist_name</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">not_none_count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Please don&#39;t not enter all three tasks (sum_metabolite, sum_metapathway, sum_customerlist) at the same time.&quot;</span>
+
+    <span class="k">if</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="s1">&#39;total-total&#39;</span>
+    <span class="k">elif</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">metabolite_name</span>
+    <span class="k">elif</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">metapathway_name</span>
+    <span class="k">elif</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">customerlist_name</span>
+
+    <span class="k">if</span> <span class="n">permutation_spatial</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">df_communMatrix</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;MetaChat_group_spatial-&quot;</span>  <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_pvalue</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;MetaChat_group_spatial-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">][</span><span class="s1">&#39;communication_pvalue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df_communMatrix</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;MetaChat_group-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_pvalue</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;MetaChat_group-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">][</span><span class="s1">&#39;communication_pvalue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    
+    <span class="n">df_communMatrix</span><span class="p">[</span><span class="n">df_pvalue</span> <span class="o">&gt;</span> <span class="n">p_value_cutoff</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">self_communication_off</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">df_communMatrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">df_communMatrix</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">df_communMatrix</span> <span class="o">=</span> <span class="n">df_communMatrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_communMatrix</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">df_communMatrix</span> <span class="o">=</span> <span class="n">df_communMatrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">df_communMatrix</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">link_kws_handler</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">highlight_group_sender</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">highlight_group_receiver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">link_kws_handler</span><span class="p">(</span><span class="n">from_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                            <span class="n">to_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">highlight_group_sender</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">highlight_group_receiver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">from_label</span> <span class="ow">in</span> <span class="n">highlight_group_sender</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">highlight_group_sender</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">highlight_group_receiver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">to_label</span> <span class="ow">in</span> <span class="n">highlight_group_receiver</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">from_label</span> <span class="ow">in</span> <span class="n">highlight_group_sender</span> <span class="ow">or</span> <span class="n">to_label</span> <span class="ow">in</span> <span class="n">highlight_group_receiver</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">group_cmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">group_cmap</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">group_name</span> <span class="o">+</span> <span class="s1">&#39;_colors&#39;</span><span class="p">]))</span>   
+   
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df_communMatrix</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">circos</span> <span class="o">=</span> <span class="n">Circos</span><span class="o">.</span><span class="n">initialize_from_matrix</span><span class="p">(</span>
+            <span class="n">df_communMatrix</span><span class="p">,</span>
+            <span class="n">space</span> <span class="o">=</span> <span class="n">space</span><span class="p">,</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">group_cmap</span><span class="p">,</span>
+            <span class="n">label_kws</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">),</span>
+            <span class="n">link_kws</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ec</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">link_kws_handler</span> <span class="o">=</span> <span class="n">link_kws_handler</span>
+            <span class="p">)</span>   
+        <span class="n">circos</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_savepath</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There is no significant group communication in &quot;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_group_communication_heatmap">
+<a class="viewcode-back" href="../../../api/metachat.pl.plot_group_communication_heatmap.html#metachat.pl.plot_group_communication_heatmap">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_group_communication_heatmap</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metabolite_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metapathway_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">customerlist_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">permutation_spatial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_value_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">p_value_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">size_scale</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+    <span class="n">palette</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">marker</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span>
+    <span class="n">x_order</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+    <span class="n">y_order</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">mpl</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">plot_savepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot heatmap diagram for group-level MCC.</span>
+<span class="sd">    The metabolic cell communication should have been computed by the function :func:`mc.tl.metabolic_communication`.</span>
+<span class="sd">    The metabolic cell communication for some specific metabolite, metabolic pathway and customerlist should have been summarized by the function :func:`mc.tl.summary_communication`.</span>
+<span class="sd">    The group-level metabolic cell communication flow should have been computed by the function :func:`mc.tl.communication_group` or :func:`mc.tl.communication_group_spatial`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var``.</span>
+<span class="sd">        Rows correspond to cells or positions and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    group_name</span>
+<span class="sd">        Group name of the cell annotation previously saved in ``adata.obs``. </span>
+<span class="sd">    metabolite_name</span>
+<span class="sd">        Name of a specific metabolite to detect response genes. For example, metabolite_name = &#39;HMDB0000148&#39;.</span>
+<span class="sd">    metapathway_name</span>
+<span class="sd">        Name of a specific metabolic pathways to detect response genes. For example, metabolite_name = &#39;Alanine, aspartate and glutamate metabolism&#39;.</span>
+<span class="sd">    customerlist_name</span>
+<span class="sd">        Name of a specific customerlist to detect response genes. For example, customerlist_name = &#39;CustomerA&#39;.</span>
+<span class="sd">    permutation_spatial</span>
+<span class="sd">        Whether to use results from ``mc.tl.communication_group_spatial``.</span>
+<span class="sd">    p_value_plot:</span>
+<span class="sd">        Whether to plot significant. if significant, show &quot;*&quot;.</span>
+<span class="sd">    p_value_cutoff</span>
+<span class="sd">        Significance thresholds for Group-level MCC to plot.</span>
+<span class="sd">    size_scale</span>
+<span class="sd">        Control the size of points from values.</span>
+<span class="sd">    cmap</span>
+<span class="sd">        color map to plot communication intensity. Can be chose in &quot;green&quot;, &quot;red&quot; and &quot;blue&quot;.</span>
+<span class="sd">    palette</span>
+<span class="sd">        palette to plot communication intensity. Can be generated by &quot;sns.blend_palette&quot;. If specify, the &quot;cmap&quot; will not work.</span>
+<span class="sd">    marker</span>
+<span class="sd">        The marker shape show in heatmap. It&#39;s the same parameter in &quot;ax.scatter&quot;.</span>
+<span class="sd">    x_order</span>
+<span class="sd">        The order of sender cell groups show in the heatmap. e.g. x_order = [&quot;GroupA&quot;, &quot;GroupB&quot;, &quot;GroupC&quot;]</span>
+<span class="sd">    y_order</span>
+<span class="sd">        The order of receiver cell groups show in the heatmap. e.g. y_order = [&quot;GroupA&quot;, &quot;GroupB&quot;, &quot;GroupC&quot;]</span>
+<span class="sd">    figsize</span>
+<span class="sd">        Fig size to plot the diagram.</span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        Filename for saving the figure. Set the name to end with &#39;.pdf&#39; or &#39;png&#39; to specify format.   </span>
+<span class="sd">    ax</span>
+<span class="sd">        An existing matplotlib ax (`matplotlib.axis.Axis`).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : matplotlib.axis.Axis</span>
+<span class="sd">        The matplotlib ax object of the plot.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span> 
+
+   <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify group_name.&quot;</span>
+    <span class="n">not_none_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">metabolite_name</span><span class="p">,</span> <span class="n">metapathway_name</span><span class="p">,</span> <span class="n">customerlist_name</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">not_none_count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Please don&#39;t not enter all three tasks (sum_metabolite, sum_metapathway, sum_customerlist) at the same time.&quot;</span>
+
+    <span class="k">if</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="s1">&#39;total-total&#39;</span>
+    <span class="k">elif</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">metabolite_name</span>
+    <span class="k">elif</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">metapathway_name</span>
+    <span class="k">elif</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">customerlist_name</span>
+
+    <span class="k">if</span> <span class="n">permutation_spatial</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">df_communMatrix</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;MetaChat_group_spatial-&quot;</span>  <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_pvalue</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;MetaChat_group_spatial-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">][</span><span class="s1">&#39;communication_pvalue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df_communMatrix</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;MetaChat_group-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_pvalue</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;MetaChat_group-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span><span class="p">][</span><span class="s1">&#39;communication_pvalue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">df_communMatrix</span> <span class="o">=</span> <span class="n">df_communMatrix</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">melt_communMatrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df_communMatrix</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s1">&#39;Column&#39;</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s1">&#39;Value&#39;</span><span class="p">)</span>
+    <span class="n">melt_communMatrix</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Sender&#39;</span><span class="p">,</span><span class="s1">&#39;Receiver&#39;</span><span class="p">,</span><span class="s1">&#39;MCC_score&#39;</span><span class="p">]</span>
+
+    <span class="n">df_pvalue</span> <span class="o">=</span> <span class="n">df_pvalue</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">melt_pvalue</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df_pvalue</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s1">&#39;Column&#39;</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s1">&#39;Value&#39;</span><span class="p">)</span>
+    <span class="n">melt_pvalue</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Sender&#39;</span><span class="p">,</span><span class="s1">&#39;Receiver&#39;</span><span class="p">,</span><span class="s1">&#39;p_value&#39;</span><span class="p">]</span>
+    <span class="n">melt_df</span>  <span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">melt_communMatrix</span><span class="p">,</span> <span class="n">melt_pvalue</span><span class="p">[</span><span class="s1">&#39;p_value&#39;</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">sender</span> <span class="o">=</span> <span class="n">melt_df</span><span class="p">[</span><span class="s1">&#39;Sender&#39;</span><span class="p">]</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="n">melt_df</span><span class="p">[</span><span class="s1">&#39;Receiver&#39;</span><span class="p">]</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">melt_df</span><span class="p">[</span><span class="s1">&#39;MCC_score&#39;</span><span class="p">]</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">melt_df</span><span class="p">[</span><span class="s1">&#39;MCC_score&#39;</span><span class="p">]</span>
+    <span class="n">p_value</span> <span class="o">=</span> <span class="n">melt_df</span><span class="p">[</span><span class="s1">&#39;p_value&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">palette</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_colors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">palette</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_colors</span> <span class="o">=</span> <span class="mi">256</span> <span class="c1"># Use 256 colors for the diverging color palette</span>
+        <span class="k">if</span> <span class="n">cmap</span> <span class="o">==</span> <span class="s1">&#39;green&#39;</span><span class="p">:</span>
+            <span class="n">palette</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">blend_palette</span><span class="p">([</span><span class="s2">&quot;#D8E6E5&quot;</span><span class="p">,</span> <span class="s2">&quot;#94C1BE&quot;</span><span class="p">,</span> <span class="s2">&quot;#49A59D&quot;</span><span class="p">],</span> <span class="n">n_colors</span><span class="o">=</span><span class="n">n_colors</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">cmap</span> <span class="o">==</span> <span class="s1">&#39;red&#39;</span><span class="p">:</span>
+            <span class="n">palette</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">blend_palette</span><span class="p">([</span><span class="s2">&quot;#FCF5B8&quot;</span><span class="p">,</span> <span class="s2">&quot;#EBA55A&quot;</span><span class="p">,</span> <span class="s2">&quot;#C23532&quot;</span><span class="p">],</span> <span class="n">n_colors</span><span class="o">=</span><span class="n">n_colors</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">cmap</span> <span class="o">==</span> <span class="s1">&#39;blue&#39;</span><span class="p">:</span>
+            <span class="n">palette</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">blend_palette</span><span class="p">([</span><span class="s2">&quot;#CCE8F9&quot;</span><span class="p">,</span> <span class="s2">&quot;#72BBE7&quot;</span><span class="p">,</span> <span class="s2">&quot;#4872B4&quot;</span><span class="p">],</span> <span class="n">n_colors</span><span class="o">=</span><span class="n">n_colors</span><span class="p">)</span>
+
+    <span class="n">color_min</span><span class="p">,</span> <span class="n">color_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>  
+    <span class="k">def</span> <span class="nf">value_to_color</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+        <span class="n">color_list</span> <span class="o">=</span> <span class="n">color</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">color_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">color_min</span> <span class="o">==</span> <span class="n">color_max</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">palette</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">color_list</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+            <span class="n">val_position</span> <span class="o">=</span> <span class="n">index</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">color_list</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">val_position</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">val_position</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val_position</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_colors</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">palette</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+        
+    <span class="n">size_min</span><span class="p">,</span> <span class="n">size_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">value_to_size</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+        <span class="n">size_list</span> <span class="o">=</span> <span class="n">size</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">size_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">size_min</span> <span class="o">==</span> <span class="n">size_max</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">size_scale</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">size_list</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+            <span class="n">val_position</span> <span class="o">=</span> <span class="n">index</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">size_list</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">val_position</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">val_position</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">val_position</span> <span class="o">*</span> <span class="n">size_scale</span>
+
+    <span class="k">if</span> <span class="n">x_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> 
+        <span class="n">x_names</span> <span class="o">=</span> <span class="n">x_order</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sender</span><span class="p">]))]</span>
+    <span class="n">x_to_num</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_names</span><span class="p">)}</span>
+
+    <span class="k">if</span> <span class="n">y_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> 
+        <span class="n">y_names</span> <span class="o">=</span> <span class="n">y_order</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">receiver</span><span class="p">]))]</span>
+    <span class="n">y_to_num</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y_names</span><span class="p">)}</span>
+
+    <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_names</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_names</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="n">figsize</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_to_num</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sender</span><span class="p">],</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_to_num</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">receiver</span><span class="p">],</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="n">marker</span><span class="p">,</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="n">value_to_size</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">size</span><span class="p">],</span> 
+        <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">value_to_color</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">color</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">p_value_plot</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sender</span><span class="p">)):</span>
+            <span class="n">isender</span> <span class="o">=</span> <span class="n">sender</span><span class="p">[</span><span class="nb">iter</span><span class="p">]</span>
+            <span class="n">ireceiver</span> <span class="o">=</span> <span class="n">receiver</span><span class="p">[</span><span class="nb">iter</span><span class="p">]</span>
+            <span class="n">ipvalue</span> <span class="o">=</span> <span class="n">p_value</span><span class="p">[</span><span class="nb">iter</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ipvalue</span> <span class="o">&lt;</span> <span class="n">p_value_cutoff</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_to_num</span><span class="p">[</span><span class="n">isender</span><span class="p">],</span> <span class="n">y_to_num</span><span class="p">[</span><span class="n">ireceiver</span><span class="p">],</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">x_to_num</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">x_to_num</span><span class="p">],</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">y_to_num</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">y_to_num</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;major&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;minor&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()],</span> <span class="n">minor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([</span><span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yticks</span><span class="p">()],</span> <span class="n">minor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x_to_num</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">y_to_num</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Sender&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Receiver&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">figsize</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">figsize</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_savepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_savepath</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">ax</span></div>
+
+
+<div class="viewcode-block" id="plot_group_communication_compare_hierarchy_diagram">
+<a class="viewcode-back" href="../../../api/metachat.pl.plot_group_communication_compare_hierarchy_diagram.html#metachat.pl.plot_group_communication_compare_hierarchy_diagram">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_group_communication_compare_hierarchy_diagram</span><span class="p">(</span>
+    <span class="n">adata_A</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">adata_B</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">condition_name_A</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">condition_name_B</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metabolite_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metapathway_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">customerlist_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">permutation_spatial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_value_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">node_sizes_limit</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">300</span><span class="p">),</span>
+    <span class="n">edge_sizes_limit</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+    <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">plot_savepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">mpl</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot hierarachy diagram for comparing group-level MCC between two conditions.</span>
+<span class="sd">    The metabolic cell communication should have been computed by the function :func:`mc.tl.metabolic_communication`.</span>
+<span class="sd">    The metabolic cell communication for some specific metabolite, metabolic pathway and customerlist should have been summarized by the function :func:`mc.tl.summary_communication`.</span>
+<span class="sd">    The group-level metabolic cell communication flow should have been computed by the function :func:`mc.tl.communication_group` or :func:`mc.tl.communication_group_spatial`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata_A</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var`` for condition A.</span>
+<span class="sd">        Rows correspond to cells or positions and columns to genes.</span>
+<span class="sd">    adata_B</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var`` for condition B.</span>
+<span class="sd">        Rows correspond to cells or positions and columns to genes.</span>
+<span class="sd">    condition_name_A</span>
+<span class="sd">        Name of condition A.</span>
+<span class="sd">    condition_name_B</span>
+<span class="sd">        Name of condition B.   </span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    group_name</span>
+<span class="sd">        Group name of the cell annotation previously saved in ``adata.obs``. </span>
+<span class="sd">    metabolite_name</span>
+<span class="sd">        Name of a specific metabolite to detect response genes. For example, metabolite_name = &#39;HMDB0000148&#39;.</span>
+<span class="sd">    metapathway_name</span>
+<span class="sd">        Name of a specific metabolic pathways to detect response genes. For example, metabolite_name = &#39;Alanine, aspartate and glutamate metabolism&#39;.</span>
+<span class="sd">    customerlist_name</span>
+<span class="sd">        Name of a specific customerlist to detect response genes. For example, customerlist_name = &#39;CustomerA&#39;.</span>
+<span class="sd">    permutation_spatial</span>
+<span class="sd">        Whether to use results from ``mc.tl.communication_group_spatial``.</span>
+<span class="sd">    p_value_cutoff</span>
+<span class="sd">        Significance thresholds for Group-level MCC to plot.</span>
+<span class="sd">    node_sizes_limit</span>
+<span class="sd">        Control the limit of the node size. </span>
+<span class="sd">    edge_sizes_limit</span>
+<span class="sd">        Control the limit of the edge size. </span>
+<span class="sd">    group_cmap</span>
+<span class="sd">        A dictionary that maps group names to colors. </span>
+<span class="sd">    alpha </span>
+<span class="sd">        Transparency of insignificant edges</span>
+<span class="sd">    figsize</span>
+<span class="sd">        Fig size to plot the diagram.</span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        Filename for saving the figure. Set the name to end with &#39;.pdf&#39; or &#39;png&#39; to specify format.   </span>
+<span class="sd">    ax</span>
+<span class="sd">        An existing matplotlib ax (`matplotlib.axis.Axis`).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : matplotlib.axis.Axis</span>
+<span class="sd">        The matplotlib ax object of the plot.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify group_name.&quot;</span>
+    <span class="n">not_none_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">metabolite_name</span><span class="p">,</span> <span class="n">metapathway_name</span><span class="p">,</span> <span class="n">customerlist_name</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">not_none_count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Please don&#39;t not enter all three tasks (sum_metabolite, sum_metapathway, sum_customerlist) at the same time.&quot;</span>
+
+    <span class="k">if</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="s1">&#39;total-total&#39;</span>
+    <span class="k">elif</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">metabolite_name</span>
+    <span class="k">elif</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">metapathway_name</span>
+    <span class="k">elif</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uns_names</span> <span class="o">=</span> <span class="n">customerlist_name</span>
+
+    <span class="k">if</span> <span class="n">permutation_spatial</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">culster_name</span> <span class="o">=</span> <span class="s2">&quot;MetaChat_group_spatial-&quot;</span>  <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">culster_name</span> <span class="o">=</span> <span class="s2">&quot;MetaChat_group-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">uns_names</span>
+
+    <span class="n">matrix_condition_A</span> <span class="o">=</span> <span class="n">adata_A</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">culster_name</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">pvalue_condition_A</span> <span class="o">=</span> <span class="n">adata_A</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">culster_name</span><span class="p">][</span><span class="s1">&#39;communication_pvalue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">matrix_condition_B</span> <span class="o">=</span> <span class="n">adata_B</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">culster_name</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">pvalue_condition_B</span> <span class="o">=</span> <span class="n">adata_B</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">culster_name</span><span class="p">][</span><span class="s1">&#39;communication_pvalue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">group_cmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">group_cmap</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">adata_A</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">adata_A</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">group_name</span> <span class="o">+</span> <span class="s1">&#39;_colors&#39;</span><span class="p">]))</span>
+
+    <span class="n">G_signif</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="n">G_non_signif</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">matrix_condition_A</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">matrix_condition_B</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">matrix_condition_A</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">matrix_condition_B</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The group lebel is not the same for the two sets of data, and the intersection will be taken to continue the analysis.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="n">matrix_condition_A</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="n">node_sizes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">node_colors</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
+        <span class="n">size_L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">matrix_condition_A</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="bp">cls</span><span class="p">]</span>
+        <span class="n">size_M</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">matrix_condition_A</span><span class="p">,</span> <span class="mi">0</span><span class="p">)[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">matrix_condition_B</span><span class="p">,</span> <span class="mi">0</span><span class="p">)[</span><span class="bp">cls</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span>
+        <span class="n">size_R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">matrix_condition_B</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="bp">cls</span><span class="p">]</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
+        <span class="n">G_signif</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_L&quot;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size_L</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">G_signif</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;middle&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size_M</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">G_signif</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_R&quot;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size_R</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">G_non_signif</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_L&quot;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size_L</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">G_non_signif</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;middle&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size_M</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">G_non_signif</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_R&quot;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size_R</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">node_sizes</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_L&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">size_L</span>
+        <span class="n">node_sizes</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">size_M</span>
+        <span class="n">node_sizes</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_R&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">size_R</span>
+        <span class="n">node_colors</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_L&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="n">node_colors</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="n">node_colors</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;_R&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+
+    <span class="n">node_sizes_min_value</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">node_sizes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">node_sizes_max_value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_sizes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="n">node_sizes_min_value_new</span> <span class="o">=</span> <span class="n">node_sizes_limit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">node_sizes_max_value_new</span> <span class="o">=</span> <span class="n">node_sizes_limit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">node_sizes_visual</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">node_sizes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">new_size</span> <span class="o">=</span> <span class="n">node_sizes_min_value_new</span> <span class="o">+</span> <span class="p">((</span><span class="n">size</span> <span class="o">-</span> <span class="n">node_sizes_min_value</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">node_sizes_max_value_new</span> <span class="o">-</span> <span class="n">node_sizes_min_value_new</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">node_sizes_max_value</span> <span class="o">-</span> <span class="n">node_sizes_min_value</span><span class="p">))</span>
+        <span class="n">node_sizes_visual</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_size</span>
+
+    <span class="n">edges_signif</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edges_non_signif</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edge_sizes_min_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">matrix_condition_A</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">matrix_condition_B</span><span class="p">)])</span>
+    <span class="n">edge_sizes_max_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">matrix_condition_A</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">matrix_condition_B</span><span class="p">)])</span>
+    <span class="n">edge_sizes_min_value_new</span> <span class="o">=</span> <span class="n">edge_sizes_limit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">edge_sizes_max_value_new</span> <span class="o">=</span> <span class="n">edge_sizes_limit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">cls_sender</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">cls_receiver</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
+            <span class="n">weight_A</span> <span class="o">=</span> <span class="n">matrix_condition_A</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cls_sender</span><span class="p">,</span><span class="n">cls_receiver</span><span class="p">]</span>
+            <span class="n">weight_A</span> <span class="o">=</span> <span class="n">edge_sizes_min_value_new</span> <span class="o">+</span> <span class="p">((</span><span class="n">weight_A</span> <span class="o">-</span> <span class="n">edge_sizes_min_value</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">edge_sizes_max_value_new</span> <span class="o">-</span> <span class="n">edge_sizes_min_value_new</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">edge_sizes_max_value</span> <span class="o">-</span> <span class="n">edge_sizes_min_value</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">pvalue_condition_A</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cls_sender</span><span class="p">,</span><span class="n">cls_receiver</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p_value_cutoff</span><span class="p">:</span>
+                <span class="n">edges_signif</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cls_sender</span> <span class="o">+</span> <span class="s2">&quot;_L&quot;</span><span class="p">,</span> <span class="n">cls_receiver</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span><span class="p">,</span> <span class="n">weight_A</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edges_non_signif</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cls_sender</span> <span class="o">+</span> <span class="s2">&quot;_L&quot;</span><span class="p">,</span> <span class="n">cls_receiver</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span><span class="p">,</span> <span class="n">weight_A</span><span class="p">))</span>
+
+            <span class="n">weight_B</span> <span class="o">=</span> <span class="n">matrix_condition_B</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cls_sender</span><span class="p">,</span><span class="n">cls_receiver</span><span class="p">]</span>
+            <span class="n">weight_B</span> <span class="o">=</span> <span class="n">edge_sizes_min_value_new</span> <span class="o">+</span> <span class="p">((</span><span class="n">weight_B</span> <span class="o">-</span> <span class="n">edge_sizes_min_value</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">edge_sizes_max_value_new</span> <span class="o">-</span> <span class="n">edge_sizes_min_value_new</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">edge_sizes_max_value</span> <span class="o">-</span> <span class="n">edge_sizes_min_value</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">pvalue_condition_B</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cls_sender</span><span class="p">,</span><span class="n">cls_receiver</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p_value_cutoff</span><span class="p">:</span>
+                <span class="n">edges_signif</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cls_sender</span> <span class="o">+</span> <span class="s2">&quot;_R&quot;</span><span class="p">,</span> <span class="n">cls_receiver</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span><span class="p">,</span> <span class="n">weight_B</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edges_non_signif</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cls_sender</span> <span class="o">+</span> <span class="s2">&quot;_R&quot;</span><span class="p">,</span> <span class="n">cls_receiver</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span><span class="p">,</span> <span class="n">weight_B</span><span class="p">))</span>
+
+    <span class="n">G_signif</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">(</span><span class="n">edges_signif</span><span class="p">)</span>
+    <span class="n">G_non_signif</span><span class="o">.</span><span class="n">add_weighted_edges_from</span><span class="p">(</span><span class="n">edges_non_signif</span><span class="p">)</span>
+
+    <span class="n">pos</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G_signif</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;_L&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">-</span> <span class="n">classes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="s1">&#39;_M&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">-</span> <span class="n">classes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">-</span> <span class="n">classes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
+
+    <span class="c1"># plot diagram</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="n">edges_signif</span> <span class="o">=</span> <span class="n">G_signif</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">edge_colors_signif</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_colors</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges_signif</span><span class="p">]</span>
+    <span class="n">edge_widths_signif</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges_signif</span><span class="p">]</span>
+
+    <span class="n">edges_non_signif</span> <span class="o">=</span> <span class="n">G_non_signif</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">edge_colors_non_signif</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_colors</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges_non_signif</span><span class="p">]</span>
+    <span class="n">edge_widths_non_signif</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges_non_signif</span><span class="p">]</span>
+
+    <span class="c1"># plot nodes</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G_signif</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;_M&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+            <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G_signif</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">nodelist</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">node_color</span><span class="o">=</span><span class="p">[</span><span class="n">node_colors</span><span class="p">[</span><span class="n">node</span><span class="p">]],</span> <span class="n">node_shape</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="n">node_sizes_visual</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G_signif</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">nodelist</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">node_color</span><span class="o">=</span><span class="p">[</span><span class="n">node_colors</span><span class="p">[</span><span class="n">node</span><span class="p">]],</span> <span class="n">node_size</span><span class="o">=</span><span class="n">node_sizes_visual</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">labels_pos</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
+        <span class="n">labels</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s1">&#39;_L&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+        <span class="n">labels_pos</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s1">&#39;_L&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s1">&#39;_L&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">pos</span><span class="p">[</span><span class="bp">cls</span> <span class="o">+</span> <span class="s1">&#39;_L&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G_signif</span><span class="p">,</span> <span class="n">labels_pos</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G_signif</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">edgelist</span><span class="o">=</span><span class="n">edges_signif</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="n">edge_colors_signif</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">edge_widths_signif</span><span class="p">,</span> <span class="n">arrowstyle</span><span class="o">=</span><span class="s1">&#39;-|&gt;&#39;</span><span class="p">,</span> <span class="n">arrowsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G_non_signif</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">edgelist</span><span class="o">=</span><span class="n">edges_non_signif</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="n">edge_colors_non_signif</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">edge_widths_non_signif</span><span class="p">,</span> <span class="n">arrowstyle</span><span class="o">=</span><span class="s1">&#39;-|&gt;&#39;</span><span class="p">,</span> <span class="n">arrowsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_frame_on</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">6.5</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;Sender&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;Receiver&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;Sender&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="mf">2.35</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">head_width</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">head_length</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;#4F9B79&#39;</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;#4F9B79&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="mf">5.65</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">head_width</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">head_length</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;#253071&#39;</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;#253071&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">2.9</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">condition_name_A</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span> 
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">5.1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">condition_name_B</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span> 
+
+    <span class="k">if</span> <span class="n">plot_savepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_savepath</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ax</span></div>
+
+ 
+<div class="viewcode-block" id="plot_MSpair_contribute_group">
+<a class="viewcode-back" href="../../../api/metachat.pl.plot_MSpair_contribute_group.html#metachat.pl.plot_MSpair_contribute_group">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_MSpair_contribute_group</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metabolite_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">summary</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+    <span class="n">group_cmap</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+    <span class="n">plot_savepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot heatmap diagram for comparing contribution.</span>
+<span class="sd">    The metabolic cell communication should have been computed by the function :func:`mc.tl.metabolic_communication`.</span>
+<span class="sd">    The metabolic cell communication for some specific metabolite, metabolic pathway and customerlist should have been summarized by the function :func:`mc.tl.summary_communication`.</span>
+<span class="sd">    The group-level metabolic cell communication should have been computed by the function :func:`mc.tl.communication_group` or :func:`mc.tl.communication_group_spatial`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var``.</span>
+<span class="sd">        Rows correspond to cells or positions and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    group_name</span>
+<span class="sd">        Group name of the cell annotation previously saved in ``adata.obs``. </span>
+<span class="sd">    metabolite_name</span>
+<span class="sd">        Name of a specific metabolite to detect response genes. For example, metabolite_name = &#39;HMDB0000148&#39;.</span>
+<span class="sd">    summary</span>
+<span class="sd">        The sender signals or receiver signals that be computed contribution.</span>
+<span class="sd">    cmap</span>
+<span class="sd">        color map to plot communication intensity. Can be chose in &quot;green&quot;, &quot;red&quot; and &quot;blue&quot;.</span>
+<span class="sd">    group_cmap</span>
+<span class="sd">        A dictionary that maps group names to colors.    </span>
+<span class="sd">    figsize</span>
+<span class="sd">        Fig size to plot the diagram.</span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        Filename for saving the figure. Set the name to end with &#39;.pdf&#39; or &#39;png&#39; to specify format.   </span>
+
+<span class="sd">    &quot;&quot;&quot;</span> 
+
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify group_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify metabolite_name.&quot;</span>
+
+    <span class="n">df_metasen</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;Metabolite_Sensor_filtered&#39;</span><span class="p">]</span>
+    <span class="n">name_sensor</span> <span class="o">=</span> <span class="n">df_metasen</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_metasen</span><span class="p">[</span><span class="s1">&#39;Metabolite&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">metabolite_name</span><span class="p">,</span><span class="s1">&#39;Sensor&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">summary</span> <span class="o">==</span> <span class="s1">&#39;sender&#39;</span><span class="p">:</span>
+        <span class="n">arrv</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
+    <span class="k">elif</span> <span class="n">summary</span> <span class="o">==</span> <span class="s1">&#39;receiver&#39;</span><span class="p">:</span>
+        <span class="n">arrv</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span>
+    <span class="n">ms_pair</span> <span class="o">=</span> <span class="p">[</span><span class="n">arrv</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">metabolite_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">sensor</span> <span class="k">for</span> <span class="n">sensor</span> <span class="ow">in</span> <span class="n">name_sensor</span><span class="p">]</span>
+    <span class="n">ms_pair</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="n">df_MCC</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="s1">&#39;sum-&#39;</span> <span class="o">+</span> <span class="n">summary</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">ms_pair</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df_MCC</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df_contribute</span> <span class="o">=</span> <span class="n">df_MCC</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">n_colors</span> <span class="o">=</span> <span class="mi">256</span>
+    <span class="k">if</span> <span class="n">cmap</span> <span class="o">==</span> <span class="s1">&#39;green&#39;</span><span class="p">:</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">blend_palette</span><span class="p">([</span><span class="s2">&quot;#F4FAFC&quot;</span><span class="p">,</span> <span class="s2">&quot;#CAE7E0&quot;</span><span class="p">,</span> <span class="s2">&quot;#80C0A5&quot;</span><span class="p">,</span> <span class="s2">&quot;#48884B&quot;</span><span class="p">,</span> <span class="s2">&quot;#1E4621&quot;</span><span class="p">],</span> <span class="n">n_colors</span><span class="o">=</span><span class="n">n_colors</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cmap</span> <span class="o">==</span> <span class="s1">&#39;blue&#39;</span><span class="p">:</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">blend_palette</span><span class="p">([</span><span class="s2">&quot;#FAFDFE&quot;</span><span class="p">,</span> <span class="s2">&quot;#B7CDE9&quot;</span><span class="p">,</span> <span class="s2">&quot;#749FD2&quot;</span><span class="p">,</span> <span class="s2">&quot;#4967AC&quot;</span><span class="p">,</span> <span class="s2">&quot;#3356A2&quot;</span><span class="p">],</span> <span class="n">n_colors</span><span class="o">=</span><span class="n">n_colors</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cmap</span> <span class="o">==</span> <span class="s1">&#39;red&#39;</span><span class="p">:</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">blend_palette</span><span class="p">([</span><span class="s2">&quot;#FFFEF7&quot;</span><span class="p">,</span> <span class="s2">&quot;#FCF5B8&quot;</span><span class="p">,</span> <span class="s2">&quot;#EBA55A&quot;</span><span class="p">,</span> <span class="s2">&quot;#C23532&quot;</span><span class="p">],</span> <span class="n">n_colors</span><span class="o">=</span><span class="n">n_colors</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">group_cmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">group_cmap_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">group_name</span> <span class="o">+</span> <span class="s1">&#39;_colors&#39;</span><span class="p">]))</span>
+        <span class="n">group_cmap</span> <span class="o">=</span> <span class="p">[</span><span class="n">group_cmap_dict</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">df_contribute</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="n">sns</span><span class="o">.</span><span class="n">clustermap</span><span class="p">(</span><span class="n">df_contribute</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                   <span class="n">row_cluster</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+                   <span class="n">col_cluster</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+                   <span class="n">col_colors</span> <span class="o">=</span> <span class="n">group_cmap</span><span class="p">,</span> 
+                   <span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">,</span>
+                   <span class="n">figsize</span> <span class="o">=</span> <span class="n">figsize</span><span class="p">,</span>
+                   <span class="n">cbar_pos</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">plot_savepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_savepath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_communication_responseGenes_keggEnrich">
+<a class="viewcode-back" href="../../../api/metachat.pl.plot_communication_responseGenes_keggEnrich.html#metachat.pl.plot_communication_responseGenes_keggEnrich">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_communication_responseGenes_keggEnrich</span><span class="p">(</span>
+    <span class="n">df_result</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">show_term_order</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span>
+    <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span>
+    <span class="n">maxshow_gene</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>  
+    <span class="n">plot_savepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Barplot for results of KEGG enrichment by MCC response genes</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_result</span>
+<span class="sd">        The results from the function :func:`mc.tl.communication_responseGenes`</span>
+<span class="sd">    show_term_order : list, optional</span>
+<span class="sd">        List of terms to be shown in the plot, in the order specified. If None, the top 5 terms will be shown.</span>
+<span class="sd">    cmap</span>
+<span class="sd">        Color map to use for the barplot. It can be chose in &#39;green&#39;, &#39;blue&#39;, &#39;red&#39;.</span>
+<span class="sd">    maxshow_gene</span>
+<span class="sd">        Maximum number of genes to show in the plot. Default is 10.</span>
+<span class="sd">    figsize</span>
+<span class="sd">        Size of the figure. Default is (6, 6).</span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        Path to save the plot. If None, the plot will be shown but not saved.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df_show</span> <span class="o">=</span> <span class="n">df_result</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">show_term_order</span><span class="p">,]</span>
+    <span class="n">x_names</span> <span class="o">=</span> <span class="n">df_show</span><span class="p">[</span><span class="s1">&#39;Term&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">x_names</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="c1"># x_names = [t for t in sorted(set([v for v in term]))]</span>
+    <span class="n">x_to_num</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_names</span><span class="p">)}</span>
+
+    <span class="n">path_to_genes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">path_to_value</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_show</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">gene_list</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Genes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+        <span class="n">genename_show</span> <span class="o">=</span> <span class="n">gene_list</span><span class="p">[:</span><span class="n">maxshow_gene</span><span class="p">]</span>
+        <span class="n">genename_show</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">genename_show</span><span class="p">)</span>
+        <span class="n">path_to_genes</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Term&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">genename_show</span>
+        <span class="n">path_to_value</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Term&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;P-value&#39;</span><span class="p">])</span>
+        
+    <span class="n">bar_color</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;blue&#39;</span><span class="p">:</span> <span class="s1">&#39;#C9E3F6&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;green&#39;</span><span class="p">:</span> <span class="s1">&#39;#ACD3B7&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="s1">&#39;#F0C3AC&#39;</span><span class="p">}</span>
+    <span class="n">text_color</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;blue&#39;</span><span class="p">:</span> <span class="s1">&#39;#2D3A8C&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;green&#39;</span><span class="p">:</span> <span class="s1">&#39;#2E5731&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="s1">&#39;#AD392F&#39;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="n">figsize</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_to_num</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x_names</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">path_to_value</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x_names</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">bar_color</span><span class="p">[</span><span class="n">cmap</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> 
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x_names</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">0</span><span class="o">+</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">x_to_num</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">v</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">0</span><span class="o">+</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">x_to_num</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">path_to_genes</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">text_color</span><span class="p">[</span><span class="n">cmap</span><span class="p">],</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;bottom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="n">t</span><span class="o">+</span><span class="mf">0.5</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()],</span> <span class="n">minor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;-log10(p-value)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;KEGG pathway&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_savepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_savepath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_summary_pathway">
+<a class="viewcode-back" href="../../../api/metachat.pl.plot_summary_pathway.html#metachat.pl.plot_summary_pathway">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_summary_pathway</span><span class="p">(</span><span class="n">ms_result</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">senspathway_rank</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">plot_senspathway_index</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+                         <span class="n">plot_savepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to plot a Sankey diagram summarizing the metabolic cell communication pathways.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ms_result</span>
+<span class="sd">        A DataFrame containing the metabolic communication scores between different pathways.</span>
+<span class="sd">    senspathway_rank</span>
+<span class="sd">        A DataFrame containing the ranking of sensor pathways.</span>
+<span class="sd">    plot_senspathway_index</span>
+<span class="sd">        A list of indices specifying which sensor pathways to include in the plot.</span>
+<span class="sd">    figsize</span>
+<span class="sd">        Size of the figure in inches. Default is (10, 10).</span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        Path to save the plot image. If None, the plot will be displayed but not saved.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># color</span>
+    <span class="n">palette_1</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;tab20&quot;</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">hex_colors_1</span> <span class="o">=</span> <span class="p">[</span><span class="n">mcolors</span><span class="o">.</span><span class="n">to_hex</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">palette_1</span><span class="p">]</span>
+    <span class="n">hex_colors_source</span> <span class="o">=</span> <span class="p">[</span><span class="n">color</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hex_colors_1</span><span class="p">)</span> <span class="k">if</span> <span class="n">index</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">hex_colors_line</span> <span class="o">=</span> <span class="p">[</span><span class="n">color</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hex_colors_1</span><span class="p">)</span> <span class="k">if</span> <span class="n">index</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">palette_2</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;YlGnBu&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">plot_senspathway_index</span><span class="p">))</span>
+    <span class="n">hex_colors_target</span> <span class="o">=</span> <span class="p">[</span><span class="n">mcolors</span><span class="o">.</span><span class="n">to_hex</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">palette_2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">usename_senspathway</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">senspathway_rank</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">plot_senspathway_index</span><span class="p">,</span><span class="s2">&quot;Sensor.Pathway&quot;</span><span class="p">])</span>
+    <span class="n">ms_result_new</span> <span class="o">=</span> <span class="n">ms_result</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">usename_senspathway</span><span class="p">]</span>
+    
+    <span class="n">all_values</span> <span class="o">=</span> <span class="n">ms_result_new</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">non_zero_values</span> <span class="o">=</span> <span class="n">all_values</span><span class="p">[</span><span class="n">all_values</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">min_non_zero_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">non_zero_values</span><span class="p">)</span>
+    <span class="n">ms_result_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ms_result_new</span><span class="o">/</span><span class="n">min_non_zero_value</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ms_result_new</span> <span class="o">=</span> <span class="n">ms_result_new</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    
+    <span class="n">result_all_melted</span> <span class="o">=</span> <span class="n">ms_result_new</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">id_vars</span><span class="o">=</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s1">&#39;communication_score&#39;</span><span class="p">)</span>
+    
+    <span class="n">metapathway_color</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ms_result_new</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="s2">&quot;Metabolite.Pathway&quot;</span><span class="p">]),</span>
+        <span class="s1">&#39;color_source&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hex_colors_source</span><span class="p">[:</span><span class="n">ms_result_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span>
+        <span class="s1">&#39;color_link&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hex_colors_line</span><span class="p">[:</span><span class="n">ms_result_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="p">}</span>
+    <span class="n">metapathway_color</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">metapathway_color</span><span class="p">)</span>
+    <span class="n">result_all_melted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">result_all_melted</span><span class="p">,</span> <span class="n">metapathway_color</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+
+    <span class="n">NODES</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ms_result_new</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;Metabolite.Pathway&quot;</span><span class="p">]),</span> 
+                                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">usename_senspathway</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hex_colors_source</span><span class="p">[:</span><span class="n">ms_result_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span> 
+                                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hex_colors_target</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">usename_senspathway</span><span class="p">)])),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+    <span class="n">Node_index</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ms_result_new</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;Metabolite.Pathway&quot;</span><span class="p">]),</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">usename_senspathway</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">ms_result_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">usename_senspathway</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="n">Node_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">Node_index</span><span class="p">)</span>
+    <span class="n">result_all_melted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">result_all_melted</span><span class="p">,</span> <span class="n">Node_index</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">,</span> <span class="n">right_on</span> <span class="o">=</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">)</span>
+    <span class="n">result_all_melted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">result_all_melted</span><span class="p">,</span> <span class="n">Node_index</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">,</span> <span class="n">right_on</span> <span class="o">=</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">)</span>
+
+    <span class="n">LINKS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">source</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result_all_melted</span><span class="p">[</span><span class="s2">&quot;index_x&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                 <span class="n">target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result_all_melted</span><span class="p">[</span><span class="s2">&quot;index_y&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                 <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result_all_melted</span><span class="p">[</span><span class="s2">&quot;communication_score&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                 <span class="n">color</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result_all_melted</span><span class="p">[</span><span class="s2">&quot;color_link&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Sankey</span><span class="p">(</span><span class="n">node</span> <span class="o">=</span> <span class="n">NODES</span><span class="p">,</span> <span class="n">link</span> <span class="o">=</span> <span class="n">LINKS</span><span class="p">)</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">figsize</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">figsize</span><span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
+
+    <span class="k">if</span> <span class="n">plot_savepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">plot_savepath</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">figsize</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">figsize</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>      </div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Songhao Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

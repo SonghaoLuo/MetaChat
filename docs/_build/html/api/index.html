@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Documentation &mdash; MetaChat 0.0.2 documentation</title>
+  <title>API &mdash; MetaChat 0.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
@@ -24,6 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="metachat.pp.MetaChatDB" href="metachat.pp.MetaChatDB.html" />
     <link rel="prev" title="Toy example 1" href="../notebooks/toy_example1.html" /> 
 </head>
 
@@ -49,10 +50,46 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/toy_example1.html">Toy example 1</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-metachat.tools">Tools: tl</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-metachat.preprocessing">Preprocessing: pp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#module-metachat.plotting">Plotting: pl</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-metachat.pp">Preprocessing: pp</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pp.LRC_filtered.html">metachat.pp.LRC_filtered</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pp.compute_costDistance.html">metachat.pp.compute_costDistance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-metachat.tl">Tools: tl</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metabolic-cell-communication-inference">Metabolic cell communication inference</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.metabolic_communication.html">metachat.tl.metabolic_communication</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#downstream-analysis">Downstream analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.summary_communication.html">metachat.tl.summary_communication</a></li>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.communication_flow.html">metachat.tl.communication_flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.communication_group.html">metachat.tl.communication_group</a></li>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.communication_group_spatial.html">metachat.tl.communication_group_spatial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.summary_pathway.html">metachat.tl.summary_pathway</a></li>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.communication_responseGenes.html">metachat.tl.communication_responseGenes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.communication_responseGenes_cluster.html">metachat.tl.communication_responseGenes_cluster</a></li>
+<li class="toctree-l4"><a class="reference internal" href="metachat.tl.communication_responseGenes_keggEnrich.html">metachat.tl.communication_responseGenes_keggEnrich</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-metachat.pl">Plotting: pl</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_communication_flow.html">metachat.pl.plot_communication_flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_group_communication_compare_hierarchy_diagram.html">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -69,7 +106,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">API Documentation</li>
+      <li class="breadcrumb-item active">API</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -79,17 +116,105 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="api-documentation">
-<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Link to this heading"></a></h1>
+  <section id="api">
+<span id="module-metachat"></span><h1>API<a class="headerlink" href="#api" title="Link to this heading"></a></h1>
+<section id="module-metachat.pp">
+<span id="preprocessing-pp"></span><h2>Preprocessing: pp<a class="headerlink" href="#module-metachat.pp" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.MetaChatDB.html#metachat.pp.MetaChatDB" title="metachat.pp.MetaChatDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.MetaChatDB</span></code></a>([species])</p></td>
+<td><p>Extract metabolite-sensor pairs from MetaChatDB.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.LRC_unfiltered.html#metachat.pp.LRC_unfiltered" title="metachat.pp.LRC_unfiltered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_unfiltered</span></code></a>(adata[, LRC_name, ...])</p></td>
+<td><p>Function for identifying LRC candidate (unfiltered) points based on the quantile of the marker gene.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.LRC_cluster.html#metachat.pp.LRC_cluster" title="metachat.pp.LRC_cluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_cluster</span></code></a>(adata[, LRC_name, ...])</p></td>
+<td><p>Function for performing local density clustering on candidate points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.LRC_filtered.html#metachat.pp.LRC_filtered" title="metachat.pp.LRC_filtered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_filtered</span></code></a>(adata[, LRC_name, ...])</p></td>
+<td><p>Function for assigning LRC points after locak density clustering.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.compute_costDistance.html#metachat.pp.compute_costDistance" title="metachat.pp.compute_costDistance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.compute_costDistance</span></code></a>(adata[, LRC_type, ...])</p></td>
+<td><p>Function for computing LRC-embedding cost distance based on graph construction.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="module-metachat.tools">
-<span id="tools-tl"></span><h1>Tools: tl<a class="headerlink" href="#module-metachat.tools" title="Link to this heading"></a></h1>
+<section id="module-metachat.tl">
+<span id="tools-tl"></span><h2>Tools: tl<a class="headerlink" href="#module-metachat.tl" title="Link to this heading"></a></h2>
+<section id="metabolic-cell-communication-inference">
+<h3>Metabolic cell communication inference<a class="headerlink" href="#metabolic-cell-communication-inference" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.tl.metabolic_communication.html#metachat.tl.metabolic_communication" title="metachat.tl.metabolic_communication"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.metabolic_communication</span></code></a>(adata[, ...])</p></td>
+<td><p>Function for inferring spatial metabolic cell communication.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="module-metachat.preprocessing">
-<span id="preprocessing-pp"></span><h1>Preprocessing: pp<a class="headerlink" href="#module-metachat.preprocessing" title="Link to this heading"></a></h1>
+<section id="downstream-analysis">
+<h3>Downstream analysis<a class="headerlink" href="#downstream-analysis" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.tl.summary_communication.html#metachat.tl.summary_communication" title="metachat.tl.summary_communication"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.summary_communication</span></code></a>(adata[, ...])</p></td>
+<td><p>Function for summary communication signals to different metabolites set.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.tl.communication_flow.html#metachat.tl.communication_flow" title="metachat.tl.communication_flow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.communication_flow</span></code></a>(adata[, ...])</p></td>
+<td><p>Function for constructing metabolic communication flow by a vector field.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.tl.communication_group.html#metachat.tl.communication_group" title="metachat.tl.communication_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.communication_group</span></code></a>(adata[, ...])</p></td>
+<td><p>Function for summarizng metabolic MCC communication to group-level communication and computing p-values by permutating cell/spot labels.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.tl.communication_group_spatial.html#metachat.tl.communication_group_spatial" title="metachat.tl.communication_group_spatial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.communication_group_spatial</span></code></a>(adata[, ...])</p></td>
+<td><p>Function for summarizng metabolic MCC communication to group-level communication and computing p-values based on spaital distance distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.tl.summary_pathway.html#metachat.tl.summary_pathway" title="metachat.tl.summary_pathway"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.summary_pathway</span></code></a>(adata[, database_name, ...])</p></td>
+<td><p>Function for summarizng MCC pathway pattern given specific sender group and receiver group.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.tl.communication_responseGenes.html#metachat.tl.communication_responseGenes" title="metachat.tl.communication_responseGenes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.communication_responseGenes</span></code></a>(adata, adata_deg)</p></td>
+<td><p>Function for identifying signals dependent genes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.tl.communication_responseGenes_cluster.html#metachat.tl.communication_responseGenes_cluster" title="metachat.tl.communication_responseGenes_cluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.communication_responseGenes_cluster</span></code></a>(...)</p></td>
+<td><p>Function for cluster the communcation DE genes based on their fitted expression pattern.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.tl.communication_responseGenes_keggEnrich.html#metachat.tl.communication_responseGenes_keggEnrich" title="metachat.tl.communication_responseGenes_keggEnrich"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.communication_responseGenes_keggEnrich</span></code></a>([...])</p></td>
+<td><p>Function for performing KEGG enrichment analysis on a given list of response genes.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="module-metachat.plotting">
-<span id="plotting-pl"></span><h1>Plotting: pl<a class="headerlink" href="#module-metachat.plotting" title="Link to this heading"></a></h1>
+</section>
+<section id="module-metachat.pl">
+<span id="plotting-pl"></span><h2>Plotting: pl<a class="headerlink" href="#module-metachat.pl" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_communication_flow.html#metachat.pl.plot_communication_flow" title="metachat.pl.plot_communication_flow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_communication_flow</span></code></a>(adata[, ...])</p></td>
+<td><p>Function for plotting spatial metabolic cell flow.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_group_communication_chord.html#metachat.pl.plot_group_communication_chord" title="metachat.pl.plot_group_communication_chord"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_group_communication_chord</span></code></a>(adata[, ...])</p></td>
+<td><p>Plot chord diagram for group-level MCC.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_group_communication_heatmap.html#metachat.pl.plot_group_communication_heatmap" title="metachat.pl.plot_group_communication_heatmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_group_communication_heatmap</span></code></a>(adata[, ...])</p></td>
+<td><p>Plot heatmap diagram for group-level MCC.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html#metachat.pl.plot_communication_responseGenes" title="metachat.pl.plot_communication_responseGenes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_communication_responseGenes</span></code></a>(df_deg, ...)</p></td>
+<td><p>Plot smoothed gene expression of the detected metabolic cell communication response genes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_group_communication_compare_hierarchy_diagram.html#metachat.pl.plot_group_communication_compare_hierarchy_diagram" title="metachat.pl.plot_group_communication_compare_hierarchy_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_group_communication_compare_hierarchy_diagram</span></code></a>(...)</p></td>
+<td><p>Plot hierarachy diagram for comparing group-level MCC between two conditions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_MSpair_contribute_group.html#metachat.pl.plot_MSpair_contribute_group" title="metachat.pl.plot_MSpair_contribute_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_MSpair_contribute_group</span></code></a>(adata[, ...])</p></td>
+<td><p>Plot heatmap diagram for comparing contribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_communication_responseGenes_keggEnrich.html#metachat.pl.plot_communication_responseGenes_keggEnrich" title="metachat.pl.plot_communication_responseGenes_keggEnrich"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_communication_responseGenes_keggEnrich</span></code></a>(...)</p></td>
+<td><p>Barplot for results of KEGG enrichment by MCC response genes</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_summary_pathway.html#metachat.pl.plot_summary_pathway" title="metachat.pl.plot_summary_pathway"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_summary_pathway</span></code></a>([ms_result, ...])</p></td>
+<td><p>Function to plot a Sankey diagram summarizing the metabolic cell communication pathways.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 
 
@@ -97,6 +222,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../notebooks/toy_example1.html" class="btn btn-neutral float-left" title="Toy example 1" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metachat.pp.MetaChatDB.html" class="btn btn-neutral float-right" title="metachat.pp.MetaChatDB" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

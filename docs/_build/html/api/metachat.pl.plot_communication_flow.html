@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metachat.pl.plot_communication_flow &mdash; MetaChat 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=e3a6060d"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="metachat.pl.plot_group_communication_chord" href="metachat.pl.plot_group_communication_chord.html" />
+    <link rel="prev" title="metachat.tl.communication_responseGenes_keggEnrich" href="metachat.tl.communication_responseGenes_keggEnrich.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MetaChat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/toy_example1.html">Toy example 1</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-metachat.pp">Preprocessing: pp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-metachat.tl">Tools: tl</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#module-metachat.pl">Plotting: pl</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">metachat.pl.plot_communication_flow</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metachat.pl.plot_communication_flow"><code class="docutils literal notranslate"><span class="pre">plot_communication_flow()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_group_communication_compare_hierarchy_diagram.html">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MetaChat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API</a></li>
+      <li class="breadcrumb-item active">metachat.pl.plot_communication_flow</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/metachat.pl.plot_communication_flow.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="metachat-pl-plot-communication-flow">
+<h1>metachat.pl.plot_communication_flow<a class="headerlink" href="#metachat-pl-plot-communication-flow" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="metachat.pl.plot_communication_flow">
+<span class="sig-prename descclassname"><span class="pre">metachat.pl.</span></span><span class="sig-name descname"><span class="pre">plot_communication_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metabolite_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metapathway_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customerlist_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'summary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sender'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coolwarm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0,</span> <span class="pre">1])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_summary_quantile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.995</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_v_quantile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#333333'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_knn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_cutoff_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_savepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metachat/plotting/_plotting.html#plot_communication_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metachat.pl.plot_communication_flow" title="Link to this definition"></a></dt>
+<dd><p>Function for plotting spatial metabolic cell flow.</p>
+<p>The metabolic cell communication should have been computed by the function <code class="xref py py-func docutils literal notranslate"><span class="pre">mc.tl.metabolic_communication()</span></code>.
+The metabolic cell communication for some specific metabolite, metabolic pathway and customerlist should have been summarized by the function <code class="xref py py-func docutils literal notranslate"><span class="pre">mc.tl.summary_communication()</span></code>.
+The metabolic cell communication flow should have been computed by the function <code class="xref py py-func docutils literal notranslate"><span class="pre">mc.tl.communication_flow()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adata</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnData</span></code></span>) – The data matrix of shape <code class="docutils literal notranslate"><span class="pre">n_obs</span></code> × <code class="docutils literal notranslate"><span class="pre">n_var</span></code>.
+Rows correspond to cells or positions and columns to genes.</p></li>
+<li><p><strong>database_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Name of the Metabolite-Sensor interaction database.</p></li>
+<li><p><strong>metabolite_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Name of a specific metabolite to detect response genes. For example, metabolite_name = ‘HMDB0000148’.</p></li>
+<li><p><strong>metapathway_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Name of a specific metabolic pathways to detect response genes. For example, metabolite_name = ‘Alanine, aspartate and glutamate metabolism’.</p></li>
+<li><p><strong>customerlist_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Name of a specific customerlist to detect response genes. For example, customerlist_name = ‘CustomerA’.</p></li>
+<li><p><strong>plot_method</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – ‘cell’ plot vectors on individual cells.
+‘grid’ plot interpolated vectors on regular grids.
+‘stream’ streamline plot.</p></li>
+<li><p><strong>background</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – ‘summary’: scatter plot with color representing total sent or received signal.
+‘image’: the image in Visium data.
+‘group’: scatter plot with color representing cell groups.</p></li>
+<li><p><strong>background_legend</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to include the background legend when background is set to <cite>summary</cite> or <cite>group</cite>.</p></li>
+<li><p><strong>library_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – library_id to specify image when background is set to ‘image’.</p></li>
+<li><p><strong>group_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – The key for cell group annotation. Needed if background is set to <cite>group</cite>.
+For example, if <code class="docutils literal notranslate"><span class="pre">group_name=='leiden'</span></code>, the group annotation should be available in <code class="docutils literal notranslate"><span class="pre">.obs['leiden']</span></code>.</p></li>
+<li><p><strong>summary</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – If background is set to ‘summary’, the numerical value to plot for background.
+‘sender’: node color represents sender weight.
+‘receiver’: node color represents receiver weight.</p></li>
+<li><p><strong>cmap</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – matplotlib colormap name for node summary if numerical (background set to ‘summary’), e.g., ‘coolwarm’.
+plotly colormap name for node color if summary is (background set to ‘group’). e.g., ‘Alphabet’.</p></li>
+<li><p><strong>group_cmap</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span>) – A dictionary that maps group names to colors when setting background to ‘group’. If given, <code class="docutils literal notranslate"><span class="pre">cmap</span></code> will be ignored.</p></li>
+<li><p><strong>pos_idx</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – The coordinates to use for plotting (2D plot).</p></li>
+<li><p><strong>ndsize</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The node size of the spots.</p></li>
+<li><p><strong>scale</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The scale parameter passed to the matplotlib quiver function <code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.quiver()</span></code> for vector field plots.
+The smaller the value, the longer the arrows.</p></li>
+<li><p><strong>normalize_summary_quantile</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – If background is set to ‘summary’, the numerical value greater than a quantile will be the same as that quantile.</p></li>
+<li><p><strong>normalize_v</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether the normalize the vector field to uniform lengths to highlight the directions without showing magnitudes.</p></li>
+<li><p><strong>normalize_v_quantile</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The vector length quantile to use to normalize the vector field.</p></li>
+<li><p><strong>arrow_color</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The color of the arrows.</p></li>
+<li><p><strong>grid_density</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The density of grid if <code class="docutils literal notranslate"><span class="pre">plot_method=='grid'</span></code>.</p></li>
+<li><p><strong>grid_knn</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">plot_method=='grid'</span></code>, the number of nearest neighbors to interpolate the signaling directions from spots to grid points.</p></li>
+<li><p><strong>grid_scale</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The scale parameter (relative to grid size) for the kernel function of mapping directions of spots to grid points.</p></li>
+<li><p><strong>grid_thresh</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The threshold of interpolation weights determining whether to include a grid point. A smaller value gives a tighter cover of the tissue by the grid points.</p></li>
+<li><p><strong>grid_width</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The value passed to the <code class="docutils literal notranslate"><span class="pre">width</span></code> parameter of the function <code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.quiver()</span></code> when <code class="docutils literal notranslate"><span class="pre">plot_method=='grid'</span></code>.</p></li>
+<li><p><strong>stream_density</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The density of stream lines passed to the <code class="docutils literal notranslate"><span class="pre">density</span></code> parameter of the function <code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.streamplot()</span></code> when <code class="docutils literal notranslate"><span class="pre">plot_method=='stream'</span></code>.</p></li>
+<li><p><strong>stream_linewidth</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The width of stream lines passed to the <code class="docutils literal notranslate"><span class="pre">linewidth</span></code> parameter of the function <code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.streamplot()</span></code> when <code class="docutils literal notranslate"><span class="pre">plot_method=='stream'</span></code>.</p></li>
+<li><p><strong>stream_cutoff_perc</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The quantile cutoff to ignore the weak vectors. Default to 5 that the vectors shorter than the 5% quantile will not be plotted.</p></li>
+<li><p><strong>title</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – The title of diagram.</p></li>
+<li><p><strong>plot_savepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – If given, save to the plot_savepath. For example ‘mcc_flow.pdf’.</p></li>
+<li><p><strong>ax</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span>) – An existing matplotlib ax (<cite>matplotlib.axis.Axis</cite>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ax</strong> – The matplotlib ax object of the plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.axis.Axis</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="metachat.tl.communication_responseGenes_keggEnrich.html" class="btn btn-neutral float-left" title="metachat.tl.communication_responseGenes_keggEnrich" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metachat.pl.plot_group_communication_chord.html" class="btn btn-neutral float-right" title="metachat.pl.plot_group_communication_chord" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Songhao Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
