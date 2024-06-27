@@ -32,20 +32,10 @@ Tools: tl
 .. module:: metachat.tl
 .. currentmodule:: metachat
 
-Metabolic cell communication inference
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 .. autosummary::
    :toctree: .
 
    tl.metabolic_communication
-
-Downstream analysis
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autosummary::
-   :toctree: .
-
    tl.summary_communication
    tl.communication_flow
    tl.communication_group
