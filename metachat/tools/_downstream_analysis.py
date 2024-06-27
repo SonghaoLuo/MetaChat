@@ -42,8 +42,7 @@ def summary_communication(
         For example, sum_metapathways = ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
     sum_customerlists
         Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.
-        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')],
-                                          'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
+        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
     copy
         Whether to return a copy of the :class:`anndata.AnnData`.
 
@@ -196,8 +195,7 @@ def communication_flow(
         For example, sum_metapathways = ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
     sum_customerlists
         Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.
-        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')],
-                                          'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
+        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
     k
         Top k senders or receivers to consider when determining the direction.
     pos_idx
@@ -361,8 +359,7 @@ def communication_group(
         For example, sum_metapathways = ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
     sum_customerlists
         Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.
-        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')],
-                                          'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
+        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
     n_permutations
         Number of label permutations for computing the p-value.
     random_seed
@@ -450,8 +447,7 @@ def communication_group_spatial(
         For example, sum_metapathways = ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
     sum_customerlists
         Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.
-        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')],
-                                          'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
+        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
     n_permutations
         Number of label permutations for computing the p-value.
     bins_num
@@ -739,12 +735,6 @@ def communication_responseGenes(
     df_yhat: pd.DataFrame
         A data frame of smoothed gene expression values.
     
-    References
-    ----------
-
-    .. [Van_den_Berge2020] Van den Berge, K., Roux de Bézieux, H., Street, K., Saelens, W., Cannoodt, R., Saeys, Y., ... & Clement, L. (2020). 
-        Trajectory-based differential expression analysis for single-cell sequencing data. Nature communications, 11(1), 1-13.
-
     """
     # setup R environment
     import rpy2
