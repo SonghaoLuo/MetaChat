@@ -5,6 +5,7 @@ sphinx_autodoc_typehints
 sphinx_rtd_size
 nbsphinx
 sphinx_gallery
+furo
 anndata==0.10.8
 gseapy==1.1.2
 leidenalg==0.10.2

@@ -35,7 +35,7 @@ potential sensors of metabolites: surface receptors, nuclear receptors, and tran
 secreted from cells are either transported over short-range distances (a few cells) via diffusion 
 through extracellular space, or over long-range distances via the bloodstream and the cerebrospinal fluid (CSF).
 
-.. image:: image/metabolic_cell_communication.png
+.. image:: _static/image/metabolic_cell_communication.png
    :width: 600px
    :align: center
    :alt: Metabolic cell communication
@@ -47,7 +47,7 @@ MetaChatDB is a literature-supported database for metabolite-sensor interactions
 the metabolite-sensor interactions are reported based on peer-reviewed publications. Specifically, we manually 
 build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt) that are being continually updated.
 
-.. image:: image/metachat_db.png
+.. image:: _static/image/metachat_db.png
    :width: 600px
    :align: center
    :alt: MetaChatDB
