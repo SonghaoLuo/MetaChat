@@ -35,6 +35,9 @@ extensions = [
     'sphinx_gallery.load_style',
 ]
 
+nbsphinx_allow_errors = True  # 允许在文档中显示 notebook 中的错误（可选）
+nbsphinx_execute = 'auto'
+
 sphinx_rtd_size_width = "75%"
 
 source_suffix = {
