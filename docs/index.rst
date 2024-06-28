@@ -61,12 +61,18 @@ MetaChat's features
   algorithm simultaneously considers short- range and long-range transport of metabolites, as well as species competition 
   between metabolites and sensors.
 
+  <p></p>
+
 - MetaChat has multiple visualization and downstream analysis tools to dissect MCC flow directions, multiple levels of MCC 
   aggregation, pairwise MCC pathway patterns between cell groups, and MCC remodelling in receiver cells.
+
+  <p></p>
 
 - The method can flexibly be applied to either spatial multi-omics measurements on either the same or multiple tissue slices, 
   or, in combination with flux analysis, spatial transcriptomics alone of varying spatial resolution (single-cell or spot-level), 
   meaning that vast amounts of existing data can be analyzed immediately for MCC.
+
+  <p></p>
 
 Reference
 =========
