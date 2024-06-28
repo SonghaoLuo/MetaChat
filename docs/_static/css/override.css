@@ -23,3 +23,7 @@
 .theme-furo .sidebar {
     background-color: #F4FAFB;
 }
+
+.toctree-wrapper .caption {
+    color: #5C9AA3;
+}
