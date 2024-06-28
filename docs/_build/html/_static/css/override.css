@@ -5,3 +5,13 @@
     margin: 1em auto 0em auto;
     border-radius: 50%;
 }
+
+.admonition.note {
+    background-color: #EAF5F7; /* 设置背景颜色 */
+    border-left: 5px solid #5C9AA3; /* 设置左侧边框颜色 */
+}
+
+.admonition.note .admonition-title {
+    background-color: #EAF5F7; /* 设置标题背景颜色 */
+    color: #5C9AA3; /* 设置标题文字颜色 */
+}
