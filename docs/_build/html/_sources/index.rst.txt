@@ -36,6 +36,8 @@ secreted from cells are either transported over short-range distances (a few cel
 through extracellular space, or over long-range distances via the bloodstream and the cerebrospinal fluid (CSF).
 
 .. image:: image/metabolic_cell_communication.png
+   :width: 600px
+   :align: center
    :alt: Metabolic cell communication
 
 MetaChatDB
@@ -46,7 +48,12 @@ the metabolite-sensor interactions are reported based on peer-reviewed publicati
 build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt) that are being continually updated.
 
 .. image:: image/metachat_db.png
+   :width: 600px
+   :align: center
    :alt: MetaChatDB
+
+.. note:: 
+   hhh
 
 New
 ===
@@ -61,18 +68,13 @@ MetaChat's features
   algorithm simultaneously considers short- range and long-range transport of metabolites, as well as species competition 
   between metabolites and sensors.
 
-  <p></p>
-
 - MetaChat has multiple visualization and downstream analysis tools to dissect MCC flow directions, multiple levels of MCC 
   aggregation, pairwise MCC pathway patterns between cell groups, and MCC remodelling in receiver cells.
-
-  <p></p>
 
 - The method can flexibly be applied to either spatial multi-omics measurements on either the same or multiple tissue slices, 
   or, in combination with flux analysis, spatial transcriptomics alone of varying spatial resolution (single-cell or spot-level), 
   meaning that vast amounts of existing data can be analyzed immediately for MCC.
 
-  <p></p>
 
 Reference
 =========
