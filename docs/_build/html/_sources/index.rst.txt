@@ -11,7 +11,8 @@ Welcome to MetaChat's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
+   
+   installation
    tutorials
    api/index
 
