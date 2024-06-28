@@ -62,8 +62,8 @@ html_show_sourcelink = False
 html_theme_options = {
     "sidebar_hide_name": True,
     "light_css_variables": {
-        "color-brand-primary": "#003262",
-        "color-brand-content": "#003262",
+        "color-brand-primary": "#5C9AA3",
+        "color-brand-content": "#5C9AA3",
         "admonition-font-size": "var(--font-size-normal)",
         "admonition-title-font-size": "var(--font-size-normal)",
     },
