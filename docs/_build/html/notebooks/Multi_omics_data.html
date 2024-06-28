@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/override.css?v=4ec2120c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/override.css?v=4b85f744" />
     
     
 
@@ -294,15 +294,15 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
-<span class="kn">import</span> <span class="nn">squidpy</span> <span class="k">as</span> <span class="nn">sq</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>import os
+import numpy as np
+import pandas as pd
+import scanpy as sc
+import squidpy as sq
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-<span class="kn">import</span> <span class="nn">metachat</span> <span class="k">as</span> <span class="nn">mc</span>
+import metachat as mc
 </pre></div>
 </div>
 </div>
@@ -310,8 +310,8 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting work dictionary</span>
-<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/home/Project/MetaChat_test/mouse_brain&quot;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span># setting work dictionary
+os.chdir(&quot;/home/Project/MetaChat_test/mouse_brain&quot;)
 </pre></div>
 </div>
 </div>
@@ -323,8 +323,8 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_RNA</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;</span><span class="p">)</span>
-<span class="n">adata_RNA</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata_RNA = sc.read_h5ad(&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;)
+adata_RNA
 </pre></div>
 </div>
 </div>
@@ -345,10 +345,10 @@ AnnData object with n_obs × n_vars = 3011 × 32285
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_RNA</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
-<span class="n">adata_RNA</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">adata_RNA</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">normalize_total</span><span class="p">(</span><span class="n">adata_RNA</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">adata_RNA</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata_RNA.var_names_make_unique()
+adata_RNA.raw = adata_RNA
+sc.pp.normalize_total(adata_RNA, inplace=True)
+sc.pp.log1p(adata_RNA)
 </pre></div>
 </div>
 </div>
@@ -356,15 +356,15 @@ AnnData object with n_obs × n_vars = 3011 × 32285
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_visual</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="n">random_seed</span> <span class="o">=</span> <span class="mi">42</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">highly_variable_genes</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">min_mean</span><span class="o">=</span><span class="mf">0.0125</span><span class="p">,</span> <span class="n">max_mean</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_disp</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-<span class="n">adata_visual</span> <span class="o">=</span> <span class="n">adata_visual</span><span class="p">[:,</span> <span class="n">adata_visual</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">highly_variable</span><span class="p">]</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">svd_solver</span><span class="o">=</span><span class="s1">&#39;arpack&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_pcs</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">leiden</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">adata_visual</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;leiden&#39;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata_visual = adata_RNA.copy()
+random_seed = 42
+sc.pp.highly_variable_genes(adata_visual, min_mean=0.0125, max_mean=10, min_disp=0.2)
+adata_visual = adata_visual[:, adata_visual.var.highly_variable]
+sc.tl.pca(adata_visual, svd_solver=&#39;arpack&#39;, random_state=random_seed)
+sc.pp.neighbors(adata_visual, n_neighbors=10, n_pcs=40, random_state=random_seed)
+sc.tl.umap(adata_visual, random_state=random_seed)
+sc.tl.leiden(adata_visual, resolution=1)
+sc.pl.spatial(adata_visual, color=&#39;leiden&#39;)
 </pre></div>
 </div>
 </div>
@@ -379,23 +379,23 @@ AnnData object with n_obs × n_vars = 3011 × 32285
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cluster_to_cell_type</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;0&#39;</span><span class="p">:</span> <span class="s1">&#39;Striatum dorsal region&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="s1">&#39;Striatum ventral region&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;4&#39;</span><span class="p">:</span> <span class="s1">&#39;Lateral septal complex&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;5&#39;</span><span class="p">:</span> <span class="s1">&#39;Fiber tracts&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;6&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;7&#39;</span><span class="p">:</span> <span class="s1">&#39;Fiber tracts&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;8&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;9&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="s1">&#39;Striatum dorsal region&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;11&#39;</span><span class="p">:</span> <span class="s1">&#39;Striatum ventral region&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;12&#39;</span><span class="p">:</span> <span class="s1">&#39;Ventricular systems&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;13&#39;</span><span class="p">:</span> <span class="s1">&#39;Cerebral cortex&#39;</span><span class="p">,</span>
-<span class="p">}</span>
-<span class="n">adata_RNA</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;tissue_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata_visual</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;leiden&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">cluster_to_cell_type</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>cluster_to_cell_type = {
+    &#39;0&#39;: &#39;Striatum dorsal region&#39;,
+    &#39;1&#39;: &#39;Cerebral cortex&#39;,
+    &#39;2&#39;: &#39;Striatum ventral region&#39;,
+    &#39;3&#39;: &#39;Cerebral cortex&#39;,
+    &#39;4&#39;: &#39;Lateral septal complex&#39;,
+    &#39;5&#39;: &#39;Fiber tracts&#39;,
+    &#39;6&#39;: &#39;Cerebral cortex&#39;,
+    &#39;7&#39;: &#39;Fiber tracts&#39;,
+    &#39;8&#39;: &#39;Cerebral cortex&#39;,
+    &#39;9&#39;: &#39;Cerebral cortex&#39;,
+    &#39;10&#39;: &#39;Striatum dorsal region&#39;,
+    &#39;11&#39;: &#39;Striatum ventral region&#39;,
+    &#39;12&#39;: &#39;Ventricular systems&#39;,
+    &#39;13&#39;: &#39;Cerebral cortex&#39;,
+}
+adata_RNA.obs[&#39;tissue_type&#39;] = adata_visual.obs[&#39;leiden&#39;].map(cluster_to_cell_type)
 </pre></div>
 </div>
 </div>
@@ -403,11 +403,11 @@ AnnData object with n_obs × n_vars = 3011 × 32285
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="p">,</span>
-                      <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
-                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(figsize = (5,5))
+sq.pl.spatial_scatter(adata = adata_RNA,
+                      color = &quot;tissue_type&quot;,
+                      ax = ax)
+ax.set_box_aspect(1)
 </pre></div>
 </div>
 </div>
@@ -425,10 +425,10 @@ AnnData object with n_obs × n_vars = 3011 × 32285
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_MSI</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_MSI.h5ad&#39;</span><span class="p">)</span>
-<span class="n">adata_MSI</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span>
-<span class="n">adata_MSI</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span>
-<span class="n">adata_MSI</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata_MSI = sc.read_h5ad(&#39;data/multiomics_mousebrain_parkinson_MSI.h5ad&#39;)
+adata_MSI.uns[&#39;spatial&#39;] = adata_RNA.uns[&#39;spatial&#39;]
+adata_MSI.obsm[&#39;spatial&#39;] = adata_RNA.obsm[&#39;spatial&#39;]
+adata_MSI
 </pre></div>
 </div>
 </div>
@@ -449,9 +449,9 @@ AnnData object with n_obs × n_vars = 3011 × 3015
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_MSI</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
-<span class="n">adata_RNA</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">adata_RNA</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">normalize_total</span><span class="p">(</span><span class="n">adata_MSI</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata_MSI.var_names_make_unique()
+adata_RNA.raw = adata_RNA
+sc.pp.normalize_total(adata_MSI, inplace=True)
 </pre></div>
 </div>
 </div>
@@ -462,14 +462,14 @@ AnnData object with n_obs × n_vars = 3011 × 3015
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">hstack</span>
-<span class="n">X_combined</span> <span class="o">=</span> <span class="n">hstack</span><span class="p">([</span><span class="n">adata_RNA</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">adata_MSI</span><span class="o">.</span><span class="n">X</span><span class="p">])</span>
-<span class="n">X_combined</span> <span class="o">=</span> <span class="n">X_combined</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
-<span class="n">var_combined</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;features&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adata_RNA</span><span class="o">.</span><span class="n">var_names</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adata_MSI</span><span class="o">.</span><span class="n">var_names</span><span class="p">)))})</span>
-<span class="n">var_combined</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">var_combined</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
-<span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">AnnData</span><span class="p">(</span><span class="n">X_combined</span><span class="p">,</span> <span class="n">obs</span><span class="o">=</span><span class="n">adata_RNA</span><span class="o">.</span><span class="n">obs</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var_combined</span><span class="p">)</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">obsm</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">obsm</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">uns</span> <span class="o">=</span> <span class="n">adata_RNA</span><span class="o">.</span><span class="n">uns</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>from scipy.sparse import hstack
+X_combined = hstack([adata_RNA.X, adata_MSI.X])
+X_combined = X_combined.tocsr()
+var_combined = pd.DataFrame({&quot;features&quot; : np.concatenate((np.array(adata_RNA.var_names),np.array(adata_MSI.var_names)))})
+var_combined.index = var_combined[&quot;features&quot;]
+adata = sc.AnnData(X_combined, obs=adata_RNA.obs, var=var_combined)
+adata.obsm = adata_RNA.obsm
+adata.uns = adata_RNA.uns
 </pre></div>
 </div>
 </div>
@@ -483,7 +483,7 @@ AnnData object with n_obs × n_vars = 3011 × 3015
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_metasen</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">MetaChatDB</span><span class="p">(</span><span class="n">species</span><span class="o">=</span><span class="s1">&#39;mouse&#39;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>df_metasen = mc.pp.MetaChatDB(species=&#39;mouse&#39;)
 </pre></div>
 </div>
 </div>
@@ -494,15 +494,15 @@ AnnData object with n_obs × n_vars = 3011 × 3015
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span>
-<span class="n">LRC_marker_gene</span> <span class="o">=</span> <span class="s2">&quot;Gfap&quot;</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>LRC_name = &quot;CSF&quot;
+LRC_marker_gene = &quot;Gfap&quot;
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
-                      <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="n">LRC_marker_gene</span><span class="p">],</span>
-                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_&quot; + LRC_marker_gene + &quot;.pdf&quot;)</span>
+fig, ax = plt.subplots(figsize = (6,5))
+sq.pl.spatial_scatter(adata,
+                      color = [LRC_marker_gene],
+                      ax = ax)
+ax.set_box_aspect(1)
+# plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_&quot; + LRC_marker_gene + &quot;.pdf&quot;)
 </pre></div>
 </div>
 </div>
@@ -517,10 +517,10 @@ AnnData object with n_obs × n_vars = 3011 × 3015
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_unfiltered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                     <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
-                     <span class="n">LRC_marker_gene</span> <span class="o">=</span> <span class="n">LRC_marker_gene</span><span class="p">,</span>
-                     <span class="n">quantile</span> <span class="o">=</span> <span class="mi">85</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.pp.LRC_unfiltered(adata = adata,
+                     LRC_name = LRC_name,
+                     LRC_marker_gene = LRC_marker_gene,
+                     quantile = 85)
 </pre></div>
 </div>
 </div>
@@ -536,12 +536,12 @@ Cells with Gfap expression above the 85% have been selected as candidates and st
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
-                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_unfiltered&#39;</span><span class="p">,</span>
-                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_unfiltered.pdf&quot;)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(figsize = (6,5))
+sq.pl.spatial_scatter(adata,
+                      color = &#39;LRC_&#39; + LRC_name + &#39;_unfiltered&#39;,
+                      ax = ax)
+ax.set_box_aspect(1)
+# plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_unfiltered.pdf&quot;)
 </pre></div>
 </div>
 </div>
@@ -556,12 +556,12 @@ Cells with Gfap expression above the 85% have been selected as candidates and st
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># There is a clear long-range channel as CSF vessel, so we perform density peak clustering on points with high marker expression in CSF vessel.</span>
-<span class="n">LRC_cluster_CSF</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_cluster</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                    <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
-                                    <span class="n">density_cutoff</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
-                                    <span class="n">delta_cutoff</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">,</span>
-                                    <span class="n">outlier_cutoff</span> <span class="o">=</span> <span class="mf">4.5</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span># There is a clear long-range channel as CSF vessel, so we perform density peak clustering on points with high marker expression in CSF vessel.
+LRC_cluster_CSF = mc.pp.LRC_cluster(adata = adata,
+                                    LRC_name = LRC_name,
+                                    density_cutoff = 7,
+                                    delta_cutoff = 8000,
+                                    outlier_cutoff = 4.5)
 </pre></div>
 </div>
 </div>
@@ -576,9 +576,9 @@ Cells with Gfap expression above the 85% have been selected as candidates and st
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_filtered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                   <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
-                   <span class="n">LRC_cluster</span> <span class="o">=</span> <span class="n">LRC_cluster_CSF</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.pp.LRC_filtered(adata = adata,
+                   LRC_name = LRC_name,
+                   LRC_cluster = LRC_cluster_CSF)
 </pre></div>
 </div>
 </div>
@@ -594,14 +594,14 @@ Candidate points for CSF LRC are clustered and outliers are removed. LRC points 
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
-                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">,</span>
-                      <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_filtered.pdf&quot;)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>import matplotlib.colors as mcolors
+fig, ax = plt.subplots(figsize = (6,5))
+sq.pl.spatial_scatter(adata,
+                      color = &#39;LRC_&#39; + LRC_name + &#39;_filtered&#39;,
+                      alpha = 1,
+                      ax = ax)
+ax.set_box_aspect(1)
+# plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_filtered.pdf&quot;)
 </pre></div>
 </div>
 </div>
@@ -616,12 +616,12 @@ Candidate points for CSF LRC are clustered and outliers are removed. LRC points 
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">compute_costDistance</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                           <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CSF&quot;</span><span class="p">],</span>
-                           <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-                           <span class="n">k_neighb</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-                           <span class="n">LRC_strength</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
-                           <span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.pp.compute_costDistance(adata = adata,
+                           LRC_type = [&quot;CSF&quot;],
+                           dis_thr = 1000,
+                           k_neighb = 5,
+                           LRC_strength = 2000,
+                           plot = True)
 </pre></div>
 </div>
 </div>
@@ -744,12 +744,12 @@ Finished!
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">metabolic_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                              <span class="n">df_metasen</span> <span class="o">=</span> <span class="n">df_metasen</span><span class="p">,</span>
-                              <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CSF&quot;</span><span class="p">],</span>
-                              <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;results/inference_results.h5ad&#39;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.tl.metabolic_communication(adata = adata,
+                              database_name = &#39;MetaChatDB&#39;,
+                              df_metasen = df_metasen,
+                              LRC_type = [&quot;CSF&quot;],
+                              dis_thr = 1000)
+adata.write(&#39;results/inference_results.h5ad&#39;)
 </pre></div>
 </div>
 </div>
@@ -769,7 +769,7 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;results/inference_results.h5ad&quot;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata = sc.read(&quot;results/inference_results.h5ad&quot;)
 </pre></div>
 </div>
 </div>
@@ -779,7 +779,7 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sum_metabolites</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HMDB0000216&#39;</span><span class="p">,</span><span class="s1">&#39;HMDB0000073&#39;</span><span class="p">]</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>sum_metabolites = [&#39;HMDB0000216&#39;,&#39;HMDB0000073&#39;]
 </pre></div>
 </div>
 </div>
@@ -787,9 +787,9 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">summary_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                            <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                            <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.tl.summary_communication(adata = adata,
+                            database_name = &#39;MetaChatDB&#39;,
+                            sum_metabolites = sum_metabolites)
 </pre></div>
 </div>
 </div>
@@ -800,10 +800,10 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                         <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                         <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
-                         <span class="n">k</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.tl.communication_flow(adata = adata,
+                         database_name = &#39;MetaChatDB&#39;,
+                         sum_metabolites = sum_metabolites,
+                         k = 5)
 </pre></div>
 </div>
 </div>
@@ -811,52 +811,52 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                              <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
-                              <span class="n">plot_method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span>
-                              <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span><span class="p">,</span>
-                              <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
-                              <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
-                              <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
-                              <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.0000000000003</span><span class="p">,</span>
-                              <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
-                              <span class="n">grid_density</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
-                              <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Image&#39;</span><span class="p">,</span>
-                              <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 3, figsize=(15,5))
+mc.pl.plot_communication_flow(adata = adata,
+                              database_name = &#39;MetaChatDB&#39;,
+                              metabolite_name = &#39;HMDB0000073&#39;,
+                              plot_method = &#39;grid&#39;,
+                              background = &#39;image&#39;,
+                              group_name = &#39;tissue_type&#39;,
+                              summary = &#39;sender&#39;,
+                              ndsize = 8,
+                              scale = 0.0000000000003,
+                              normalize_v_quantile = 0.995,
+                              grid_density = 0.4,
+                              title = &#39;Image&#39;,
+                              ax = ax[0])
+ax[0].set_box_aspect(1)
 
-<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                              <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
-                              <span class="n">plot_method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span>
-                              <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;group&#39;</span><span class="p">,</span>
-                              <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
-                              <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
-                              <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
-                              <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.0000000000003</span><span class="p">,</span>
-                              <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
-                              <span class="n">grid_density</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
-                              <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Group types&#39;</span><span class="p">,</span>
-                              <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+mc.pl.plot_communication_flow(adata = adata,
+                              database_name = &#39;MetaChatDB&#39;,
+                              metabolite_name = &#39;HMDB0000073&#39;,
+                              plot_method = &#39;grid&#39;,
+                              background = &#39;group&#39;,
+                              group_name = &#39;tissue_type&#39;,
+                              summary = &#39;sender&#39;,
+                              ndsize = 8,
+                              scale = 0.0000000000003,
+                              normalize_v_quantile = 0.995,
+                              grid_density = 0.4,
+                              title = &#39;Group types&#39;,
+                              ax = ax[1])
+ax[1].set_box_aspect(1)
 
-<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                              <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
-                              <span class="n">plot_method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span>
-                              <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;summary&#39;</span><span class="p">,</span>
-                              <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
-                              <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
-                              <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;YlOrRd&#39;</span><span class="p">,</span>
-                              <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
-                              <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.0000000000003</span><span class="p">,</span>
-                              <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
-                              <span class="n">grid_density</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
-                              <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;MCC Signals&#39;</span><span class="p">,</span>
-                              <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+mc.pl.plot_communication_flow(adata = adata,
+                              database_name = &#39;MetaChatDB&#39;,
+                              metabolite_name = &#39;HMDB0000073&#39;,
+                              plot_method = &#39;grid&#39;,
+                              background = &#39;summary&#39;,
+                              group_name = &#39;tissue_type&#39;,
+                              summary = &#39;sender&#39;,
+                              cmap = &#39;YlOrRd&#39;,
+                              ndsize = 8,
+                              scale = 0.0000000000003,
+                              normalize_v_quantile = 0.995,
+                              grid_density = 0.4,
+                              title = &#39;MCC Signals&#39;,
+                              ax = ax[2])
+ax[2].set_box_aspect(1)
 </pre></div>
 </div>
 </div>
@@ -874,11 +874,11 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_group</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                          <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                          <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
-                          <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
-                          <span class="n">n_permutations</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.tl.communication_group(adata = adata,
+                          database_name = &#39;MetaChatDB&#39;,
+                          group_name = &quot;tissue_type&quot;,
+                          sum_metabolites = sum_metabolites,
+                          n_permutations = 100)
 </pre></div>
 </div>
 </div>
@@ -886,7 +886,7 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;MetaChat_group-tissue_type-MetaChatDB-HMDB0000073&#39;</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata.uns[&#39;MetaChat_group-tissue_type-MetaChatDB-HMDB0000073&#39;][&#39;communication_matrix&#39;]
 </pre></div>
 </div>
 </div>
@@ -984,7 +984,7 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;MetaChat_group-tissue_type-MetaChatDB-HMDB0000073&#39;</span><span class="p">][</span><span class="s1">&#39;communication_pvalue&#39;</span><span class="p">]</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata.uns[&#39;MetaChat_group-tissue_type-MetaChatDB-HMDB0000073&#39;][&#39;communication_pvalue&#39;]
 </pre></div>
 </div>
 </div>
@@ -1082,11 +1082,11 @@ There are 327 pairs were found from the spatial data.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_group_spatial</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                  <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                                  <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
-                                  <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
-                                  <span class="n">n_permutations</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.tl.communication_group_spatial(adata = adata,
+                                  database_name = &#39;MetaChatDB&#39;,
+                                  group_name = &quot;tissue_type&quot;,
+                                  sum_metabolites = sum_metabolites,
+                                  n_permutations = 100)
 </pre></div>
 </div>
 </div>
@@ -1108,33 +1108,36 @@ Computing group-level MCC for MetaChatDB-total-total
 Processing pairs: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 36/36 [08:56&lt;00:00, 14.90s/it]
 </pre></div></div>
 </div>
+<div class="note docutils container">
+<p>If you encounter any bugs in the code, our if you have suggestions for new features, please open an issue. If you have a general question or something you would like to discuss with us, please post on the scverse discourse. You can also contact us using <a class="reference external" href="mailto:info&#37;&#52;&#48;cellrank&#46;org">info<span>&#64;</span>cellrank<span>&#46;</span>org</a>.</p>
+</div>
 <p>Correspondingly, the group-level MCC results considering the spatial distance distribution are stored in <code class="docutils literal notranslate"><span class="pre">adata.uns['MetaChat_group_spatial-tissue_type-MetaChatDB-HMDB0000073']</span></code></p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span> <span class="s1">&#39;polar&#39;</span><span class="p">})</span>
-<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_chord</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                     <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                                     <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
-                                     <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
-                                     <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                                     <span class="n">p_value_cutoff</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                                     <span class="n">space</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                                     <span class="n">self_communication_off</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                                     <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;With Self Communication&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(11,4.5), subplot_kw={&#39;projection&#39;: &#39;polar&#39;})
+mc.pl.plot_group_communication_chord(adata = adata,
+                                     database_name = &#39;MetaChatDB&#39;,
+                                     group_name = &quot;tissue_type&quot;,
+                                     metabolite_name = &#39;HMDB0000073&#39;,
+                                     permutation_spatial = False,
+                                     p_value_cutoff = 1,
+                                     space = 10,
+                                     self_communication_off = False,
+                                     ax = ax[0])
+ax[0].set_title(&#39;With Self Communication&#39;, fontsize=14)
 
-<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_chord</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                     <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                                     <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
-                                     <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
-                                     <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                                     <span class="n">p_value_cutoff</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                                     <span class="n">space</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                                     <span class="n">self_communication_off</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                                     <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Without Self Communication&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+mc.pl.plot_group_communication_chord(adata = adata,
+                                     database_name = &#39;MetaChatDB&#39;,
+                                     group_name = &quot;tissue_type&quot;,
+                                     metabolite_name = &#39;HMDB0000073&#39;,
+                                     permutation_spatial = False,
+                                     p_value_cutoff = 1,
+                                     space = 10,
+                                     self_communication_off = True,
+                                     ax = ax[1])
+ax[1].set_title(&#39;Without Self Communication&#39;, fontsize=14)
 </pre></div>
 </div>
 </div>
@@ -1151,31 +1154,31 @@ Text(0.5, 1.0, &#39;Without Self Communication&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Multi_omics_data_41_1.png" src="../_images/notebooks_Multi_omics_data_41_1.png" />
+<img alt="../_images/notebooks_Multi_omics_data_42_1.png" src="../_images/notebooks_Multi_omics_data_42_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
-<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_heatmap</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                       <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                                       <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
-                                       <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span>
-                                       <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span>
-                                       <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HMDB0000073&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(1, 2, figsize=(11,3))
+mc.pl.plot_group_communication_heatmap(adata = adata,
+                                       database_name = &#39;MetaChatDB&#39;,
+                                       group_name = &quot;tissue_type&quot;,
+                                       metabolite_name = &#39;HMDB0000073&#39;,
+                                       cmap = &#39;green&#39;,
+                                       permutation_spatial = False,
+                                       ax = ax[0])
+ax[0].set_title(&#39;HMDB0000073&#39;, fontsize=14)
 
-<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_heatmap</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                       <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                                       <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
-                                       <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000216&#39;</span><span class="p">,</span>
-                                       <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
-                                       <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HMDB0000216&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+mc.pl.plot_group_communication_heatmap(adata = adata,
+                                       database_name = &#39;MetaChatDB&#39;,
+                                       group_name = &quot;tissue_type&quot;,
+                                       metabolite_name = &#39;HMDB0000216&#39;,
+                                       cmap = &#39;blue&#39;,
+                                       permutation_spatial = False,
+                                       ax = ax[1])
+ax[1].set_title(&#39;HMDB0000216&#39;, fontsize=14)
 </pre></div>
 </div>
 </div>
@@ -1192,7 +1195,7 @@ Text(0.5, 1.0, &#39;HMDB0000216&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Multi_omics_data_42_1.png" src="../_images/notebooks_Multi_omics_data_42_1.png" />
+<img alt="../_images/notebooks_Multi_omics_data_43_1.png" src="../_images/notebooks_Multi_omics_data_43_1.png" />
 </div>
 </div>
 </section>
@@ -1202,7 +1205,7 @@ Text(0.5, 1.0, &#39;HMDB0000216&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_raw</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>adata_raw = sc.read_h5ad(&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;)
 </pre></div>
 </div>
 </div>
@@ -1210,12 +1213,12 @@ Text(0.5, 1.0, &#39;HMDB0000216&#39;)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span>
-<span class="n">df_deg</span><span class="p">,</span> <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                                    <span class="n">adata_raw</span> <span class="o">=</span> <span class="n">adata_raw</span><span class="p">,</span>
-                                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
-                                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
-                                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;receiver&#39;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>metabolite_name = &#39;HMDB0000073&#39;
+df_deg, df_yhat = mc.tl.communication_responseGenes(adata = adata,
+                                                    adata_raw = adata_raw,
+                                                    database_name = &#39;MetaChatDB&#39;,
+                                                    metabolite_name = metabolite_name,
+                                                    summary = &#39;receiver&#39;)
 </pre></div>
 </div>
 </div>
@@ -1234,10 +1237,10 @@ done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
-<span class="n">deg_result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;df_deg&quot;</span><span class="p">:</span> <span class="n">df_deg</span><span class="p">,</span> <span class="s2">&quot;df_yhat&quot;</span><span class="p">:</span> <span class="n">df_yhat</span><span class="p">}</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;results/responseGenes_&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span> <span class="o">+</span> <span class="s2">&quot;.pkl&quot;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
-    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">deg_result</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>import pickle
+deg_result = {&quot;df_deg&quot;: df_deg, &quot;df_yhat&quot;: df_yhat}
+with open(&quot;results/responseGenes_&quot; + metabolite_name + &quot;.pkl&quot;, &#39;wb&#39;) as handle:
+    pickle.dump(deg_result, handle, protocol=pickle.HIGHEST_PROTOCOL)
 </pre></div>
 </div>
 </div>
@@ -1245,13 +1248,13 @@ done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;results/responseGenes_&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span> <span class="o">+</span> <span class="s2">&quot;.pkl&quot;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-    <span class="n">deg_result</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-<span class="n">df_deg</span> <span class="o">=</span> <span class="n">deg_result</span><span class="p">[</span><span class="s2">&quot;df_deg&quot;</span><span class="p">]</span>
-<span class="n">df_yhat</span> <span class="o">=</span> <span class="n">deg_result</span><span class="p">[</span><span class="s2">&quot;df_yhat&quot;</span><span class="p">]</span>
-<span class="n">df_deg_clus</span><span class="p">,</span> <span class="n">df_yhat_clus</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_cluster</span><span class="p">(</span><span class="n">df_deg</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="mi">3</span><span class="p">],</span> <span class="n">df_yhat</span><span class="p">,</span> <span class="n">deg_clustering_res</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>metabolite_name = &#39;HMDB0000073&#39;
+import pickle
+with open(&quot;results/responseGenes_&quot; + metabolite_name + &quot;.pkl&quot;, &#39;rb&#39;) as file:
+    deg_result = pickle.load(file)
+df_deg = deg_result[&quot;df_deg&quot;]
+df_yhat = deg_result[&quot;df_yhat&quot;]
+df_deg_clus, df_yhat_clus = mc.tl.communication_responseGenes_cluster(df_deg.iloc[:,:3], df_yhat, deg_clustering_res=0.2)
 </pre></div>
 </div>
 </div>
@@ -1259,14 +1262,14 @@ done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes</span><span class="p">(</span><span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_deg_clus</span><span class="p">,</span>
-                                       <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">df_yhat_clus</span><span class="p">,</span>
-                                       <span class="n">top_ngene_per_cluster</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
-                                       <span class="n">colormap</span> <span class="o">=</span> <span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
-                                       <span class="n">color_range</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
-                                       <span class="n">font_scale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                                       <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
-                                       <span class="n">return_genes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.pl.plot_communication_responseGenes(df_deg = df_deg_clus,
+                                       df_yhat = df_yhat_clus,
+                                       top_ngene_per_cluster = 8,
+                                       colormap = &#39;viridis&#39;,
+                                       color_range = (-2,2),
+                                       font_scale = 1,
+                                       figsize = (10,6),
+                                       return_genes = False)
 </pre></div>
 </div>
 </div>
@@ -1274,16 +1277,16 @@ done.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Multi_omics_data_48_0.png" src="../_images/notebooks_Multi_omics_data_48_0.png" />
+<img alt="../_images/notebooks_Multi_omics_data_49_0.png" src="../_images/notebooks_Multi_omics_data_49_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_result</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_keggEnrich</span><span class="p">(</span><span class="n">gene_list</span> <span class="o">=</span> <span class="n">df_deg</span><span class="p">[</span><span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;pvalue&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[:</span><span class="mi">1000</span><span class="p">],</span>
-                                                         <span class="n">gene_sets</span> <span class="o">=</span> <span class="s2">&quot;KEGG_2019_Mouse&quot;</span><span class="p">,</span>
-                                                         <span class="n">organism</span> <span class="o">=</span> <span class="s2">&quot;Mouse&quot;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>df_result = mc.tl.communication_responseGenes_keggEnrich(gene_list = df_deg[df_deg[&#39;pvalue&#39;] &lt; 0.05].index.tolist()[:1000],
+                                                         gene_sets = &quot;KEGG_2019_Mouse&quot;,
+                                                         organism = &quot;Mouse&quot;)
 </pre></div>
 </div>
 </div>
@@ -1291,7 +1294,7 @@ done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_result</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;results/responseGenes_keggEnrich_&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>df_result.to_csv(&quot;results/responseGenes_keggEnrich_&quot; + metabolite_name + &quot;.csv&quot;)
 </pre></div>
 </div>
 </div>
@@ -1299,11 +1302,11 @@ done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes_keggEnrich</span><span class="p">(</span><span class="n">df_result</span> <span class="o">=</span> <span class="n">df_result</span><span class="p">,</span>
-                                                  <span class="n">show_term_order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span>
-                                                  <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
-                                                  <span class="n">maxshow_gene</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                                                  <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>mc.pl.plot_communication_responseGenes_keggEnrich(df_result = df_result,
+                                                  show_term_order = [1,2,6,7,9],
+                                                  cmap = &#39;blue&#39;,
+                                                  maxshow_gene = 10,
+                                                  figsize = (7,5))
 </pre></div>
 </div>
 </div>
@@ -1311,7 +1314,7 @@ done.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_Multi_omics_data_51_0.png" src="../_images/notebooks_Multi_omics_data_51_0.png" />
+<img alt="../_images/notebooks_Multi_omics_data_52_0.png" src="../_images/notebooks_Multi_omics_data_52_0.png" />
 </div>
 </div>
 </section>

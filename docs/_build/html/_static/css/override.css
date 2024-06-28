@@ -7,11 +7,15 @@
 }
 
 .admonition.note {
-    background-color: #EAF5F7; /* 设置背景颜色 */
-    border-left: 5px solid #5C9AA3; /* 设置左侧边框颜色 */
+    background-color: #EAF5F7;
+    border-left: 5px solid #5C9AA3;
 }
 
 .admonition.note .admonition-title {
-    background-color: #EAF5F7; /* 设置标题背景颜色 */
-    color: #5C9AA3; /* 设置标题文字颜色 */
+    background-color: #EAF5F7;
+    color: #5C9AA3;
+}
+
+.admonition.note .fa {
+    color: #5C9AA3;
 }
