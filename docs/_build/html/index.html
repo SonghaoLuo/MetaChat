@@ -83,176 +83,47 @@
   <section id="welcome-to-metachat-s-documentation">
 <h1>Welcome to MetaChat’s documentation!<a class="headerlink" href="#welcome-to-metachat-s-documentation" title="Link to this heading"></a></h1>
 </section>
-<section id="metachat">
-<h1>MetaChat<a class="headerlink" href="#metachat" title="Link to this heading"></a></h1>
-<section id="brief-introduction">
-<h2>Brief introduction<a class="headerlink" href="#brief-introduction" title="Link to this heading"></a></h2>
-<p>MetaChat is a Python package to screen metabolic cell communication (MCC) from spatial multi-omics data of transcriptomics and metabolomics.
-It contains many intuitive visualization and downstream analysis tools, provides a great practical toolbox for biomedical researchers.</p>
+<section id="metachat-spatial-metabolic-communication-flow-of-single-cells">
+<h1>MetaChat: Spatial metabolic communication flow of single cells<a class="headerlink" href="#metachat-spatial-metabolic-communication-flow-of-single-cells" title="Link to this heading"></a></h1>
+<p><strong>MetaChat</strong> is a Python package to screen metabolic cell communication (MCC) from spatial
+multi-omics data of transcriptomics and metabolomics. It contains many intuitive visualization
+and downstream analysis tools, provides a great practical toolbox for biomedical researchers.</p>
+</section>
 <section id="metabolic-cell-communication">
-<h3>Metabolic cell communication<a class="headerlink" href="#metabolic-cell-communication" title="Link to this heading"></a></h3>
-<p>Metabolic cell-cell communication (MCC) occurs when sensor proteins in the receiver cells detect metabolites in their environment, activating intracellular signaling events. There are three major potential sensors of metabolites: surface receptors, nuclear receptors, and transporters. Metabolites secreted from cells are either transported over short-range distances (a few cells) via diffusion through extracellular space, or over long-range distances via the bloodstream and the cerebrospinal fluid (CSF).</p>
-<img width="500" alt="image" src="https://github.com/SonghaoLuo/MetaChat/assets/138028157/f08f21de-eeae-4626-8fbe-c26a307ec225"></section>
+<h1>Metabolic cell communication<a class="headerlink" href="#metabolic-cell-communication" title="Link to this heading"></a></h1>
+<p>Metabolic cell-cell communication (MCC) occurs when sensor proteins in the receiver cells detect
+metabolites in their environment, activating intracellular signaling events. There are three major
+potential sensors of metabolites: surface receptors, nuclear receptors, and transporters. Metabolites
+secreted from cells are either transported over short-range distances (a few cells) via diffusion
+through extracellular space, or over long-range distances via the bloodstream and the cerebrospinal fluid (CSF).</p>
+<img alt="Metabolic cell communication" src="_images/metabolic_cell_communication.png" />
+</section>
 <section id="metachatdb">
-<h3>MetaChatDB<a class="headerlink" href="#metachatdb" title="Link to this heading"></a></h3>
-<p>MetaChatDB is a literature-supported database for metabolite-sensor interactions for both human and mouse. All the metabolite-sensor interactions are reported based on peer-reviewed publications. Specifically, we manually build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt) that are being continually updated.</p>
-<img width="500" alt="image" src="https://github.com/SonghaoLuo/MetaChat/assets/138028157/20e168c2-2409-47c4-881f-3b80d38326f3"></section>
+<h1>MetaChatDB<a class="headerlink" href="#metachatdb" title="Link to this heading"></a></h1>
+<p>MetaChatDB is a literature-supported database for metabolite-sensor interactions for both human and mouse. All
+the metabolite-sensor interactions are reported based on peer-reviewed publications. Specifically, we manually
+build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt) that are being continually updated.</p>
+<img alt="MetaChatDB" src="_images/metachat_db.png" />
 </section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<section id="system-requirements">
-<h3>System requirements<a class="headerlink" href="#system-requirements" title="Link to this heading"></a></h3>
-<p>Recommended operating systems: macOS or Linux. MetaChat was developed and tested on Linux and macOS.</p>
+<section id="new">
+<h1>New<a class="headerlink" href="#new" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Jun 26, 2024: We released MetaChat version 0.0.2. This version standardizes function names and fixes some bugs.</p></li>
+</ul>
 </section>
-<section id="python-requirements">
-<h3>Python requirements<a class="headerlink" href="#python-requirements" title="Link to this heading"></a></h3>
-<p>MetaChat was developed using python 3.9.</p>
-</section>
-<section id="installation-using-pip">
-<h3>Installation using <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#installation-using-pip" title="Link to this heading"></a></h3>
-<p>We suggest setting up MetaChat in a separate <code class="docutils literal notranslate"><span class="pre">mamba</span></code> or <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment to prevent conflicts with other software dependencies. Create a new Python environment specifically for MetaChat and install the required libraries within it.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>metachat_env<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9<span class="w"> </span>r-base<span class="o">=</span><span class="m">4</span>.3.2
-mamba<span class="w"> </span>activate<span class="w"> </span>metachat_env
-pip<span class="w"> </span>install<span class="w"> </span>metachat
-</pre></div>
-</div>
-</section>
-<section id="troubleshooting">
-<h3>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h3>
-<p><strong>Problem: Unable to install gseapy</strong></p>
-<p>If you get <code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">can't</span> <span class="pre">find</span> <span class="pre">Rust</span> <span class="pre">compiler</span></code> during the installation of gseapy, please try installing the rust compiler via <code class="docutils literal notranslate"><span class="pre">mamba</span> <span class="pre">install</span> <span class="pre">rust</span></code>.</p>
-<p><strong>Problem: Unable to install pydpc</strong></p>
-<p>If you get error during the installation of pydpc, please try <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--use-pep517</span> <span class="pre">pydpc==0.1.3</span></code></p>
-</section>
-</section>
-<section id="documentation-and-tutorials">
-<h2>Documentation, and Tutorials<a class="headerlink" href="#documentation-and-tutorials" title="Link to this heading"></a></h2>
-<p>For more realistic and simulation examples, please see MetaChat documentation that is available through the link <a class="reference external" href="https://metachat.readthedocs.io/en/latest/">https://metachat.readthedocs.io/en/latest/</a>.</p>
-</section>
-<section id="quick-start">
-<h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
-<p>Let’s get a quick start on using metachat to infer MCC by using simulation data generated from a PDE dynamic model.</p>
-<section id="import-packages">
-<h3>Import packages<a class="headerlink" href="#import-packages" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
-<span class="kn">import</span> <span class="nn">squidpy</span> <span class="k">as</span> <span class="nn">sq</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">metachat</span> <span class="k">as</span> <span class="nn">mc</span>
-</pre></div>
-</div>
-</section>
-<section id="setting-work-dictionary">
-<h3>Setting work dictionary<a class="headerlink" href="#setting-work-dictionary" title="Link to this heading"></a></h3>
-<p>To run the examples, you’ll need to download the some pre-existing files in <code class="docutils literal notranslate"><span class="pre">toy_eample</span></code> folder and change your working directory to the <code class="docutils literal notranslate"><span class="pre">toy_example</span></code> folder.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;your_path/toy_example&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="multi-omics-data-from-simulation">
-<h3>Multi-omics data from simulation<a class="headerlink" href="#multi-omics-data-from-simulation" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data/example1/adata_example1.h5ad&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This dataset consists of a metabolite <code class="docutils literal notranslate"><span class="pre">M1</span></code> and a sensor <code class="docutils literal notranslate"><span class="pre">S1</span></code>. Their spatial distributions are shown below:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;Blues&quot;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;S1&quot;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;Reds&quot;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p><span class="raw-html-md"><img src="https://github.com/SonghaoLuo/MetaChat/assets/138028157/7176aabd-7e3e-4439-9f9c-9b0346fd5da8" alt="Spatial Distributions" width="600"/></span></p>
-</section>
-<section id="long-range-channels-lrc">
-<h3>Long-range channels (LRC)<a class="headerlink" href="#long-range-channels-lrc" title="Link to this heading"></a></h3>
-<p>Import the pre-defined long range channel and add it to the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_channel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;data/example1/LRC_channel.npy&#39;</span><span class="p">)</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_type1_filtered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LRC_channel</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_type1_filtered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_type1_filtered&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>It’s spatial distribution are shown in orange color:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;LRC_type1_filtered&quot;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p><span class="raw-html-md"><img src="https://github.com/SonghaoLuo/MetaChat/assets/138028157/c7cc5dbd-1725-4726-a973-8555cf4f6ad0" alt="Spatial Distributions" width="300"/></span></p>
-</section>
-<section id="metabolite-sensor-database-construction">
-<h3>Metabolite-sensor database construction<a class="headerlink" href="#metabolite-sensor-database-construction" title="Link to this heading"></a></h3>
-<p>We need to artificially create a simple database which must include three columns: ‘Metabolite’, ‘Sensor’, ‘Long.Range.Channel’, representing the metabolite name, the sensor name, and the type of long range channel that metabolites may be entered, respectively. <span class="raw-html-md"><br /></span>
-In this example, we assume that the metabolite <code class="docutils literal notranslate"><span class="pre">M1</span></code> can communicate with proximal cells by short-range diffusion and with distal cells by long-range channel transport (<code class="docutils literal notranslate"><span class="pre">type1</span></code>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">M_S_pair</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;M1&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">,</span> <span class="s1">&#39;type1&#39;</span><span class="p">]]</span>
-<span class="n">df_MetaSen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">M_S_pair</span><span class="p">)</span>
-<span class="n">df_MetaSen</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Metabolite&#39;</span><span class="p">,</span> <span class="s1">&#39;Sensor&#39;</span><span class="p">,</span> <span class="s1">&#39;Long.Range.Channel&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</section>
-<section id="compute-the-cost-matrix-based-on-the-long-range-channels">
-<h3>Compute the cost matrix based on the long-range channels<a class="headerlink" href="#compute-the-cost-matrix-based-on-the-long-range-channels" title="Link to this heading"></a></h3>
-<p>To utilize flow-optimal transport, we need to compute the cost matrix depends mainly on two parameters:maximum communication distance (<code class="docutils literal notranslate"><span class="pre">dis_thr</span></code>) and long-range communication strength (<code class="docutils literal notranslate"><span class="pre">LRC_strength</span></code>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">compute_longRangeDistance</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                <span class="n">database_name</span> <span class="o">=</span> <span class="s2">&quot;msdb_example1&quot;</span><span class="p">,</span>
-                                <span class="n">df_MetaSen</span> <span class="o">=</span> <span class="n">df_MetaSen</span><span class="p">,</span>
-                                <span class="n">LRC_name</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;type1&quot;</span><span class="p">],</span>
-                                <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                                <span class="n">k_neighb</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-                                <span class="n">LRC_strength</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
-                                <span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                                <span class="n">spot_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="run-the-inference-function">
-<h3>Run the inference function<a class="headerlink" href="#run-the-inference-function" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">metabolic_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;msdb_example1&#39;</span><span class="p">,</span>
-                              <span class="n">df_MetaSen</span> <span class="o">=</span> <span class="n">df_MetaSen</span><span class="p">,</span>
-                              <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;type1&quot;</span><span class="p">],</span>
-                              <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
-                              <span class="n">cot_weights</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">),</span>
-                              <span class="n">cot_eps_p</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
-                              <span class="n">cot_rho</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-                              <span class="n">cost_type</span> <span class="o">=</span> <span class="s1">&#39;euc&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="compare-metachat-results-with-the-pde-model">
-<h3>Compare MetaChat results with the PDE model<a class="headerlink" href="#compare-metachat-results-with-the-pde-model" title="Link to this heading"></a></h3>
-<p>Comparative results showed that the distribution of M1-S1 inferred by MetaChat had a high correlation with that simulated by the PDE model.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MCC_PDE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;data/example1/pde_result.npy&#39;</span><span class="p">)</span>
-<span class="n">MCC_infer</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-msdb_example1-sum-receiver&#39;</span><span class="p">][</span><span class="s1">&#39;r-M1-S1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">MCC_PDE</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;M1-S1 distribution from PDE&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">MCC_infer</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;M1-S1 distribution with LRC&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-</pre></div>
-</div>
-<p><span class="raw-html-md"><img src="https://github.com/SonghaoLuo/MetaChat/assets/138028157/9aec37b3-a266-4d86-b486-5b6409c06293" alt="Spatial Distributions" width="600"/></span></p>
-</section>
-</section>
-<section id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
-<p>Luo, S., Almet, A.A., Nie, Q.. Spatial metabolic communication flow of single cells.</p>
+<section id="metachat-s-features">
+<h1>MetaChat’s features<a class="headerlink" href="#metachat-s-features" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>MetaChat uses a Flow Optimal Transport algorithm, which frames MCC inference as an optimal transport problem from
+metabolite distributions to sensor distributions that are constrained by metabolite transport flow conditions. This
+algorithm simultaneously considers short- range and long-range transport of metabolites, as well as species competition
+between metabolites and sensors.</p></li>
+<li><p>MetaChat has multiple visualization and downstream analysis tools to dissect MCC flow directions, multiple levels of MCC
+aggregation, pairwise MCC pathway patterns between cell groups, and MCC remodelling in receiver cells.</p></li>
+<li><p>The method can flexibly be applied to either spatial multi-omics measurements on either the same or multiple tissue slices,
+or, in combination with flux analysis, spatial transcriptomics alone of varying spatial resolution (single-cell or spot-level),
+meaning that vast amounts of existing data can be analyzed immediately for MCC.</p></li>
+</ul>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -281,7 +152,6 @@ In this example, we assume that the metabolite <code class="docutils literal not
 </li>
 </ul>
 </div>
-</section>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
