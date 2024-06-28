@@ -6,8 +6,21 @@
 Welcome to MetaChat's documentation!
 ====================================
 
-MetaChat: Spatial metabolic communication flow of single cells
-==============================================================
+.. image:: https://img.shields.io/pypi/v/metachat
+   :target: https://pypi.org/project/metachat/
+   :alt: PyPI
+
+.. image:: https://img.shields.io/pypi/pyversions/metachat
+   :target: https://pypi.org/project/metachat/
+   :alt: PyPI - Python Version
+
+.. image:: https://img.shields.io/pypi/wheel/metachat
+   :target: https://pypi.org/project/metachat/
+   :alt: PyPI - Wheel
+
+.. image:: https://img.shields.io/github/downloads/SonghaoLuo/MetaChat/total
+   :target: https://github.com/SonghaoLuo/MetaChat/releases
+   :alt: Downloads
 
 **MetaChat** is a Python package to screen metabolic cell communication (MCC) from spatial 
 multi-omics data of transcriptomics and metabolomics. It contains many intuitive visualization 
@@ -54,6 +67,11 @@ MetaChat's features
 - The method can flexibly be applied to either spatial multi-omics measurements on either the same or multiple tissue slices, 
   or, in combination with flux analysis, spatial transcriptomics alone of varying spatial resolution (single-cell or spot-level), 
   meaning that vast amounts of existing data can be analyzed immediately for MCC.
+
+Reference
+=========
+Luo, S., Almet, A.A., Nie, Q.. Spatial metabolic communication flow of single cells.
+
 
 .. toctree::
    :maxdepth: 2
