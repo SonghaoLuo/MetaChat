@@ -86,7 +86,7 @@ Luo, S., Almet, A.A., Nie, Q.. Spatial metabolic communication flow of single ce
    :caption: Contents:
 
    installation
-   tutorials
+   tutorials/index
    api/index
 
 Indices and tables
