@@ -782,7 +782,7 @@ The points that can occur long-range communication is...
 </section>
 <section id="constructing-group-level-mcc">
 <h3>Constructing group-level MCC<a class="headerlink" href="#constructing-group-level-mcc" title="Link to this heading"></a></h3>
-<p>Next, we constructed group-level MCC.</p>
+<p>Next, we constructed group-level MCC. We provide two ways to construct it, one is to directly permutate the group label randomly (<code class="docutils literal notranslate"><span class="pre">mc.tl.communication_group</span></code>), and the other is to permutate according based on the spatial distance (<code class="docutils literal notranslate"><span class="pre">mc.tl.communication_group_spatial</span></code>).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_group</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
@@ -794,6 +794,7 @@ The points that can occur long-range communication is...
 </div>
 </div>
 </div>
+<p>For each signal set, two results are stored, communication strength (<code class="docutils literal notranslate"><span class="pre">communication_matrix</span></code>) and significance p-value (<code class="docutils literal notranslate"><span class="pre">communication_pvalue</span></code>). row labels are sender cells and column labels are receiver cells.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;MetaChat_group-tissue_type-MetaChatDB-HMDB0000073&#39;</span><span class="p">][</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">]</span>
@@ -978,6 +979,7 @@ The points that can occur long-range communication is...
 </table>
 </div></div></div>
 </div>
+<p>The following function is based on the spatial distance distribution. Correspondingly, the group-level MCC results considering the spatial distance distribution are stored in <code class="docutils literal notranslate"><span class="pre">adata.uns['MetaChat_group_spatial-tissue_type-MetaChatDB-HMDB0000073']</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_group_spatial</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
@@ -1001,9 +1003,9 @@ Computing group-level MCC for MetaChatDB-total-total
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Let’s give readers a helpful hint!</p>
+<p>Due to the repetitive sampling process, this function can be time consuming, usually taking around 8 minutes to run a signal, depending on the amount of data. This is so we recommend putting in all the signals that need to be run at once, as we can do the calculations on all the signals at the same time in one sampling.</p>
 </div>
-<p>Correspondingly, the group-level MCC results considering the spatial distance distribution are stored in <code class="docutils literal notranslate"><span class="pre">adata.uns['MetaChat_group_spatial-tissue_type-MetaChatDB-HMDB0000073']</span></code></p>
+<p>Visualize group level MCC via chord diagram. If the cells are too heavily weighted to our own communications, we can hide them by setting <code class="docutils literal notranslate"><span class="pre">self_communication_off</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span> <span class="s1">&#39;polar&#39;</span><span class="p">})</span>
@@ -1038,6 +1040,7 @@ Computing group-level MCC for MetaChatDB-total-total
 <img alt="../_images/2c20dea46391bf6541e26b3927e68fd5faf4e6b7cab735e9f35981080bdd46d9.png" src="../_images/2c20dea46391bf6541e26b3927e68fd5faf4e6b7cab735e9f35981080bdd46d9.png" />
 </div>
 </div>
+<p>Visualize group level MCC via heatmap diagram.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
@@ -1071,13 +1074,16 @@ Computing group-level MCC for MetaChatDB-total-total
 </section>
 <section id="mcc-remodelling-in-receiver-cells">
 <h3>MCC remodelling in receiver cells<a class="headerlink" href="#mcc-remodelling-in-receiver-cells" title="Link to this heading"></a></h3>
+<p>Next, we investigated MCC signaling leading to remodelling in receiver cells.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata_raw</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import a raw dataset of transcriptomics as a input.</span>
+<span class="n">adata_raw</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>First, we identify genes that show a responsive relationship with this MCC signaling through the tradeSeq R package [<a class="reference external" href="https://www.nature.com/articles/s41467-020-14766-3">Koen et al., 2020</a>].</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span>
@@ -1100,7 +1106,8 @@ done.
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save results</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
 <span class="n">deg_result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;df_deg&quot;</span><span class="p">:</span> <span class="n">df_deg</span><span class="p">,</span> <span class="s2">&quot;df_yhat&quot;</span><span class="p">:</span> <span class="n">df_yhat</span><span class="p">}</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;results/responseGenes_&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span> <span class="o">+</span> <span class="s2">&quot;.pkl&quot;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
     <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">deg_result</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span>
@@ -1108,6 +1115,7 @@ done.
 </div>
 </div>
 </div>
+<p>To present the different response trends of the response genes, we did clustering of the response trends.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span>
@@ -1121,6 +1129,7 @@ done.
 </div>
 </div>
 </div>
+<p>Some genes’ expression increased with increasing MCC intensity, while others decreased with increasing intensity.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes</span><span class="p">(</span><span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_deg_clus</span><span class="p">,</span>
@@ -1138,6 +1147,7 @@ done.
 <img alt="../_images/fa1ad1a80da265b0f79a8fead9879369696c700f868d82384d6f50f04d7f32ac.png" src="../_images/fa1ad1a80da265b0f79a8fead9879369696c700f868d82384d6f50f04d7f32ac.png" />
 </div>
 </div>
+<p>We put the response genes into KEGG for gene enrichment.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df_result</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_keggEnrich</span><span class="p">(</span><span class="n">gene_list</span> <span class="o">=</span> <span class="n">df_deg</span><span class="p">[</span><span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;pvalue&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[:</span><span class="mi">1000</span><span class="p">],</span>
@@ -1153,6 +1163,10 @@ done.
 </pre></div>
 </div>
 </div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can show the most relevant MCC remodelling pathways by specifying the enriched pathway serial numbers.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
