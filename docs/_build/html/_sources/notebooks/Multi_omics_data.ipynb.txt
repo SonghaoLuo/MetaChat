@@ -988,10 +988,23 @@
    "metadata": {},
    "source": [
     "<div class=\"admonition important\">\n",
-    "    <p class=\"admonition-title\">Important</p>\n",
-    "    <p>This is a note.</p>\n",
+    "<p class=\"admonition-title\">Important</p>\n",
+    "<p>This is a note.</p>\n",
     "</div>"
    ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "!!! important\n",
+    "    You should note that the title will be automatically capitalized."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": []
   },
   {
    "cell_type": "markdown",
