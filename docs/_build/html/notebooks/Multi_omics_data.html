@@ -540,8 +540,8 @@
 <img alt="../_images/92b06efaff4b8da010d4289173e2338126a354cab5d4e71a12b6b1b1edba20ba.png" src="../_images/92b06efaff4b8da010d4289173e2338126a354cab5d4e71a12b6b1b1edba20ba.png" />
 </div>
 </div>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>This step allows you to keep adjusting the parameters (<code class="docutils literal notranslate"><span class="pre">density_cutoff</span></code>, <code class="docutils literal notranslate"><span class="pre">delta_cutoff</span></code> and <code class="docutils literal notranslate"><span class="pre">outlier_cutoff</span></code>) to get the best visual effect.</p>
 </div>
 <div class="cell docutils container">
@@ -577,6 +577,12 @@
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>If you want to use manual determination of the LRC, please see the tutorial for details.</p>
+</div>
+<p>Next, we want to compute the cost distance for this data, based on the previously identified LRCs. for the case of multiple LRC types, enter all of them together in a list, e.g. LRC_type = [“Blood”, “CSF”].</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Since the coordinate scale may vary for each data, it is difficult to intuitively estimate the parameter <code class="docutils literal notranslate"><span class="pre">dis_thr</span></code>, which reflects the furthest distance of influence by LRC. if you set <code class="docutils literal notranslate"><span class="pre">plot=True</span></code>, you can clearly see for each class of each type, which spots may be affected by the LRC, and thus determine <code class="docutils literal notranslate"><span class="pre">dis_thr</span></code>.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">LRC_strength</span></code>, this is generally an order of magnitude greater than the minimum distance between spots.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -635,6 +641,11 @@ The points that can occur long-range communication is...
 </div>
 </div>
 </div>
+<p>With the previous preparation, we can finally begin to make inferences about metabolic cellular communication.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is better to have the same <code class="docutils literal notranslate"><span class="pre">dis_thr</span></code> of this function as in <code class="docutils literal notranslate"><span class="pre">dis_thr</span></code> in <code class="docutils literal notranslate"><span class="pre">mc.pp.compute_costDistance</span></code>.</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">metabolic_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
@@ -656,6 +667,7 @@ The points that can occur long-range communication is...
 </section>
 <section id="downstream-analysis">
 <h2>Downstream analysis<a class="headerlink" href="#downstream-analysis" title="Link to this heading"></a></h2>
+<p>Next, based on our previously obtained inferences, we perform a series of downstream analyses and visualizations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;results/inference_results.h5ad&quot;</span><span class="p">)</span>
@@ -665,6 +677,7 @@ The points that can occur long-range communication is...
 </div>
 <section id="summary-communication-among-different-scales">
 <h3>Summary communication among different scales<a class="headerlink" href="#summary-communication-among-different-scales" title="Link to this heading"></a></h3>
+<p>Since we inferred the MCC signals for each metabolite-sensor pair, and we often have a need to analyze a particular metabolite and a particular metabolic pathway or custom signal set, we need to summarize the signal sets at different scales in advance.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sum_metabolites</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HMDB0000216&#39;</span><span class="p">,</span><span class="s1">&#39;HMDB0000073&#39;</span><span class="p">]</span>
@@ -680,6 +693,15 @@ The points that can occur long-range communication is...
 </pre></div>
 </div>
 </div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function supports multiple inputs summarizing signals at the same time, for example
+mc.tl.summary_communication(adata = adata,
+database_name = ‘MetaChatDB’,
+sum_metabolites = [‘HMDB0000216’,’HMDB0000073’],
+sum_metabolites = [‘HMDB0000216’,’HMDB0000073’],
+sum_metabolites = [‘HMDB0000216’,’HMDB0000073’])</p>
 </div>
 </section>
 <section id="identifing-mcc-flow">
