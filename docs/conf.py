@@ -35,7 +35,11 @@ extensions = [
     'sphinx_gallery.load_style',
     'myst_nb'
 ]
-
+myst_enable_extensions = [
+    'html_admonition',
+    'colon_fence',
+    
+]
 nbsphinx_allow_errors = True
 nbsphinx_execute = 'auto'
 nb_execution_mode = "off"
