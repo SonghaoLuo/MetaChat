@@ -437,7 +437,7 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The MSI annotations for the metabolome should have the HMDB ID as the variable name in the adata object, due to the fact that the built-in database MetaChatDB is indexed by the HMDB ID.</p>
+<p>The MSI annotations for the metabolome should have the HMDB ID from <a class="reference external" href="https://hmdb.ca/">The Human Metabolome Database</a>  as the variable name in the adata object, due to the fact that the built-in database MetaChatDB is indexed by the HMDB ID.</p>
 </div>
 </section>
 <section id="combine-the-transcriptomics-and-metabolomics-data">
@@ -469,9 +469,15 @@
 </div>
 </div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>If you have your own metabolic-sensor database, follow the tutorial How to Build a Custom Database.</p>
+</div>
 </section>
-<section id="identify-long-range-channels">
-<h3>Identify long-range channels<a class="headerlink" href="#identify-long-range-channels" title="Link to this heading"></a></h3>
+<section id="identify-long-range-channels-lrc">
+<h3>Identify long-range channels (LRC)<a class="headerlink" href="#identify-long-range-channels-lrc" title="Link to this heading"></a></h3>
+<p>Next, we will see how to identify LRCs. There are two ways to do this: (i) by marker genes, as here we utilize the high expression of Mgp as a potential spatial location for blood vessels or Gfap for cerebrospinal fluid (CSF); (ii) Manual determination of LRC through user-defined regions.</p>
+<p>Here we show the process of identifying LRC of cerebrospinal fluid.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span>
@@ -482,7 +488,6 @@
                       <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="n">LRC_marker_gene</span><span class="p">],</span>
                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_&quot; + LRC_marker_gene + &quot;.pdf&quot;)</span>
 </pre></div>
 </div>
 </div>
@@ -490,6 +495,7 @@
 <img alt="../_images/8926c12781603d61f2b7b3cd44eff75e52c7658834ff77f7e7eb8157c4e4ad7e.png" src="../_images/8926c12781603d61f2b7b3cd44eff75e52c7658834ff77f7e7eb8157c4e4ad7e.png" />
 </div>
 </div>
+<p>We can see a clear channel near the fiber tracts. Next, we select the spots with expression above the 85% quantile as candidate spots for LRC.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_unfiltered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
@@ -512,7 +518,6 @@
                       <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_unfiltered&#39;</span><span class="p">,</span>
                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_unfiltered.pdf&quot;)</span>
 </pre></div>
 </div>
 </div>
@@ -520,10 +525,10 @@
 <img alt="../_images/ffa0ccaa97f333c7f330eac7fcd18ed1da2ff1f7b62851e4fa5b6d0b0f3a618e.png" src="../_images/ffa0ccaa97f333c7f330eac7fcd18ed1da2ff1f7b62851e4fa5b6d0b0f3a618e.png" />
 </div>
 </div>
+<p>We can see that the candidate spots have a clear channel, but are accompanied by scattered dots. We identify non-elliptical LRC clusters and exclude outliers by a local density clustering algorithm. Of these, points that satisfy both <code class="docutils literal notranslate"><span class="pre">density</span> <span class="pre">&gt;</span> <span class="pre">density_cutoff</span></code> and <code class="docutils literal notranslate"><span class="pre">delta</span> <span class="pre">&gt;</span> <span class="pre">delta_cutoff</span></code> will be used as cluster centers (red solid line). And points with <code class="docutils literal notranslate"><span class="pre">density</span> <span class="pre">&lt;</span> <span class="pre">outlier_cutoff</span></code> will be considered as outliers spots.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># There is a clear long-range channel as CSF vessel, so we perform density peak clustering on points with high marker expression in CSF vessel.</span>
-<span class="n">LRC_cluster_CSF</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_cluster</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_cluster_CSF</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_cluster</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
                                     <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
                                     <span class="n">density_cutoff</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
                                     <span class="n">delta_cutoff</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">,</span>
@@ -534,6 +539,10 @@
 <div class="cell_output docutils container">
 <img alt="../_images/92b06efaff4b8da010d4289173e2338126a354cab5d4e71a12b6b1b1edba20ba.png" src="../_images/92b06efaff4b8da010d4289173e2338126a354cab5d4e71a12b6b1b1edba20ba.png" />
 </div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This step allows you to keep adjusting the parameters (<code class="docutils literal notranslate"><span class="pre">density_cutoff</span></code>, <code class="docutils literal notranslate"><span class="pre">delta_cutoff</span></code> and <code class="docutils literal notranslate"><span class="pre">outlier_cutoff</span></code>) to get the best visual effect.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -558,13 +567,16 @@
                       <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># plt.savefig(&quot;figures/&quot; + &quot;LRC_&quot; + LRC_name + &quot;_filtered.pdf&quot;)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <img alt="../_images/b6b77989f732cf74dc670aee46fb8fac484ef1f368d302c16d497a81f1bc7a30.png" src="../_images/b6b77989f732cf74dc670aee46fb8fac484ef1f368d302c16d497a81f1bc7a30.png" />
 </div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>If you want to use manual determination of the LRC, please see the tutorial for details.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1195,7 +1207,7 @@ done.
 </li>
 <li><a class="reference internal" href="#mcc-inference">MCC Inference</a><ul>
 <li><a class="reference internal" href="#import-metachatdb">Import MetaChatDB</a></li>
-<li><a class="reference internal" href="#identify-long-range-channels">Identify long-range channels</a></li>
+<li><a class="reference internal" href="#identify-long-range-channels-lrc">Identify long-range channels (LRC)</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#downstream-analysis">Downstream analysis</a><ul>
