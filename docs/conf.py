@@ -38,7 +38,7 @@ extensions = [
 
 nbsphinx_allow_errors = True
 nbsphinx_execute = 'auto'
-
+nb_execution_mode = "off"
 sphinx_rtd_size_width = "75%"
 
 source_suffix = {
