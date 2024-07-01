@@ -290,9 +290,11 @@
         <article role="main" id="furo-main-content">
           <section id="example-of-spatial-multi-omics-data-mouse-brain-with-parkinson-s-disease">
 <h1>Example of spatial multi-omics data (mouse brain with Parkinson’s disease)<a class="headerlink" href="#example-of-spatial-multi-omics-data-mouse-brain-with-parkinson-s-disease" title="Link to this heading"></a></h1>
+<p>In this tutorial, we use mouse brain slices as an example to show the basic application of MetaChat to multi-omics data of transcriptomics and metabolomics [<a class="reference external" href="https://www.nature.com/articles/s41587-023-01937-y">Marco et al., 2023</a>].</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing packages</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
@@ -307,7 +309,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting work dictionary</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setting your work dictionary</span>
 <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/home/Project/MetaChat_test/mouse_brain&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -317,6 +319,7 @@
 <h2>Data preprocessing<a class="headerlink" href="#data-preprocessing" title="Link to this heading"></a></h2>
 <section id="preprocessing-for-transcriptomics-data">
 <h3>Preprocessing for transcriptomics data<a class="headerlink" href="#preprocessing-for-transcriptomics-data" title="Link to this heading"></a></h3>
+<p>First, we perform basic preprocessing of the transcriptome, including data transformation, highly variable genes, clustering, and reduction visualization. All processes are handled by Scanpy [<a class="reference external" href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-017-1382-0">F. Alexander et al., 2018</a>] and Squidpy [<a class="reference external" href="https://www.nature.com/articles/s41592-021-01358-2">Giovanni et al., 2022</a>].</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata_RNA</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;</span><span class="p">)</span>
@@ -362,6 +365,7 @@
 <img alt="../_images/01aa2c6e1a77298c6f568ea28caf7e305a63b7872932bf542332493ce95782af.png" src="../_images/01aa2c6e1a77298c6f568ea28caf7e305a63b7872932bf542332493ce95782af.png" />
 </div>
 </div>
+<p>By comparing with <a class="reference external" href="https://mouse.brain-map.org/experiment/thumbnails/100048576?image_type=atlas">Allen Mouse Brain Atlas</a> [<a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0092867420304025">Quanxin et al., 2020</a>], we can initially get the following six basic types of organizations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cluster_to_cell_type</span> <span class="o">=</span> <span class="p">{</span>
@@ -402,6 +406,7 @@
 </section>
 <section id="preprocessing-for-metabolomics-data">
 <h3>Preprocessing for metabolomics data<a class="headerlink" href="#preprocessing-for-metabolomics-data" title="Link to this heading"></a></h3>
+<p>Next, metabolomic data is imported and spatial information from the transcriptomic data is assigned to the metabolome.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata_MSI</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_MSI.h5ad&#39;</span><span class="p">)</span>
@@ -424,11 +429,15 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata_MSI</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
-<span class="n">adata_RNA</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">adata_RNA</span>
+<span class="n">adata_MSI</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">adata_MSI</span>
 <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">normalize_total</span><span class="p">(</span><span class="n">adata_MSI</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The MSI annotations for the metabolome should have the HMDB ID as the variable name in the adata object, due to the fact that the built-in database MetaChatDB is indexed by the HMDB ID.</p>
 </div>
 </section>
 <section id="combine-the-transcriptomics-and-metabolomics-data">
@@ -946,10 +955,6 @@ Computing group-level MCC for MetaChatDB-total-total
 </pre></div>
 </div>
 </div>
-</div>
-<div class="admonition note" id="html-admonition">
-<p class="admonition-title">This is the <strong>title</strong></p>
-<p>This is the <em>content</em></p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>

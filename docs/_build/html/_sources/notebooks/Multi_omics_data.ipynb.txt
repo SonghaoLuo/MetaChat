@@ -8,11 +8,19 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In this tutorial, we use mouse brain slices as an example to show the basic application of MetaChat to multi-omics data of transcriptomics and metabolomics [[Marco et al., 2023](https://www.nature.com/articles/s41587-023-01937-y)]."
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": 1,
    "metadata": {},
    "outputs": [],
    "source": [
+    "# Importing packages\n",
     "import os\n",
     "import numpy as np\n",
     "import pandas as pd\n",
@@ -30,7 +38,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# setting work dictionary\n",
+    "# Setting your work dictionary\n",
     "os.chdir(\"/home/Project/MetaChat_test/mouse_brain\")"
    ]
   },
@@ -46,6 +54,13 @@
    "metadata": {},
    "source": [
     "### Preprocessing for transcriptomics data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "First, we perform basic preprocessing of the transcriptome, including data transformation, highly variable genes, clustering, and reduction visualization. All processes are handled by Scanpy [[F. Alexander et al., 2018](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-017-1382-0)] and Squidpy [[Giovanni et al., 2022](https://www.nature.com/articles/s41592-021-01358-2)]."
    ]
   },
   {
@@ -114,6 +129,13 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "By comparing with [Allen Mouse Brain Atlas](https://mouse.brain-map.org/experiment/thumbnails/100048576?image_type=atlas) [[Quanxin et al., 2020](https://www.sciencedirect.com/science/article/pii/S0092867420304025)], we can initially get the following six basic types of organizations."
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": 6,
    "metadata": {},
@@ -170,6 +192,13 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Next, metabolomic data is imported and spatial information from the transcriptomic data is assigned to the metabolome."
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": 8,
    "metadata": {},
@@ -203,8 +232,17 @@
    "outputs": [],
    "source": [
     "adata_MSI.var_names_make_unique()\n",
-    "adata_RNA.raw = adata_RNA\n",
+    "adata_MSI.raw = adata_MSI\n",
     "sc.pp.normalize_total(adata_MSI, inplace=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    ":::{note}\n",
+    "The MSI annotations for the metabolome should have the HMDB ID as the variable name in the adata object, due to the fact that the built-in database MetaChatDB is indexed by the HMDB ID.\n",
+    ":::"
    ]
   },
   {
@@ -981,16 +1019,6 @@
     "                                  group_name = \"tissue_type\",\n",
     "                                  sum_metabolites = sum_metabolites,\n",
     "                                  n_permutations = 100)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "<div class=\"admonition note\" name=\"html-admonition\" style=\"background: lightgreen; padding: 10px\">\n",
-    "<p class=\"title\">This is the **title**</p>\n",
-    "This is the *content*\n",
-    "</div>"
    ]
   },
   {
