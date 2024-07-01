@@ -987,23 +987,10 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "```{note}\n",
-    "Here is a note!\n",
-    "```"
+    ":::{tip}\n",
+    "Let's give readers a helpful hint!\n",
+    ":::"
    ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "!!! important\n",
-    "    You should note that the title will be automatically capitalized."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": []
   },
   {
    "cell_type": "markdown",

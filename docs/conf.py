@@ -33,6 +33,7 @@ extensions = [
     'sphinx_rtd_size',
     'nbsphinx',
     'sphinx_gallery.load_style',
+    'myst_nb'
 ]
 
 nbsphinx_allow_errors = True
@@ -42,6 +43,8 @@ sphinx_rtd_size_width = "75%"
 
 source_suffix = {
     '.rst': 'restructuredtext',
+    '.ipynb': 'myst-nb',
+    '.myst': 'myst-nb',
     '.md': 'markdown',
 }
 
