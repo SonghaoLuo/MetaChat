@@ -52,9 +52,6 @@ build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt
    :align: center
    :alt: MetaChatDB
 
-.. note:: 
-   hhh
-
 New
 ===
 

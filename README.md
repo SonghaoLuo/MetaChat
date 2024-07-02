@@ -58,12 +58,12 @@ import metachat as mc
 ### Setting work dictionary
 To run the examples, you'll need to download the some pre-existing files in `toy_eample` folder and change your working directory to the `toy_example` folder.
 ```python
-os.chdir("your_path/toy_example")
+os.chdir("your_path/example1")
 ```
 
 ### Multi-omics data from simulation
 ```python
-adata = sc.read("data/example1/adata_example1.h5ad")
+adata = sc.read("data/adata_example1.h5ad")
 ```
 This dataset consists of a metabolite `M1` and a sensor `S1`. Their spatial distributions are shown below:
 ```python
@@ -81,13 +81,13 @@ plt.show()
 ### Long-range channels (LRC)
 Import the pre-defined long range channel and add it to the `adata` object.
 ```python
-LRC_channel = np.load('data/example1/LRC_channel.npy')
+LRC_channel = np.load('data/LRC_channel.npy')
 adata.obs['LRC_type1_filtered'] = LRC_channel.flatten()
 adata.obs['LRC_type1_filtered'] = adata.obs['LRC_type1_filtered'].astype('category')
 ```
 It's spatial distribution are shown in orange color:
 ```python
-fig, ax = plt.subplots(figsize = (4,4))
+fig, ax = plt.subplots(figsize = (3,3))
 sq.pl.spatial_scatter(adata = adata, color = "LRC_type1_filtered", size = 80, shape = None, ax = ax)
 ax.invert_yaxis()
 ax.set_box_aspect(1)
@@ -100,34 +100,32 @@ We need to artificially create a simple database which must include three column
 In this example, we assume that the metabolite `M1` can communicate with proximal cells by short-range diffusion and with distal cells by long-range channel transport (`type1`).
 ```python
 M_S_pair = [['M1', 'S1', 'type1']]
-df_MetaSen = pd.DataFrame(M_S_pair)
-df_MetaSen.columns = ['Metabolite', 'Sensor', 'Long.Range.Channel']
+df_metasen = pd.DataFrame(M_S_pair)
+df_metasen.columns = ['Metabolite', 'Sensor', 'Long.Range.Channel']
 ```
 
 ### Compute the cost matrix based on the long-range channels
 To utilize flow-optimal transport, we need to compute the cost matrix depends mainly on two parameters:maximum communication distance (`dis_thr`) and long-range communication strength (`LRC_strength`).
 ```python
-mc.pp.compute_longRangeDistance(adata = adata,
-                                database_name = "msdb_example1",
-                                df_MetaSen = df_MetaSen,
-                                LRC_name = ["type1"],
-                                dis_thr = 10,
-                                k_neighb = 5,
-                                LRC_strength = 4,
-                                plot = True,
-                                spot_size = 1)
+mc.pp.compute_costDistance(adata = adata,
+                           LRC_type = ["type1"],
+                           dis_thr = 10,
+                           k_neighb = 5,
+                           LRC_strength = 4,
+                           plot = True,
+                           spot_size = 1)
 ```
 
 ### Run the inference function
 ```python
 mc.tl.metabolic_communication(adata = adata,
                               database_name = 'msdb_example1',
-                              df_MetaSen = df_MetaSen,
+                              df_metasen = df_metasen,
                               LRC_type = ["type1"],
                               dis_thr = 15,
-                              cot_weights = (1.0,0.0,0.0,0.0),
-                              cot_eps_p = 0.25,
-                              cot_rho = 1.0,
+                              fot_weights = (1.0,0.0,0.0,0.0),
+                              fot_eps_p = 0.25,
+                              fot_rho = 1.0,
                               cost_type = 'euc')
 ```
 

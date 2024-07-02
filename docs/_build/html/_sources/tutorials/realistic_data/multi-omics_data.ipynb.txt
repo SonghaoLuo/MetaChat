@@ -39,7 +39,7 @@
    "outputs": [],
    "source": [
     "# Setting your work dictionary\n",
-    "os.chdir(\"/home/Project/MetaChat_test/mouse_brain\")"
+    "os.chdir(\"your_path/mouse_brain\")"
    ]
   },
   {
