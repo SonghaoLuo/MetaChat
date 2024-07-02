@@ -6,9 +6,11 @@
 Tutorials
 =========
 
+These are some example scripts using the MetaChat package, which illustrates some of the most important features of the package.
+
 .. toctree::
     :maxdepth: 2
     :glob:
-
+    
     simulated_data/index
     realistic_data/index

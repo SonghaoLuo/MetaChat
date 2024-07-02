@@ -18,7 +18,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "<img src=\"/home/Project/packages/MetaChat-main/docs/_static/image/example3.jpg\" alt=\"Example1\" width=\"250\"/>"
+    "<img src=\"../../_static/image/example3.jpg\" alt=\"Example1\" width=\"250\"/>"
    ]
   },
   {
