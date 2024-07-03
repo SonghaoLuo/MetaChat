@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="&lt;no title&gt;" href="tutorials.html" /><link rel="prev" title="Welcome to MetaChat’s documentation!" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tutorials" href="tutorials/index.html" /><link rel="prev" title="Welcome to MetaChat’s documentation!" href="index.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>Installation - MetaChat 0.0.2 documentation</title>
@@ -225,9 +225,21 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/Multi_omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/toy_example1.html">Toy example 1</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/simulated_data/index.html">Simulated data</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Simulated data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/simulated_data/example_1.html">Example 1 (Short- and Long-range communication)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/simulated_data/example_2.html">Example 2 (Different types of long-range channels)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/simulated_data/example_3.html">Example 3 (Metabolite-Sensor competition)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/simulated_data/example_4.html">Example 4 (Multiple LRCs in one type)</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/realistic_data/index.html">Realistic data</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Realistic data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/realistic_data/multi-omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
@@ -316,6 +328,14 @@ mamba<span class="w"> </span>install<span class="w"> </span>bioconda::bioconduct
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>defaults
 conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>bioconda
 conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w"> </span>channel_priority<span class="w"> </span>strict
+</pre></div>
+</div>
+<p>Since Bioconda is only supported on Linux (64-bit and AArch64) and macOS (x86_64), installation on other systems requires the use of the Bioconductor.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>r-biocmanager<span class="w"> </span>--no-update-deps
+</pre></div>
+</div>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">BiocManager</span><span class="o">::</span><span class="nf">install</span><span class="p">(</span><span class="s">&quot;tradeSeq&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -345,12 +365,12 @@ conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w">
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="tutorials.html">
+          <a class="next-page" href="tutorials/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">&lt;no title&gt;</div>
+                <div class="title">Tutorials</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

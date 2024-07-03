@@ -42,7 +42,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "To run the examples, you'll need to download the some pre-existing files in `docs/tutorials/simulated_data` folder and change your working directory to the toy_example folder."
+    "To run the examples, you'll need to download the some pre-existing files in `docs/tutorials/simulated_data` folder and change your working directory to the `simulated_data` folder."
    ]
   },
   {

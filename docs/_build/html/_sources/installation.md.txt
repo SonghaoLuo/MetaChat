@@ -33,6 +33,16 @@ Make sure you add the Bioconda channel to your environment. if you haven't alrea
 conda config --add channels defaults
 conda config --add channels bioconda
 conda config --add channels conda-forge
+conda config --set channel_priority strict
+```
+
+Since Bioconda is only supported on Linux (64-bit and AArch64) and macOS (x86_64), installation on other systems requires the use of the Bioconductor.
+
+```sh
+mamba install -c conda-forge r-biocmanager --no-update-deps
+```
+```R
+BiocManager::install("tradeSeq")
 ```
 
 ### Troubleshooting
