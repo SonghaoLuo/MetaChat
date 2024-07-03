@@ -12,3 +12,4 @@ Realistic data
 
     multi-omics_data
     multi-omics_data_LRC
+    multi-omics_data_compare

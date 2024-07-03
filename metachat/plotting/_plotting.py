@@ -652,7 +652,7 @@ def plot_group_communication_compare_hierarchy_diagram(
     p_value_cutoff: float = 0.05,
     node_sizes_limit: tuple = (50,300),
     edge_sizes_limit: tuple = (0.5,10),
-    cmap: str = None,
+    group_cmap: str = None,
     alpha: float = 0.5,
     figsize: tuple = (10,3),
     plot_savepath: str = None,
@@ -753,7 +753,7 @@ def plot_group_communication_compare_hierarchy_diagram(
         size_L = np.sum(matrix_condition_A, 1)[cls]
         size_M = (np.sum(matrix_condition_A, 0)[cls] + np.sum(matrix_condition_B, 0)[cls])/2
         size_R = np.sum(matrix_condition_B, 1)[cls]
-        color = cmap[cls]
+        color = group_cmap[cls]
         G_signif.add_node(cls + "_L", side='left', size=size_L, color=color)
         G_signif.add_node(cls + "_M", side='middle', size=size_M, color=color)
         G_signif.add_node(cls + "_R", side='right', size=size_R, color=color)
