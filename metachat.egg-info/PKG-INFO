@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: metachat
-Version: 0.0.2
+Version: 0.0.3
 Summary: Spatial metabolic communication flow of single cells.
 License: MIT License
 Keywords: metabolic cell communicaiton,spatial transcriptomics,spatial metabolomics,optimal transport
@@ -78,16 +78,6 @@ mamba activate metachat_env
 pip install metachat
 ```
 
-### Troubleshooting
-
-**Problem: Unable to install gseapy**
-
-If you get `error: can't find Rust compiler` during the installation of gseapy, please try installing the rust compiler via `mamba install rust`.
-
-**Problem: Unable to install pydpc**
-
-If you get error during the installation of pydpc, please try `pip install --use-pep517 pydpc==0.1.3`
-
 ## Documentation, and Tutorials
 
 For more realistic and simulation examples, please see MetaChat documentation that is available through the link https://metachat.readthedocs.io/en/latest/.
@@ -107,14 +97,15 @@ import metachat as mc
 ```
 
 ### Setting work dictionary
-To run the examples, you'll need to download the some pre-existing files in `toy_eample` folder and change your working directory to the `toy_example` folder.
+To run the examples, you'll need to download the some pre-existing files in `docs/tutorials/simulated_data` folder and change your working directory to the `simulated_data` folder.
+
 ```python
-os.chdir("your_path/example1")
+os.chdir("your_path/simulated_data")
 ```
 
 ### Multi-omics data from simulation
 ```python
-adata = sc.read("data/adata_example1.h5ad")
+adata = sc.read("data/example1/adata_example1.h5ad")
 ```
 This dataset consists of a metabolite `M1` and a sensor `S1`. Their spatial distributions are shown below:
 ```python
@@ -132,7 +123,7 @@ plt.show()
 ### Long-range channels (LRC)
 Import the pre-defined long range channel and add it to the `adata` object.
 ```python
-LRC_channel = np.load('data/LRC_channel.npy')
+LRC_channel = np.load('data/example1/LRC_channel.npy')
 adata.obs['LRC_type1_filtered'] = LRC_channel.flatten()
 adata.obs['LRC_type1_filtered'] = adata.obs['LRC_type1_filtered'].astype('category')
 ```
