@@ -26,6 +26,7 @@ mamba create -n metachat_env python=3.9 r-base=4.3.2
 mamba activate metachat_env
 pip install metachat
 ```
+if you use `conda`, `r-base=4.3.2` may not included in the channels. Instead, you can `r-base=4.3.1` in `conda`.
 
 ## Documentation, and Tutorials
 
