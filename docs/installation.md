@@ -51,9 +51,8 @@ mamba install -c conda-forge r-biocmanager --no-update-deps
 ```R
 BiocManager::install("tradeSeq")
 ```
-:::{hint}
-This way of installation may result in errors when installing some dependency packages. Our recommendation is to use `conda` or `mamba` for these dependencies and try `BiocManager::install("tradeSeq")` again.
-:::
+
+Hint: This way of installation may result in errors when installing some dependency packages. Our recommendation is to use `conda` or `mamba` for these dependencies and try `BiocManager::install("tradeSeq")` again.
 
 ### Troubleshooting
 

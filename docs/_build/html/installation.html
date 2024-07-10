@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tutorials" href="tutorials/index.html" /><link rel="prev" title="Welcome to MetaChat’s documentation!" href="index.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>Installation - MetaChat 0.0.2 documentation</title>
+        <title>Installation - MetaChat 0.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/css/sphinx_rtd_size.css?v=8f58cd29" />
@@ -188,7 +188,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">MetaChat 0.0.2 documentation</div></a>
+      <a href="index.html"><div class="brand">MetaChat 0.0.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -235,6 +235,8 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/realistic_data/index.html">Realistic data</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Realistic data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/realistic_data/multi-omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/realistic_data/multi-omics_data_LRC.html">Customizing long range channels by Napari</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/realistic_data/multi-omics_data_compare.html">Comparative analysis of metabolic cell communication</a></li>
 </ul>
 </li>
 </ul>
@@ -319,7 +321,12 @@ mamba<span class="w"> </span>activate<span class="w"> </span>metachat_env
 pip<span class="w"> </span>install<span class="w"> </span>metachat
 </pre></div>
 </div>
-<p>MetaChat requires two additional R packages: <code class="docutils literal notranslate"><span class="pre">tradeseq</span></code> and <code class="docutils literal notranslate"><span class="pre">clusterexperiment</span></code>. These can be easily installed through the mirror in Bioconda.</p>
+<p>if you use <code class="docutils literal notranslate"><span class="pre">conda</span></code>, <code class="docutils literal notranslate"><span class="pre">r-base=4.3.2</span></code> may not included in the channels. Instead, you can <code class="docutils literal notranslate"><span class="pre">r-base=4.3.1</span></code> in <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
+<p>Now you can check if metachat can sucessfully import in Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">metachat</span> <span class="k">as</span> <span class="nn">mc</span>
+</pre></div>
+</div>
+<p>MetaChat requires two additional R packages in one downstream analysis: <code class="docutils literal notranslate"><span class="pre">tradeseq</span></code> and <code class="docutils literal notranslate"><span class="pre">clusterexperiment</span></code>. These can be easily installed through the mirror in Bioconda.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>install<span class="w"> </span>bioconda::bioconductor-tradeseq<span class="o">=</span><span class="m">1</span>.16.0
 mamba<span class="w"> </span>install<span class="w"> </span>bioconda::bioconductor-clusterexperiment<span class="o">=</span><span class="m">2</span>.22.0
 </pre></div>
@@ -338,6 +345,7 @@ conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w">
 <div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">BiocManager</span><span class="o">::</span><span class="nf">install</span><span class="p">(</span><span class="s">&quot;tradeSeq&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Hint: This way of installation may result in errors when installing some dependency packages. Our recommendation is to use <code class="docutils literal notranslate"><span class="pre">conda</span></code> or <code class="docutils literal notranslate"><span class="pre">mamba</span></code> for these dependencies and try <code class="docutils literal notranslate"><span class="pre">BiocManager::install(&amp;quot;tradeSeq&amp;quot;)</span></code> again.</p>
 </section>
 <section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
@@ -435,7 +443,7 @@ conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w">
   </div>
 </div><script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="_static/documentation_options.js?v=e3a6060d"></script>
+    <script src="_static/documentation_options.js?v=47de8214"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=4e2eecee"></script>

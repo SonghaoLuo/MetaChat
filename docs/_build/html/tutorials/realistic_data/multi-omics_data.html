@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Customizing long range channels by Napari" href="multi-omics_data_LRC.html" /><link rel="prev" title="Realistic data" href="index.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>Example of spatial multi-omics data (mouse brain with Parkinson’s disease) - MetaChat 0.0.2 documentation</title>
+        <title>Example of spatial multi-omics data (mouse brain with Parkinson’s disease) - MetaChat 0.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
@@ -188,7 +188,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">MetaChat 0.0.2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">MetaChat 0.0.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -334,7 +334,7 @@
 <section id="preprocessing-for-transcriptomics-data">
 <h3>Preprocessing for transcriptomics data<a class="headerlink" href="#preprocessing-for-transcriptomics-data" title="Link to this heading"></a></h3>
 <p>First, we perform basic preprocessing of the transcriptome, including data transformation, highly variable genes, clustering, and reduction visualization. All processes are handled by Scanpy [<a class="reference external" href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-017-1382-0">F. Alexander et al., 2018</a>] and Squidpy [<a class="reference external" href="https://www.nature.com/articles/s41592-021-01358-2">Giovanni et al., 2022</a>].</p>
-<p>You can download the processed data that were aligned and annotated in this link https://zenodo.org/records/12630029.</p>
+<p>You can download the processed data that were aligned and annotated in this link https://zenodo.org/records/12629999.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata_RNA</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;data/multiomics_mousebrain_parkinson_RNA.h5ad&#39;</span><span class="p">)</span>
@@ -484,10 +484,6 @@
 </div>
 </div>
 </div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>If you have your own metabolic-sensor database, follow the tutorial How to Build a Custom Database.</p>
-</div>
 </section>
 <section id="identify-long-range-channels-lrc">
 <h3>Identify long-range channels (LRC)<a class="headerlink" href="#identify-long-range-channels-lrc" title="Link to this heading"></a></h3>
@@ -591,7 +587,7 @@
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>If you want to use manual determination of the LRC, please see the tutorial for details.</p>
+<p>If you want to use manual determination of the LRC, please see the <a class="reference external" href="https://metachat.readthedocs.io/en/latest/tutorials/realistic_data/multi-omics_data_LRC.html">tutorial</a> for details.</p>
 </div>
 <p>Next, we want to compute the cost distance for this data, based on the previously identified LRCs. for the case of multiple LRC types, enter all of them together in a list, e.g. LRC_type = [“Blood”, “CSF”].</p>
 <div class="admonition tip">
@@ -682,6 +678,10 @@ The points that can occur long-range communication is...
 </section>
 <section id="downstream-analysis">
 <h2>Downstream analysis<a class="headerlink" href="#downstream-analysis" title="Link to this heading"></a></h2>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Since this data was divided into the intact region and lesion region, it can perform some comparative analysis. See the <a class="reference external" href="https://metachat.readthedocs.io/en/latest/tutorials/realistic_data/multi-omics_data_compare.html">tutorial</a> for more details.</p>
+</div>
 <p>Next, based on our previously obtained inferences, we perform a series of downstream analyses and visualizations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1290,7 +1290,7 @@ done.
   </div>
 </div><script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../_static/documentation_options.js?v=e3a6060d"></script>
+    <script src="../../_static/documentation_options.js?v=47de8214"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>
