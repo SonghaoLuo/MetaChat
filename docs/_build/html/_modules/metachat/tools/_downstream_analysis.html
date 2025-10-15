@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metachat.tools._downstream_analysis &mdash; MetaChat 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=e3a6060d"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MetaChat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/Multi_omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/toy_example1.html">Toy example 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MetaChat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">metachat.tools._downstream_analysis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for metachat.tools._downstream_analysis</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">anndata</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">import</span> <span class="nn">gseapy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">normalize</span>
+
+<span class="kn">from</span> <span class="nn">.._utils</span> <span class="kn">import</span> <span class="n">leiden_clustering</span>
+
+<span class="c1">################## MCC communication summary ##################</span>
+<div class="viewcode-block" id="summary_communication">
+<a class="viewcode-back" href="../../../api/metachat.tl.summary_communication.html#metachat.tl.summary_communication">[docs]</a>
+<span class="k">def</span> <span class="nf">summary_communication</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_metabolites</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_metapathways</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_customerlists</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for summary communication signals to different metabolites set.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The AnnData object that have run &quot;mc.tl.metabolic_communication&quot;.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    sum_metabolites</span>
+<span class="sd">        List of specific metabolites to summarize communication for. </span>
+<span class="sd">        For example, sum_metabolites = [&#39;HMDB0000148&#39;,&#39;HMDB0000674&#39;].</span>
+<span class="sd">    sum_metapathways</span>
+<span class="sd">        List of specific metabolic pathways to summarize communication for.</span>
+<span class="sd">        For example, sum_metapathways = [&#39;Alanine, aspartate and glutamate metabolism&#39;,&#39;Glycerolipid Metabolism&#39;].</span>
+<span class="sd">    sum_customerlists</span>
+<span class="sd">        Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.</span>
+<span class="sd">        For example, sum_customerlists = {&#39;CustomerA&#39;: [(&#39;HMDB0000148&#39;, &#39;Grm5&#39;), (&#39;HMDB0000148&#39;, &#39;Grm8&#39;)], &#39;CustomerB&#39;: [(&#39;HMDB0000674&#39;, &#39;Trpc4&#39;), (&#39;HMDB0000674&#39;, &#39;Trpc5&#39;)]}</span>
+<span class="sd">    copy</span>
+<span class="sd">        Whether to return a copy of the :class:`anndata.AnnData`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        sum_metabolites, sum_metapathways, sum_customerlists can provided by user in one time.  </span>
+<span class="sd">        the summary information are added to ``.obsm`` and ``.obsp``. For example:</span>
+<span class="sd">        For each &quot;metabolite_name&quot; in &quot;sum_metabolites&quot;, ``adata.obsp[&#39;MetaChat-&#39;+database_name+&#39;-&#39;+metabolite_name]``,``adata.obsm[&#39;MetaChat-&#39;+database_name+&#39;-sum-sender-&#39;+&#39;metabolite_name&#39;][&#39;s-&#39;+metabolite_name]`` and ``adata.obsm[&#39;MetaChat-&#39;+database_name+&#39;-sum-receiver-&#39;+&#39;metabolite_name&#39;][&#39;r-&#39;+metabolite_name]``.</span>
+<span class="sd">        For each &quot;pathway_name&quot; in &quot;sum_metapathways&quot;, ``adata.obsp[&#39;MetaChat-&#39;+database_name+&#39;-&#39;+pathway_name]``, ``adata.obsm[&#39;MetaChat-&#39;+database_name+&#39;-sum-sender-&#39;+&#39;pathway_name&#39;][&#39;s-&#39;+pathway_name]`` and ``adata.obsm[&#39;MetaChat-&#39;+database_name+&#39;-sum-receiver-&#39;+&#39;pathway_name&#39;][&#39;r-&#39;+pathway_name]``.</span>
+<span class="sd">        For each &quot;customerlist_name&quot; in &quot;sum_customerlists&quot;, ``adata.obsp[&#39;MetaChat-&#39;+database_name+&#39;-&#39;+customerlist_name]``, ``adata.obsm[&#39;MetaChat-&#39;+database_name+&#39;-sum-sender-&#39;+&#39;customerlist_name&#39;][&#39;s-&#39;+customerlist_name]`` and ``adata.obsm[&#39;MetaChat-&#39;+database_name+&#39;-sum-receiver-&#39;+&#39;customerlist_name&#39;][&#39;r-&#39;+customerlist_name]``.</span>
+<span class="sd">        If copy=True, return the AnnData object and return None otherwise.                          </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">sum_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sum_metapathways</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sum_customerlists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please ensure that at least one of these three parameters (sum_metabolites, sum_metapathways, sum_customerlists) is given a valid variable.&quot;</span>
+    
+    <span class="n">ncell</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">df_metasen</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;Metabolite_Sensor_filtered&quot;</span><span class="p">]</span>
+    
+    <span class="c1"># Summary by specific metabolites</span>
+    <span class="k">if</span> <span class="n">sum_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">S_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">ncell</span><span class="p">,</span> <span class="n">ncell</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metabolites</span><span class="p">))]</span>
+        <span class="n">X_sender_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metabolites</span><span class="p">))]</span>
+        <span class="n">X_receiver_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metabolites</span><span class="p">))]</span>
+        <span class="n">col_names_sender_all</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">col_names_receiver_all</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">X_sender_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">X_receiver_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx_metabolite</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metabolites</span><span class="p">)):</span>
+            <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">metabolite_name</span> <span class="ow">in</span> <span class="n">df_metasen</span><span class="p">[</span><span class="s1">&#39;Metabolite&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                <span class="n">idx_related</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df_metasen</span><span class="p">[</span><span class="s2">&quot;Metabolite&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">metabolite_name</span><span class="p">,</span> <span class="n">na</span><span class="o">=</span><span class="kc">False</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx_related</span><span class="p">:</span>
+                    <span class="n">S</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">df_metasen</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;Metabolite&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">df_metasen</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;Sensor&#39;</span><span class="p">]]</span>
+                    <span class="n">S_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]</span> <span class="o">=</span> <span class="n">S_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span>
+                    <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+                <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">metabolite_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">S_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]</span>
+                <span class="n">X_sender_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_sender_all</span><span class="p">,</span> <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">X_receiver_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_receiver_all</span><span class="p">,</span> <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_metabolite</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="n">col_names_sender_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;s-&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span><span class="p">)</span>
+                <span class="n">col_names_receiver_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;r-&quot;</span> <span class="o">+</span> <span class="n">metabolite_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: </span><span class="si">{</span><span class="n">metabolite_name</span><span class="si">}</span><span class="s2"> is not in the results&quot;</span><span class="p">)</span>
+
+        <span class="n">df_sender_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X_sender_all</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names_sender_all</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs_names</span><span class="p">)</span>
+        <span class="n">df_receiver_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X_receiver_all</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names_receiver_all</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs_names</span><span class="p">)</span>
+
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-sum-sender-metabolite&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_sender_all</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-sum-receiver-metabolite&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_receiver_all</span>
+
+    <span class="c1"># Summary by specific metabolic pathway</span>
+    <span class="k">if</span> <span class="n">sum_metapathways</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">S_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">ncell</span><span class="p">,</span> <span class="n">ncell</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metapathways</span><span class="p">))]</span>
+        <span class="n">X_sender_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metapathways</span><span class="p">))]</span>
+        <span class="n">X_receiver_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metapathways</span><span class="p">))]</span>
+        <span class="n">col_names_sender_all</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">col_names_receiver_all</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">X_sender_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">X_receiver_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx_pathway</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metapathways</span><span class="p">)):</span>
+            <span class="n">pathway_name</span> <span class="o">=</span> <span class="n">sum_metapathways</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df_metasen</span><span class="p">[</span><span class="s2">&quot;Metabolite.Pathway&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">pathway_name</span><span class="p">,</span> <span class="n">na</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">idx_related</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df_metasen</span><span class="p">[</span><span class="s2">&quot;Metabolite.Pathway&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">pathway_name</span><span class="p">,</span> <span class="n">na</span><span class="o">=</span><span class="kc">False</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx_related</span><span class="p">:</span>
+                    <span class="n">S</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">df_metasen</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;Metabolite&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">df_metasen</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;Sensor&#39;</span><span class="p">]]</span>
+                    <span class="n">S_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]</span> <span class="o">=</span> <span class="n">S_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span>
+                    <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+                <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">pathway_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">S_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]</span>
+                <span class="n">X_sender_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_sender_all</span><span class="p">,</span> <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">X_receiver_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_receiver_all</span><span class="p">,</span> <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_pathway</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="n">col_names_sender_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;s-&quot;</span> <span class="o">+</span> <span class="n">pathway_name</span><span class="p">)</span>
+                <span class="n">col_names_receiver_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;r-&quot;</span> <span class="o">+</span> <span class="n">pathway_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: </span><span class="si">{</span><span class="n">pathway_name</span><span class="si">}</span><span class="s2"> is not in the results&quot;</span><span class="p">)</span>
+
+        <span class="n">df_sender_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X_sender_all</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names_sender_all</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs_names</span><span class="p">)</span>
+        <span class="n">df_receiver_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X_receiver_all</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names_receiver_all</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs_names</span><span class="p">)</span>
+
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-sum-sender-pathway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_sender_all</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-sum-receiver-pathway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_receiver_all</span>
+    
+    <span class="c1"># Summary by specific customer list</span>
+    <span class="k">if</span> <span class="n">sum_customerlists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">S_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">ncell</span><span class="p">,</span> <span class="n">ncell</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_customerlists</span><span class="p">))]</span>
+        <span class="n">X_sender_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_customerlists</span><span class="p">))]</span>
+        <span class="n">X_receiver_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_customerlists</span><span class="p">))]</span>
+        <span class="n">col_names_sender_all</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">col_names_receiver_all</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">X_sender_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">X_receiver_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">ncell</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx_customerlist</span><span class="p">,</span> <span class="p">(</span><span class="n">customerlist_name</span><span class="p">,</span> <span class="n">customerlist_value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sum_customerlists</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">idx_value</span> <span class="ow">in</span> <span class="n">customerlist_value</span><span class="p">:</span>
+                <span class="n">temp_meta</span> <span class="o">=</span> <span class="n">idx_value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">temp_sens</span> <span class="o">=</span> <span class="n">idx_value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">temp_meta</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">temp_sens</span><span class="p">]</span>
+                <span class="n">S_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]</span> <span class="o">=</span> <span class="n">S_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]</span> <span class="o">+</span> <span class="n">S</span>
+                <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>     
+            <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">customerlist_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">S_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]</span>
+            <span class="n">X_sender_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_sender_all</span><span class="p">,</span> <span class="n">X_sender_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">X_receiver_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X_receiver_all</span><span class="p">,</span> <span class="n">X_receiver_list</span><span class="p">[</span><span class="n">idx_customerlist</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">col_names_sender_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;s-&quot;</span> <span class="o">+</span> <span class="n">customerlist_name</span><span class="p">)</span>
+            <span class="n">col_names_receiver_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;r-&quot;</span> <span class="o">+</span> <span class="n">customerlist_name</span><span class="p">)</span>
+
+        <span class="n">df_sender_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X_sender_all</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names_sender_all</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs_names</span><span class="p">)</span>
+        <span class="n">df_receiver_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X_receiver_all</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names_receiver_all</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs_names</span><span class="p">)</span>
+
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-sum-sender-customer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_sender_all</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-sum-receiver-customer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_receiver_all</span>
+
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<span class="c1">################## MCC flow ##################</span>
+<div class="viewcode-block" id="communication_flow">
+<a class="viewcode-back" href="../../../api/metachat.tl.communication_flow.html#metachat.tl.communication_flow">[docs]</a>
+<span class="k">def</span> <span class="nf">communication_flow</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_metabolites</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_metapathways</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_customerlists</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">pos_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for constructing metabolic communication flow by a vector field.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var``.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    sum_metabolites</span>
+<span class="sd">        List of specific metabolites to summarize communication for. </span>
+<span class="sd">        For example, sum_metabolites = [&#39;HMDB0000148&#39;,&#39;HMDB0000674&#39;].</span>
+<span class="sd">    sum_metapathways</span>
+<span class="sd">        List of specific metabolic pathways to summarize communication for.</span>
+<span class="sd">        For example, sum_metapathways = [&#39;Alanine, aspartate and glutamate metabolism&#39;,&#39;Glycerolipid Metabolism&#39;].</span>
+<span class="sd">    sum_customerlists</span>
+<span class="sd">        Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.</span>
+<span class="sd">        For example, sum_customerlists = {&#39;CustomerA&#39;: [(&#39;HMDB0000148&#39;, &#39;Grm5&#39;), (&#39;HMDB0000148&#39;, &#39;Grm8&#39;)], &#39;CustomerB&#39;: [(&#39;HMDB0000674&#39;, &#39;Trpc4&#39;), (&#39;HMDB0000674&#39;, &#39;Trpc5&#39;)]}</span>
+<span class="sd">    k</span>
+<span class="sd">        Top k senders or receivers to consider when determining the direction.</span>
+<span class="sd">    pos_idx</span>
+<span class="sd">        The columns in ``.obsm[&#39;spatial&#39;]`` to use. If None, all columns are used.</span>
+<span class="sd">        For example, to use just the first and third columns, set pos_idx to ``numpy.array([0,2],int)``.</span>
+<span class="sd">    copy</span>
+<span class="sd">        Whether to return a copy of the :class:`anndata.AnnData`.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        sum_metabolites, sum_metapathways, sum_customerlists can provided by user in one time.  </span>
+<span class="sd">        Vector fields describing signaling directions are added to ``.obsm``. For example:  </span>
+<span class="sd">        ``.obsm[&#39;MetaChat_sender_vf-databaseX-metA-senA&#39;]`` and ``.obsm[&#39;MetaChat_receiver_vf-databaseX-metA-senA&#39;]``</span>
+<span class="sd">        For each &quot;metabolite_name&quot; in &quot;sum_metabolites&quot;, ``adata.obsm[&#39;MetaChat_sender_vf&#39;+database_name+&#39;-&#39;+metabolite_name]`` and ``adata.obsm[&#39;MetaChat_receiver_vf&#39;+database_name+&#39;-&#39;+metabolite_name]``.</span>
+<span class="sd">        For each &quot;pathway_name&quot; in &quot;sum_metapathways&quot;, ``adata.obsm[&#39;MetaChat_sender_vf&#39;+database_name+&#39;-&#39;+pathway_name]`` and ``adata.obsm[&#39;MetaChat_receiver_vf&#39;+database_name+&#39;-&#39;+pathway_name]``.</span>
+<span class="sd">        For each &quot;customerlist_name&quot; in &quot;sum_customerlists&quot;, ``adata.obsm[&#39;MetaChat_sender_vf&#39;+database_name+&#39;-&#39;+customerlist_name]`` and ``adata.obsm[&#39;MetaChat_receiver_vf&#39;+database_name+&#39;-&#39;+customerlist_name]``.</span>
+<span class="sd">        If copy=True, return the AnnData object and return None otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+
+    <span class="n">obsp_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">sum_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">metabolite_name</span> <span class="ow">in</span> <span class="n">sum_metabolites</span><span class="p">:</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">metabolite_name</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">sum_metapathways</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">pathway_name</span> <span class="ow">in</span> <span class="n">sum_metapathways</span><span class="p">:</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">pathway_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sum_customerlists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">customerlist_name</span> <span class="ow">in</span> <span class="n">sum_customerlists</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">customerlist_name</span><span class="p">)</span>
+
+    <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span><span class="o">+</span><span class="s1">&#39;-total-total&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sum_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sum_metapathways</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sum_customerlists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Neither sum_metabolites, sum_metapathways, sum_customerlists are provided, just calculate MCC for all signals&quot;</span><span class="p">)</span>
+
+    <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">],</span> <span class="nb">float</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pos_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[:,</span><span class="n">pos_idx</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obsp_names</span><span class="p">)):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;MetaChat-&#39;</span><span class="o">+</span><span class="n">obsp_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please check whether the mc.tl.summary_communication function run or whether </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> are in adata.obsp.keys().&quot;</span><span class="p">)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">S_sum_sender</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">S_sum_receiver</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sender_vf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+        <span class="n">receiver_vf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+
+        <span class="n">S_lil</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">S_lil</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">tmp_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S_lil</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="nb">int</span> <span class="p">)</span>
+                <span class="n">tmp_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S_lil</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="nb">float</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">row_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S_lil</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="nb">int</span> <span class="p">)</span>
+                <span class="n">data_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S_lil</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="nb">float</span> <span class="p">)</span>
+                <span class="n">sorted_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span> <span class="o">-</span><span class="n">data_np</span> <span class="p">)[:</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">tmp_idx</span> <span class="o">=</span> <span class="n">row_np</span><span class="p">[</span> <span class="n">sorted_idx</span> <span class="p">]</span>
+                <span class="n">tmp_data</span> <span class="o">=</span> <span class="n">data_np</span><span class="p">[</span> <span class="n">sorted_idx</span> <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">avg_v</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[</span><span class="n">tmp_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],:]</span> <span class="o">-</span> <span class="n">pts</span><span class="p">[</span><span class="n">j</span><span class="p">,:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tmp_v</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[</span><span class="n">tmp_idx</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">pts</span><span class="p">[</span><span class="n">j</span><span class="p">,:]</span>
+                <span class="n">tmp_v</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">tmp_v</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">)</span>
+                <span class="n">avg_v</span> <span class="o">=</span> <span class="n">tmp_v</span> <span class="o">*</span> <span class="n">tmp_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">avg_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">avg_v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span>
+            <span class="n">avg_v</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">avg_v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">sender_vf</span><span class="p">[</span><span class="n">j</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">avg_v</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">*</span> <span class="n">S_sum_sender</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        
+        <span class="n">S_lil</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">S_lil</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">tmp_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S_lil</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="nb">int</span> <span class="p">)</span>
+                <span class="n">tmp_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S_lil</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="nb">float</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">row_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S_lil</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="nb">int</span> <span class="p">)</span>
+                <span class="n">data_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">S_lil</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="nb">float</span> <span class="p">)</span>
+                <span class="n">sorted_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span> <span class="o">-</span><span class="n">data_np</span> <span class="p">)[:</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">tmp_idx</span> <span class="o">=</span> <span class="n">row_np</span><span class="p">[</span> <span class="n">sorted_idx</span> <span class="p">]</span>
+                <span class="n">tmp_data</span> <span class="o">=</span> <span class="n">data_np</span><span class="p">[</span> <span class="n">sorted_idx</span> <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">avg_v</span> <span class="o">=</span> <span class="o">-</span><span class="n">pts</span><span class="p">[</span><span class="n">tmp_idx</span><span class="p">,:]</span> <span class="o">+</span> <span class="n">pts</span><span class="p">[</span><span class="n">j</span><span class="p">,:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tmp_v</span> <span class="o">=</span> <span class="o">-</span><span class="n">pts</span><span class="p">[</span><span class="n">tmp_idx</span><span class="p">,:]</span> <span class="o">+</span> <span class="n">pts</span><span class="p">[</span><span class="n">j</span><span class="p">,:]</span>
+                <span class="n">tmp_v</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">tmp_v</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">)</span>
+                <span class="n">avg_v</span> <span class="o">=</span> <span class="n">tmp_v</span> <span class="o">*</span> <span class="n">tmp_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">avg_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">avg_v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span>
+            <span class="n">avg_v</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">avg_v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">receiver_vf</span><span class="p">[</span><span class="n">j</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">avg_v</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">*</span> <span class="n">S_sum_receiver</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;MetaChat_sender_vf-&quot;</span><span class="o">+</span><span class="n">obsp_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">sender_vf</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;MetaChat_receiver_vf-&quot;</span><span class="o">+</span><span class="n">obsp_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">receiver_vf</span>
+
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+
+<span class="c1">################## Group-level MCC ##################</span>
+<span class="k">def</span> <span class="nf">summarize_group</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">clusterid</span><span class="p">,</span> <span class="n">clusternames</span><span class="p">,</span> <span class="n">n_permutations</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># Input a sparse matrix of cell signaling and output a pandas dataframe</span>
+    <span class="c1"># for group-group signaling</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clusternames</span><span class="p">)</span>
+    <span class="n">X_cluster</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">p_cluster</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">tmp_idx_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clusterid</span><span class="o">==</span><span class="n">clusternames</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">tmp_idx_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clusterid</span><span class="o">==</span><span class="n">clusternames</span><span class="p">[</span><span class="n">j</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">X_cluster</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">tmp_idx_i</span><span class="p">,:][:,</span><span class="n">tmp_idx_j</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_permutations</span><span class="p">):</span>
+        <span class="n">clusterid_perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">clusterid</span><span class="p">)</span>
+        <span class="n">X_cluster_perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">tmp_idx_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clusterid_perm</span><span class="o">==</span><span class="n">clusternames</span><span class="p">[</span><span class="n">j</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">tmp_idx_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clusterid_perm</span><span class="o">==</span><span class="n">clusternames</span><span class="p">[</span><span class="n">k</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">X_cluster_perm</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">tmp_idx_j</span><span class="p">,:][:,</span><span class="n">tmp_idx_k</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">p_cluster</span><span class="p">[</span><span class="n">X_cluster_perm</span> <span class="o">&gt;=</span> <span class="n">X_cluster</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.0</span>
+    <span class="n">p_cluster</span> <span class="o">=</span> <span class="n">p_cluster</span> <span class="o">/</span> <span class="n">n_permutations</span>
+    <span class="n">df_cluster</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X_cluster</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">clusternames</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">clusternames</span><span class="p">)</span>
+    <span class="n">df_p_value</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">p_cluster</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">clusternames</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">clusternames</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df_cluster</span><span class="p">,</span> <span class="n">df_p_value</span>
+
+<div class="viewcode-block" id="communication_group">
+<a class="viewcode-back" href="../../../api/metachat.tl.communication_group.html#metachat.tl.communication_group">[docs]</a>
+<span class="k">def</span> <span class="nf">communication_group</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_metabolites</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_metapathways</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_customerlists</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_permutations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for summarizng metabolic MCC communication to group-level communication and computing p-values by permutating cell/spot labels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var``.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    group_name</span>
+<span class="sd">        Group name of the cell annotation previously saved in ``adata.obs``. </span>
+<span class="sd">    sum_metabolites</span>
+<span class="sd">        List of specific metabolites to summarize communication for. </span>
+<span class="sd">        For example, sum_metabolites = [&#39;HMDB0000148&#39;,&#39;HMDB0000674&#39;].</span>
+<span class="sd">    sum_metapathways</span>
+<span class="sd">        List of specific metabolic pathways to summarize communication for.</span>
+<span class="sd">        For example, sum_metapathways = [&#39;Alanine, aspartate and glutamate metabolism&#39;,&#39;Glycerolipid Metabolism&#39;].</span>
+<span class="sd">    sum_customerlists</span>
+<span class="sd">        Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.</span>
+<span class="sd">        For example, sum_customerlists = {&#39;CustomerA&#39;: [(&#39;HMDB0000148&#39;, &#39;Grm5&#39;), (&#39;HMDB0000148&#39;, &#39;Grm8&#39;)], &#39;CustomerB&#39;: [(&#39;HMDB0000674&#39;, &#39;Trpc4&#39;), (&#39;HMDB0000674&#39;, &#39;Trpc5&#39;)]}</span>
+<span class="sd">    n_permutations</span>
+<span class="sd">        Number of label permutations for computing the p-value.</span>
+<span class="sd">    random_seed</span>
+<span class="sd">        The numpy random_seed for reproducible random permutations.</span>
+<span class="sd">    copy</span>
+<span class="sd">        Whether to return a copy of the :class:`anndata.AnnData`.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        Add group-level communication matrix to ``.uns[&#39;MetaChat_group-&#39;+group_name+&#39;-&#39;+database_name+&#39;-&#39;+metabolite_name]``, ``.uns[&#39;MetaChat_group-&#39;+group_name+&#39;-&#39;+database_name+&#39;-&#39;+pathway_name]`` or ``.uns[&#39;MetaChat_group-&#39;+group_name+&#39;-&#39;+database_name+&#39;-&#39;+customerlist_name]``</span>
+<span class="sd">        The first key is the communication intensity matrix [&#39;communication_matrix&#39;]</span>
+<span class="sd">        The second key is the p-value [&#39;communication_pvalue&#39;].</span>
+<span class="sd">        If copy=True, return the AnnData object and return None otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify group_name.&quot;</span>
+
+    <span class="n">celltypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">)</span>
+    <span class="n">celltypes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">celltypes</span><span class="p">)):</span>
+        <span class="n">celltypes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">celltypes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">clusterid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">obsp_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">sum_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">metabolite_name</span> <span class="ow">in</span> <span class="n">sum_metabolites</span><span class="p">:</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">metabolite_name</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">sum_metapathways</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">pathway_name</span> <span class="ow">in</span> <span class="n">sum_metapathways</span><span class="p">:</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">pathway_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sum_customerlists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">customerlist_name</span> <span class="ow">in</span> <span class="n">sum_customerlists</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">customerlist_name</span><span class="p">)</span>
+
+    <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span><span class="o">+</span><span class="s1">&#39;-total-total&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sum_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sum_metapathways</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sum_customerlists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Neither sum_metabolites, sum_metapathways, sum_customerlists are provided, just calculate group-level MCC for all signals&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obsp_names</span><span class="p">)):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;MetaChat-&#39;</span><span class="o">+</span><span class="n">obsp_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please check whether the mc.tl.summary_communication function run or whether </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> are in adata.obsp.keys().&quot;</span><span class="p">)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span><span class="o">+</span><span class="n">obsp_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">tmp_df</span><span class="p">,</span> <span class="n">tmp_p_value</span> <span class="o">=</span> <span class="n">summarize_group</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">clusterid</span><span class="p">,</span> <span class="n">celltypes</span><span class="p">,</span> <span class="n">n_permutations</span><span class="o">=</span><span class="n">n_permutations</span><span class="p">)</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;MetaChat_group-&#39;</span><span class="o">+</span><span class="n">group_name</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="n">obsp_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">:</span> <span class="n">tmp_df</span><span class="p">,</span> <span class="s1">&#39;communication_pvalue&#39;</span><span class="p">:</span> <span class="n">tmp_p_value</span><span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="communication_group_spatial">
+<a class="viewcode-back" href="../../../api/metachat.tl.communication_group_spatial.html#metachat.tl.communication_group_spatial">[docs]</a>
+<span class="k">def</span> <span class="nf">communication_group_spatial</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_metabolites</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_metapathways</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sum_customerlists</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_permutations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">bins_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for summarizng metabolic MCC communication to group-level communication and computing p-values based on spaital distance distribution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var``.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    group_name</span>
+<span class="sd">        Group name of the cell annotation previously saved in ``adata.obs``. </span>
+<span class="sd">    sum_metabolites</span>
+<span class="sd">        List of specific metabolites to summarize communication for. </span>
+<span class="sd">        For example, sum_metabolites = [&#39;HMDB0000148&#39;,&#39;HMDB0000674&#39;].</span>
+<span class="sd">    sum_metapathways</span>
+<span class="sd">        List of specific metabolic pathways to summarize communication for.</span>
+<span class="sd">        For example, sum_metapathways = [&#39;Alanine, aspartate and glutamate metabolism&#39;,&#39;Glycerolipid Metabolism&#39;].</span>
+<span class="sd">    sum_customerlists</span>
+<span class="sd">        Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.</span>
+<span class="sd">        For example, sum_customerlists = {&#39;CustomerA&#39;: [(&#39;HMDB0000148&#39;, &#39;Grm5&#39;), (&#39;HMDB0000148&#39;, &#39;Grm8&#39;)], &#39;CustomerB&#39;: [(&#39;HMDB0000674&#39;, &#39;Trpc4&#39;), (&#39;HMDB0000674&#39;, &#39;Trpc5&#39;)]}</span>
+<span class="sd">    n_permutations</span>
+<span class="sd">        Number of label permutations for computing the p-value.</span>
+<span class="sd">    bins_num</span>
+<span class="sd">        Number of bins for sampling based on spaital distance distribution.</span>
+<span class="sd">    random_seed</span>
+<span class="sd">        The numpy random_seed for reproducible random permutations.</span>
+<span class="sd">    copy</span>
+<span class="sd">        Whether to return a copy of the :class:`anndata.AnnData`.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        Add group-level communication matrix to ``.uns[&#39;MetaChat_group_spatial-&#39;+group_name+&#39;-&#39;+database_name+&#39;-&#39;+metabolite_name]``, ``.uns[&#39;MetaChat_group-&#39;+group_name+&#39;-&#39;+database_name+&#39;-&#39;+pathway_name]`` or ``.uns[&#39;MetaChat_group-&#39;+group_name+&#39;-&#39;+database_name+&#39;-&#39;+customerlist_name]``</span>
+<span class="sd">        The first key is the communication intensity matrix [&#39;communication_matrix&#39;]</span>
+<span class="sd">        The second key is the p-value [&#39;communication_pvalue&#39;].</span>
+<span class="sd">        If copy=True, return the AnnData object and return None otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify group_name.&quot;</span>
+
+    <span class="n">celltypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">)</span>
+    <span class="n">celltypes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">celltypes</span><span class="p">)):</span>
+        <span class="n">celltypes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">celltypes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">clusterid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">group_name</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">obsp_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">sum_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">metabolite_name</span> <span class="ow">in</span> <span class="n">sum_metabolites</span><span class="p">:</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">metabolite_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sum_metapathways</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">pathway_name</span> <span class="ow">in</span> <span class="n">sum_metapathways</span><span class="p">:</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">pathway_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sum_customerlists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">customerlist_name</span> <span class="ow">in</span> <span class="n">sum_customerlists</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">customerlist_name</span><span class="p">)</span>
+
+    <span class="n">obsp_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">database_name</span><span class="o">+</span><span class="s1">&#39;-total-total&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sum_metabolites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sum_metapathways</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sum_customerlists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Neither sum_metabolites, sum_metapathways, sum_customerlists are provided, just calculate group-level MCC for all signals&quot;</span><span class="p">)</span>
+
+    <span class="n">dist_matrix</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance_LRC_No&#39;</span><span class="p">]</span>
+    <span class="n">hist</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">dist_matrix</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins_num</span><span class="p">)</span>
+    <span class="n">dist_matrix_bin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">dist_matrix</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">bin_positions</span> <span class="o">=</span> <span class="p">{</span><span class="n">category</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">dist_matrix_bin</span> <span class="o">==</span> <span class="n">category</span><span class="p">)</span> <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bins_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">celltypes</span><span class="p">)</span>
+    <span class="n">bin_counts_ij</span> <span class="o">=</span> <span class="p">[[{}</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+    <span class="n">bin_total_counts_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">tmp_idx_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clusterid</span> <span class="o">==</span> <span class="n">celltypes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tmp_idx_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clusterid</span> <span class="o">==</span> <span class="n">celltypes</span><span class="p">[</span><span class="n">j</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tmp_idx_bin</span> <span class="o">=</span> <span class="n">dist_matrix_bin</span><span class="p">[</span><span class="n">tmp_idx_i</span><span class="p">,:][:,</span><span class="n">tmp_idx_j</span><span class="p">]</span>
+            <span class="n">tmp_idx_bin_flatten</span> <span class="o">=</span> <span class="n">tmp_idx_bin</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">bin_counts_ij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">tmp_idx_bin_flatten</span><span class="p">)</span>
+            <span class="n">bin_total_counts_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_idx_i</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_idx_j</span><span class="p">)</span>
+
+    <span class="n">S</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">X_cluster</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">p_cluster</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">index_obsp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obsp_names</span><span class="p">)):</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Computing group-level MCC for &#39;</span> <span class="o">+</span> <span class="n">obsp_names</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">])</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;MetaChat-&#39;</span><span class="o">+</span><span class="n">obsp_names</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please check whether the mc.tl.summary_communication function run or whether </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> are in adata.obsp.keys().&quot;</span><span class="p">)</span>
+        <span class="n">S</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">X_cluster_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">tmp_idx_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clusterid</span> <span class="o">==</span> <span class="n">celltypes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">tmp_idx_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clusterid</span> <span class="o">==</span> <span class="n">celltypes</span><span class="p">[</span><span class="n">j</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">X_cluster_temp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">][</span><span class="n">tmp_idx_i</span><span class="p">,:][:,</span><span class="n">tmp_idx_j</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">X_cluster</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_cluster_temp</span>
+        <span class="n">p_cluster</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">2</span><span class="p">)),</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Processing pairs&#39;</span><span class="p">):</span>
+        
+        <span class="n">X_cluster_permut_ij</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">index_obsp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obsp_names</span><span class="p">)):</span>
+            <span class="n">X_cluster_permut_ij</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_permutations</span><span class="p">)</span>
+            
+        <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_permutations</span><span class="p">):</span>
+            <span class="n">tmp_X_cluster_permut_ij</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">index_obsp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obsp_names</span><span class="p">)):</span>
+                <span class="n">tmp_X_cluster_permut_ij</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">bin_counts_ij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">positions</span> <span class="o">=</span> <span class="n">bin_positions</span><span class="p">[</span><span class="nb">bin</span><span class="p">]</span>
+                <span class="n">sampled_indices</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)),</span> <span class="n">count</span><span class="p">)</span>
+                <span class="n">sampled_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">sampled_indices</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">index_obsp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obsp_names</span><span class="p">)):</span>
+                    <span class="n">tmp_X_cluster_permut_ij</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]</span> <span class="o">+=</span> <span class="n">S</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">][</span><span class="n">sampled_positions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sampled_positions</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                    <span class="n">X_cluster_permut_ij</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">][</span><span class="n">trial</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_X_cluster_permut_ij</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]</span> <span class="o">/</span> <span class="n">bin_total_counts_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+        
+        <span class="k">for</span> <span class="n">index_obsp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obsp_names</span><span class="p">)):</span>
+            <span class="n">p_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_cluster_permut_ij</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="n">X_cluster</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="n">n_permutations</span>
+            <span class="n">p_cluster</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_value</span>
+
+    <span class="k">for</span> <span class="n">index_obsp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obsp_names</span><span class="p">)):</span>
+        <span class="n">df_cluster</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">X_cluster</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">],</span> <span class="n">index</span> <span class="o">=</span> <span class="n">celltypes</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">celltypes</span><span class="p">)</span>
+        <span class="n">df_p_value</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">p_cluster</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">],</span> <span class="n">index</span> <span class="o">=</span> <span class="n">celltypes</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">celltypes</span><span class="p">)</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;MetaChat_group_spatial-&#39;</span><span class="o">+</span><span class="n">group_name</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="n">obsp_names</span><span class="p">[</span><span class="n">index_obsp</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;communication_matrix&#39;</span><span class="p">:</span> <span class="n">df_cluster</span><span class="p">,</span> <span class="s1">&#39;communication_pvalue&#39;</span><span class="p">:</span> <span class="n">df_p_value</span><span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<span class="c1">################## MCC pathway summary ##################</span>
+<div class="viewcode-block" id="summary_pathway">
+<a class="viewcode-back" href="../../../api/metachat.tl.summary_pathway.html#metachat.tl.summary_pathway">[docs]</a>
+<span class="k">def</span> <span class="nf">summary_pathway</span><span class="p">(</span><span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+                    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">sender_group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">receiver_group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">usenumber_metapathway</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                    <span class="n">permutation_spatial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for summarizng MCC pathway pattern given specific sender group and receiver group.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix of shape ``n_obs`` × ``n_var``.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    group_name</span>
+<span class="sd">        Group name of the cell annotation previously saved in ``adata.obs``. </span>
+<span class="sd">    sender_group</span>
+<span class="sd">        Name of the sender group</span>
+<span class="sd">    receiver_group</span>
+<span class="sd">        Name of the receiver group</span>
+<span class="sd">    usenumber_metapathway</span>
+<span class="sd">        Number of top metabolic pathways to use in the summary. Default is 5.</span>
+<span class="sd">    permutation_spatial</span>
+<span class="sd">        Whether to use results from ``mc.tl.communication_group_spatial``.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    metapathway_rank : pd.DataFrame</span>
+<span class="sd">        Ranking of metabolic pathways.</span>
+<span class="sd">    senspathway_rank : pd.DataFrame</span>
+<span class="sd">        Ranking of sensor&#39;s pathways.</span>
+<span class="sd">    ms_result : pd.DataFrame</span>
+<span class="sd">        The data frame of communication intensity between meatbolic pathway and sensor pathway.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">database_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify database_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify group_name.&quot;</span>
+    <span class="k">assert</span> <span class="n">sender_group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify sender_group.&quot;</span>
+    <span class="k">assert</span> <span class="n">receiver_group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please at least specify receiver_group.&quot;</span>
+
+    <span class="n">df_metasen</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s2">&quot;Metabolite_Sensor_filtered&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">Metapathway_data</span> <span class="o">=</span> <span class="n">df_metasen</span><span class="p">[</span><span class="s2">&quot;Metabolite.Pathway&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">Metapathway_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">Metapathway_data</span><span class="p">:</span>
+        <span class="n">split_items</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;; &#39;</span><span class="p">)</span>
+        <span class="n">Metapathway_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_items</span><span class="p">)</span>
+    <span class="n">sum_metapathway</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">Metapathway_list</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">sum_metapathway</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sum_metapathway</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;nan&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Choose the most significant metabolic pathway in the communication between these sender group and receiver group</span>
+    <span class="n">MCC_metapathway</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">sum_metapathway</span><span class="p">),</span><span class="mi">2</span><span class="p">)),</span> <span class="n">index</span><span class="o">=</span><span class="n">sum_metapathway</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;communication_score&#39;</span><span class="p">,</span><span class="s1">&#39;p_value&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">pathway_name</span> <span class="ow">in</span> <span class="n">MCC_metapathway</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">permutation_spatial</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MetaChat_group_spatial-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">pathway_name</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please check whether the mc.tl.communication_group_spatial function are run and whether </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> are in adata.uns.keys().&quot;</span> \
+                               <span class="s2">&quot;Note that this function needs to compute the group-level for all pathways&quot;</span><span class="p">)</span>
+            <span class="n">MCC_metapathway</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pathway_name</span><span class="p">,</span><span class="s2">&quot;communication_score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;communication_matrix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sender_group</span><span class="p">,</span><span class="n">receiver_group</span><span class="p">]</span>
+            <span class="n">MCC_metapathway</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pathway_name</span><span class="p">,</span><span class="s2">&quot;p_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;communication_pvalue&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sender_group</span><span class="p">,</span><span class="n">receiver_group</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MetaChat_group-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">pathway_name</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please check whether the mc.tl.communication_group function are run and whether </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> are in adata.uns.keys().&quot;</span> \
+                               <span class="s2">&quot;Note that this function needs to compute the group-level for all pathways&quot;</span><span class="p">)</span>
+            <span class="n">MCC_metapathway</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pathway_name</span><span class="p">,</span><span class="s2">&quot;communication_score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;communication_matrix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sender_group</span><span class="p">,</span><span class="n">receiver_group</span><span class="p">]</span>
+            <span class="n">MCC_metapathway</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pathway_name</span><span class="p">,</span><span class="s2">&quot;p_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;communication_pvalue&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sender_group</span><span class="p">,</span><span class="n">receiver_group</span><span class="p">]</span>
+      
+    <span class="n">metapathway_rank</span> <span class="o">=</span> <span class="n">MCC_metapathway</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;p_value&#39;</span><span class="p">,</span> <span class="s1">&#39;communication_score&#39;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
+    <span class="n">use_metapatheway</span> <span class="o">=</span> <span class="n">metapathway_rank</span><span class="o">.</span><span class="n">index</span><span class="p">[:</span><span class="n">usenumber_metapathway</span><span class="p">,]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="c1"># Compute the each m-s pairs communication_score</span>
+    <span class="n">MCC_group_pair</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;Metabolite_Sensor_filtered&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">irow</span><span class="p">,</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">MCC_group_pair</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">Metaname</span> <span class="o">=</span> <span class="n">ele</span><span class="p">[</span><span class="s1">&#39;Metabolite&#39;</span><span class="p">]</span>
+        <span class="n">Sensname</span> <span class="o">=</span> <span class="n">ele</span><span class="p">[</span><span class="s1">&#39;Sensor&#39;</span><span class="p">]</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MetaChat_group-&quot;</span> <span class="o">+</span> <span class="n">group_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">Metaname</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">Sensname</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please check whether the mc.tl.communication_group function are run and whether </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> are in adata.uns.keys().&quot;</span> \
+                               <span class="s2">&quot;Note that this function needs to compute the group-level for all m-s pairs&quot;</span><span class="p">)</span>
+        <span class="n">MCC_group_pair</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">irow</span><span class="p">,</span> <span class="s2">&quot;communication_score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;communication_matrix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sender_group</span><span class="p">,</span><span class="n">receiver_group</span><span class="p">]</span>
+
+    <span class="n">MCC_Meta2pathway</span> <span class="o">=</span> <span class="n">MCC_group_pair</span><span class="p">[[</span><span class="s2">&quot;Metabolite&quot;</span><span class="p">,</span> <span class="s2">&quot;Metabolite.Pathway&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor.Pathway&quot;</span><span class="p">,</span> <span class="s2">&quot;communication_score&quot;</span><span class="p">]]</span>
+    <span class="n">MCC_Meta2pathway</span> <span class="o">=</span> <span class="n">MCC_Meta2pathway</span><span class="p">[((</span><span class="n">MCC_Meta2pathway</span><span class="p">[</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;nan&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">MCC_Meta2pathway</span><span class="p">[</span><span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;nan&quot;</span><span class="p">))]</span>
+    <span class="n">MCC_Meta2pathway</span><span class="p">[</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MCC_Meta2pathway</span><span class="p">[</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;; &#39;</span><span class="p">)</span>
+    <span class="n">MCC_Meta2pathway_expanded1</span> <span class="o">=</span> <span class="n">MCC_Meta2pathway</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">)</span>
+    <span class="n">MCC_Meta2pathway_expanded1</span><span class="p">[</span><span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MCC_Meta2pathway_expanded1</span><span class="p">[</span><span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;; &#39;</span><span class="p">)</span>
+    <span class="n">MCC_Meta2pathway_expanded2</span> <span class="o">=</span> <span class="n">MCC_Meta2pathway_expanded1</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">)</span>
+    <span class="n">MCC_Meta2pathway_group</span> <span class="o">=</span> <span class="n">MCC_Meta2pathway_expanded2</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">,</span> <span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">],</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;communication_score&#39;</span><span class="p">:</span> <span class="s1">&#39;sum&#39;</span><span class="p">})</span>
+    <span class="n">filtered_MCC_Meta2pathway_group</span> <span class="o">=</span> <span class="n">MCC_Meta2pathway_group</span><span class="p">[</span><span class="n">MCC_Meta2pathway_group</span><span class="p">[</span><span class="s2">&quot;Metabolite.Pathway&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">use_metapatheway</span><span class="p">)]</span>
+
+    <span class="c1"># construct graph network to measure importance</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="n">edges_with_weights</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;communication_score&#39;</span><span class="p">])</span> 
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">filtered_MCC_Meta2pathway_group</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges_with_weights</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="n">edge</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">hubs</span><span class="p">,</span> <span class="n">authorities</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">hits</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">senspathway_rank</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">authorities</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">senspathway_rank</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">senspathway_rank</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Senspathway&#39;</span><span class="p">,</span> <span class="s1">&#39;Rankscore&#39;</span><span class="p">])</span>
+    <span class="n">senspathway_rank</span> <span class="o">=</span> <span class="n">senspathway_rank</span><span class="p">[</span><span class="n">senspathway_rank</span><span class="p">[</span><span class="s1">&#39;Senspathway&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;WP&#39;</span><span class="p">)]</span>
+
+    <span class="n">ms_result</span> <span class="o">=</span> <span class="n">filtered_MCC_Meta2pathway_group</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;Metabolite.Pathway&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;Sensor.Pathway&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;communication_score&#39;</span><span class="p">)</span>
+    <span class="n">ms_result</span> <span class="o">=</span> <span class="n">ms_result</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">metapathway_rank</span><span class="p">,</span> <span class="n">senspathway_rank</span><span class="p">,</span> <span class="n">ms_result</span></div>
+
+
+<span class="c1">################## MCC remodelling ##################</span>
+<div class="viewcode-block" id="communication_responseGenes">
+<a class="viewcode-back" href="../../../api/metachat.tl.communication_responseGenes.html#metachat.tl.communication_responseGenes">[docs]</a>
+<span class="k">def</span> <span class="nf">communication_responseGenes</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">adata_raw</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metabolite_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metapathway_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">customerlist_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">summary</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;receiver&#39;</span><span class="p">,</span>
+    <span class="n">n_var_genes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">var_genes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_deg_genes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nknots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">deg_pvalue_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for identifying signals dependent genes</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        adata.AnnData object after running inference function ``mc.tl.metabolic_communication``.</span>
+<span class="sd">    adata_raw</span>
+<span class="sd">        adata.AnnData object with raw spatial transcriptome data.</span>
+<span class="sd">    database_name</span>
+<span class="sd">        Name of the Metabolite-Sensor interaction database.</span>
+<span class="sd">    metabolite_name</span>
+<span class="sd">        Name of a specific metabolite to detect response genes. For example, metabolite_name = &#39;HMDB0000148&#39;.</span>
+<span class="sd">    metapathway_name</span>
+<span class="sd">        Name of a specific metabolic pathways to detect response genes. For example, metabolite_name = &#39;Alanine, aspartate and glutamate metabolism&#39;.</span>
+<span class="sd">    customerlist_name</span>
+<span class="sd">        Name of a specific customerlist to detect response genes. For example, customerlist_name = &#39;CustomerA&#39;.</span>
+<span class="sd">    summary</span>
+<span class="sd">        &#39;sender&#39; or &#39;receiver&#39;</span>
+<span class="sd">    n_var_genes</span>
+<span class="sd">        The number of most variable genes to test.</span>
+<span class="sd">    var_genes</span>
+<span class="sd">        The genes to test. n_var_genes will be ignored if given.</span>
+<span class="sd">    n_deg_genes</span>
+<span class="sd">        The number of top deg genes to evaluate yhat.</span>
+<span class="sd">    nknots</span>
+<span class="sd">        Number of knots in spline when constructing GAM.</span>
+<span class="sd">    n_points</span>
+<span class="sd">        Number of points on which to evaluate the fitted GAM </span>
+<span class="sd">        for downstream clustering and visualization.</span>
+<span class="sd">    deg_pvalue_cutoff</span>
+<span class="sd">        The p-value cutoff of genes for obtaining the fitted gene expression patterns.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_deg: pd.DataFrame</span>
+<span class="sd">        A data frame of deg analysis results, including Wald statistics, degree of freedom, and p-value.</span>
+<span class="sd">    df_yhat: pd.DataFrame</span>
+<span class="sd">        A data frame of smoothed gene expression values.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># setup R environment</span>
+    <span class="kn">import</span> <span class="nn">rpy2</span>
+    <span class="kn">import</span> <span class="nn">anndata2ri</span>
+    <span class="kn">import</span> <span class="nn">rpy2.robjects</span> <span class="k">as</span> <span class="nn">ro</span>
+    <span class="kn">from</span> <span class="nn">rpy2.robjects.conversion</span> <span class="kn">import</span> <span class="n">localconverter</span>
+    <span class="kn">import</span> <span class="nn">rpy2.rinterface_lib.callbacks</span>
+    <span class="kn">import</span> <span class="nn">logging</span>
+    <span class="n">rpy2</span><span class="o">.</span><span class="n">rinterface_lib</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s1">&#39;library(tradeSeq)&#39;</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s1">&#39;library(clusterExperiment)&#39;</span><span class="p">)</span>
+    <span class="n">anndata2ri</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">numpy2ri</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">pandas2ri</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+
+    <span class="n">adata_deg_raw</span> <span class="o">=</span> <span class="n">adata_raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">adata_deg_var</span> <span class="o">=</span> <span class="n">adata_raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_genes</span><span class="p">(</span><span class="n">adata_deg_var</span><span class="p">,</span> <span class="n">min_cells</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_genes</span><span class="p">(</span><span class="n">adata_deg_raw</span><span class="p">,</span> <span class="n">min_cells</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">normalize_total</span><span class="p">(</span><span class="n">adata_deg_var</span><span class="p">,</span> <span class="n">target_sum</span><span class="o">=</span><span class="mf">1e4</span><span class="p">)</span>
+    <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">adata_deg_var</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_var_genes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">highly_variable_genes</span><span class="p">(</span><span class="n">adata_deg_var</span><span class="p">,</span> <span class="n">min_mean</span><span class="o">=</span><span class="mf">0.0125</span><span class="p">,</span> <span class="n">max_mean</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">min_disp</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">n_var_genes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">highly_variable_genes</span><span class="p">(</span><span class="n">adata_deg_var</span><span class="p">,</span> <span class="n">n_top_genes</span><span class="o">=</span><span class="n">n_var_genes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">var_genes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">adata_deg_raw</span> <span class="o">=</span> <span class="n">adata_deg_raw</span><span class="p">[:,</span> <span class="n">adata_deg_var</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">highly_variable</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">adata_deg_raw</span> <span class="o">=</span> <span class="n">adata_deg_raw</span><span class="p">[:,</span> <span class="n">var_genes</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">adata_deg_var</span>
+
+    <span class="k">if</span> <span class="n">summary</span> <span class="o">==</span> <span class="s1">&#39;sender&#39;</span><span class="p">:</span>
+        <span class="n">summary_abbr</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">summary_abbr</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span>
+
+    <span class="n">non_none_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">metabolite_name</span><span class="p">,</span> <span class="n">metapathway_name</span><span class="p">,</span> <span class="n">customerlist_name</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">non_none_count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only one of &#39;metabolite_name&#39;, &#39;metapathway_name&#39;, or &#39;customerlist_name&#39; can be specified.&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sum_name</span> <span class="o">=</span> <span class="s1">&#39;total-total&#39;</span>
+        <span class="n">obsm_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">elif</span> <span class="n">metabolite_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sum_name</span> <span class="o">=</span> <span class="n">metabolite_name</span>
+        <span class="n">obsm_name</span> <span class="o">=</span> <span class="s1">&#39;-metabolite&#39;</span>
+    <span class="k">elif</span> <span class="n">metapathway_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sum_name</span> <span class="o">=</span> <span class="n">metapathway_name</span>
+        <span class="n">obsm_name</span> <span class="o">=</span> <span class="s1">&#39;-pathway&#39;</span>
+    <span class="k">elif</span> <span class="n">customerlist_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sum_name</span> <span class="o">=</span> <span class="n">customerlist_name</span>
+        <span class="n">obsm_name</span> <span class="o">=</span> <span class="s1">&#39;-customer&#39;</span>
+
+    <span class="n">comm_sum</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-&#39;</span> <span class="o">+</span> <span class="n">database_name</span> <span class="o">+</span> <span class="s2">&quot;-sum-&quot;</span> <span class="o">+</span> <span class="n">summary</span> <span class="o">+</span> <span class="n">obsm_name</span><span class="p">][</span><span class="n">summary_abbr</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">sum_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">cell_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">comm_sum</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># send adata to R</span>
+    <span class="n">adata_r</span> <span class="o">=</span> <span class="n">anndata2ri</span><span class="o">.</span><span class="n">py2rpy</span><span class="p">(</span><span class="n">adata_deg_raw</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="s2">&quot;adata&quot;</span><span class="p">,</span> <span class="n">adata_r</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s2">&quot;X &lt;- as.matrix( assay( adata, &#39;X&#39;) )&quot;</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="s2">&quot;pseudoTime&quot;</span><span class="p">,</span> <span class="n">comm_sum</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="s2">&quot;cellWeight&quot;</span><span class="p">,</span> <span class="n">cell_weight</span><span class="p">)</span>
+
+    <span class="c1"># perform analysis (tradeSeq-1.0.1 in R-3.6.3)</span>
+    <span class="n">string_fitGAM</span> <span class="o">=</span> <span class="s1">&#39;sce &lt;- fitGAM(counts=X, pseudotime=pseudoTime[,1], cellWeights=cellWeight[,1], nknots=</span><span class="si">%d</span><span class="s1">, verbose=TRUE)&#39;</span> <span class="o">%</span> <span class="n">nknots</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="n">string_fitGAM</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s1">&#39;assoRes &lt;- data.frame( associationTest(sce, global=FALSE, lineage=TRUE) )&#39;</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s1">&#39;assoRes &lt;- assoRes[!is.na(assoRes[,&quot;waldStat_1&quot;]),]&#39;</span><span class="p">)</span>
+    <span class="c1"># ro.r(&#39;assoRes[is.nan(assoRes[,&quot;waldStat_1&quot;]),&quot;waldStat_1&quot;] &lt;- 0.0&#39;)</span>
+    <span class="c1"># ro.r(&#39;assoRes[is.nan(assoRes[,&quot;df_1&quot;]),&quot;df_1&quot;] &lt;- 0.0&#39;)</span>
+    <span class="c1"># ro.r(&#39;assoRes[is.nan(assoRes[,&quot;pvalue_1&quot;]),&quot;pvalue_1&quot;] &lt;- 1.0&#39;)</span>
+    <span class="k">with</span> <span class="n">localconverter</span><span class="p">(</span><span class="n">ro</span><span class="o">.</span><span class="n">pandas2ri</span><span class="o">.</span><span class="n">converter</span><span class="p">):</span>
+        <span class="n">df_assoRes</span> <span class="o">=</span> <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;assoRes&#39;</span><span class="p">]</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s1">&#39;assoRes = assoRes[assoRes[,&quot;pvalue_1&quot;] &lt;= </span><span class="si">%f</span><span class="s1">,]&#39;</span> <span class="o">%</span> <span class="n">deg_pvalue_cutoff</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s1">&#39;oAsso &lt;- order(assoRes[,&quot;waldStat_1&quot;], decreasing=TRUE)&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_deg_genes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_deg_genes</span> <span class="o">=</span> <span class="n">df_assoRes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">string_cluster</span> <span class="o">=</span> <span class="s1">&#39;clusPat &lt;- clusterExpressionPatterns(sce, nPoints = </span><span class="si">%d</span><span class="s1">,&#39;</span> <span class="o">%</span> <span class="n">n_points</span>\
+        <span class="o">+</span> <span class="s1">&#39;verbose=TRUE, genes = rownames(assoRes)[oAsso][1:min(</span><span class="si">%d</span><span class="s1">,length(oAsso))],&#39;</span> <span class="o">%</span> <span class="n">n_deg_genes</span> \
+        <span class="o">+</span> <span class="s1">&#39; k0s=4:5, alphas=c(0.1))&#39;</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="n">string_cluster</span><span class="p">)</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s1">&#39;yhatScaled &lt;- data.frame(clusPat$yhatScaled)&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">localconverter</span><span class="p">(</span><span class="n">ro</span><span class="o">.</span><span class="n">pandas2ri</span><span class="o">.</span><span class="n">converter</span><span class="p">):</span>
+        <span class="n">yhat_scaled</span> <span class="o">=</span> <span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;yhatScaled&#39;</span><span class="p">]</span>
+
+    <span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_assoRes</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;waldStat_1&#39;</span><span class="p">:</span><span class="s1">&#39;waldStat&#39;</span><span class="p">,</span> <span class="s1">&#39;df_1&#39;</span><span class="p">:</span><span class="s1">&#39;df&#39;</span><span class="p">,</span> <span class="s1">&#39;pvalue_1&#39;</span><span class="p">:</span><span class="s1">&#39;pvalue&#39;</span><span class="p">})</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;waldStat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_deg</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">yhat_scaled</span>
+
+    <span class="n">anndata2ri</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">numpy2ri</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+    <span class="n">ro</span><span class="o">.</span><span class="n">pandas2ri</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">df_deg</span><span class="p">,</span> <span class="n">df_yhat</span></div>
+
+    
+<div class="viewcode-block" id="communication_responseGenes_cluster">
+<a class="viewcode-back" href="../../../api/metachat.tl.communication_responseGenes_cluster.html#metachat.tl.communication_responseGenes_cluster">[docs]</a>
+<span class="k">def</span> <span class="nf">communication_responseGenes_cluster</span><span class="p">(</span>
+    <span class="n">df_deg</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">df_yhat</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">deg_clustering_npc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">deg_clustering_knn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">deg_clustering_res</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">n_deg_genes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">p_value_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for cluster the communcation DE genes based on their fitted expression pattern.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_deg</span>
+<span class="sd">        The deg analysis summary data frame obtained by running ``ml.tl.communication_response_genes``.</span>
+<span class="sd">        Each row corresponds to one tested genes and columns include &quot;waldStat&quot; (Wald statistics), &quot;df&quot; (degrees of freedom), and &quot;pvalue&quot; (p-value of the Wald statistics).</span>
+<span class="sd">    df_yhat</span>
+<span class="sd">        The fitted (smoothed) gene expression pattern obtained by running ``ml.tl.communication_responseGenes``.</span>
+<span class="sd">    deg_clustering_npc</span>
+<span class="sd">        Number of PCs when performing PCA to cluster gene expression patterns</span>
+<span class="sd">    deg_clustering_knn</span>
+<span class="sd">        Number of neighbors when constructing the knn graph for leiden clustering.</span>
+<span class="sd">    deg_clustering_res</span>
+<span class="sd">        The resolution parameter for leiden clustering.</span>
+<span class="sd">    n_deg_genes</span>
+<span class="sd">        Number of top deg genes to cluster.</span>
+<span class="sd">    p_value_cutoff</span>
+<span class="sd">        The p-value cutoff for genes to be included in clustering analysis.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_deg_clus: pd.DataFrame</span>
+<span class="sd">        A data frame of clustered genes.</span>
+<span class="sd">    df_yhat_clus: pd.DataFrame</span>
+<span class="sd">        The fitted gene expression patterns of the clustered genes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_deg</span><span class="p">[</span><span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;pvalue&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p_value_cutoff</span><span class="p">]</span>
+    <span class="n">n_deg_genes</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_deg_genes</span><span class="p">,</span> <span class="n">df_deg</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;waldStat&#39;</span><span class="p">])</span>
+    <span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_deg</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">[:</span><span class="n">n_deg_genes</span><span class="p">]]</span>
+    <span class="n">yhat_scaled</span> <span class="o">=</span> <span class="n">df_yhat</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_deg</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">x_pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">deg_clustering_npc</span><span class="p">,</span> <span class="n">svd_solver</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">yhat_scaled</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">cluster_labels</span> <span class="o">=</span> <span class="n">leiden_clustering</span><span class="p">(</span><span class="n">x_pca</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">deg_clustering_knn</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">deg_clustering_res</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="s1">&#39;embedding&#39;</span><span class="p">)</span>
+
+    <span class="n">data_tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">df_deg</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">cluster_labels</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df_metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_tmp</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df_deg</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;waldStat&#39;</span><span class="p">,</span><span class="s1">&#39;df&#39;</span><span class="p">,</span><span class="s1">&#39;pvalue&#39;</span><span class="p">,</span><span class="s1">&#39;cluster&#39;</span><span class="p">]</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">df_metadata</span><span class="p">,</span> <span class="n">yhat_scaled</span></div>
+
+
+<div class="viewcode-block" id="communication_responseGenes_keggEnrich">
+<a class="viewcode-back" href="../../../api/metachat.tl.communication_responseGenes_keggEnrich.html#metachat.tl.communication_responseGenes_keggEnrich">[docs]</a>
+<span class="k">def</span> <span class="nf">communication_responseGenes_keggEnrich</span><span class="p">(</span>
+    <span class="n">gene_list</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gene_sets</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;KEGG_2021_Human&quot;</span><span class="p">,</span>
+    <span class="n">organism</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Human&quot;</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for performing KEGG enrichment analysis on a given list of response genes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gene_list</span>
+<span class="sd">        A list of genes to be analyzed for enrichment. Default is None.</span>
+<span class="sd">    gene_sets</span>
+<span class="sd">        The gene set database to use for enrichment analysis. Default is &quot;KEGG_2021_Human&quot;.</span>
+<span class="sd">        For mouse, use &#39;KEGG_2019_Mouse&#39;.</span>
+<span class="sd">    organism</span>
+<span class="sd">        The organism for which the gene sets are defined. Default is &quot;Human&quot;.</span>
+<span class="sd">        For mouse, use &#39;Mouse&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_result : pandas.DataFrame</span>
+<span class="sd">        A DataFrame containing the results of the enrichment analysis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">enr</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">enrichr</span><span class="p">(</span><span class="n">gene_list</span> <span class="o">=</span> <span class="n">gene_list</span><span class="p">,</span>
+                     <span class="n">gene_sets</span> <span class="o">=</span> <span class="n">gene_sets</span><span class="p">,</span>
+                     <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">,</span>
+                     <span class="n">no_plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="n">cutoff</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">df_result</span> <span class="o">=</span> <span class="n">enr</span><span class="o">.</span><span class="n">results</span>
+    
+    <span class="k">return</span> <span class="n">df_result</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Songhao Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

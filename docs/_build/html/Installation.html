@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; MetaChat 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=e3a6060d"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MetaChat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Multi_omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/toy_example1.html">Toy example 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MetaChat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Installation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<p>Please follow the guide below to install MetaChat and its dependent software.</p>
+<section id="system-requirements">
+<h2>System requirements<a class="headerlink" href="#system-requirements" title="Link to this heading"></a></h2>
+<p>MetaChat was developed and tested on Linux (U), macOS and Windows operating systems. Linux and macOS is recommended.</p>
+</section>
+<section id="python-requirements">
+<h2>Python requirements<a class="headerlink" href="#python-requirements" title="Link to this heading"></a></h2>
+<p>MetaChat was developed and tested using python 3.9. We recommend using mamba or conda to manage Python environments.</p>
+</section>
+<section id="installation-using-pip">
+<h2>Installation using <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#installation-using-pip" title="Link to this heading"></a></h2>
+<p>We suggest setting up MetaChat in a separate <code class="docutils literal notranslate"><span class="pre">mamba</span></code> or <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment to prevent conflicts with other software dependencies. Create a new Python environment specifically for MetaChat and install the required libraries within it.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>metachat_env<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9<span class="w"> </span>r-base<span class="o">=</span><span class="m">4</span>.3.2
+mamba<span class="w"> </span>activate<span class="w"> </span>metachat_env
+pip<span class="w"> </span>install<span class="w"> </span>metachat
+</pre></div>
+</div>
+<p>MetaChat requires two additional R packages: <code class="docutils literal notranslate"><span class="pre">tradeseq</span></code> and <code class="docutils literal notranslate"><span class="pre">clusterexperiment</span></code>. These can be easily installed through the mirror in Bioconda.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>install<span class="w"> </span>bioconda::bioconductor-tradeseq<span class="o">=</span><span class="m">1</span>.16.0
+mamba<span class="w"> </span>install<span class="w"> </span>bioconda::bioconductor-clusterexperiment<span class="o">=</span><span class="m">2</span>.22.0
+</pre></div>
+</div>
+<p>Make sure you add the Bioconda channel to your environment. if you haven’t already, add the Bioconda channel to your Conda configuration (<a class="reference external" href="https://bioconda.github.io/">https://bioconda.github.io/</a>):</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>defaults
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>bioconda
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+</pre></div>
+</div>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<p><strong>Problem: Unable to install gseapy</strong></p>
+<p>If you get <code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">can't</span> <span class="pre">find</span> <span class="pre">Rust</span> <span class="pre">compiler</span></code> during the installation of <code class="docutils literal notranslate"><span class="pre">gseapy</span></code>, please try installing the rust compiler via <code class="docutils literal notranslate"><span class="pre">mamba</span> <span class="pre">install</span> <span class="pre">rust</span></code>.</p>
+<p><strong>Problem: Unable to install pydpc</strong></p>
+<p>If you get error during the installation of pydpc, please try <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--use-pep517</span> <span class="pre">pydpc==0.1.3</span></code>.</p>
+<p>While installing in <strong>Windows</strong> system, you may get the error:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">error</span><span class="p">:</span> <span class="n">Microsoft</span> <span class="n">Visual</span> <span class="n">C</span><span class="o">++</span> <span class="mf">14.0</span> <span class="ow">or</span> <span class="n">greater</span> <span class="ow">is</span> <span class="n">required</span><span class="o">.</span> <span class="n">Get</span> <span class="n">it</span> <span class="k">with</span> <span class="s2">&quot;Microsoft C++ Build Tools&quot;</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">visualstudio</span><span class="o">.</span><span class="n">microsoft</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">visual</span><span class="o">-</span><span class="n">cpp</span><span class="o">-</span><span class="n">build</span><span class="o">-</span><span class="n">tools</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>You can sovle this problem as following steps:</p>
+<ol class="arabic simple">
+<li><p>Visit the Visual Studio website to download and install the latest version of Microsoft C++ Build Tools (<a class="reference external" href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">https://visualstudio.microsoft.com/visual-cpp-build-tools/</a>).</p></li>
+<li><p>Select installation options: During installation, you can choose to install all default options to ensure the C++ compiler and necessary build tools are included. If Visual Studio is already installed, you can select to install only the C++ tools.</p></li>
+<li><p>Set environment variables: After installation, you may need to manually set the environment variables so that the system can locate the correct build tools. Follow these steps to set the environment variables: (i) Open the Control Panel, navigate to “System and Security” -&gt; “System” -&gt; “Advanced system settings.”; (ii) In the “System Properties” window, click the “Environment Variables” button ; (iii) In the “System Variables” section, find and edit the variable named <code class="docutils literal notranslate"><span class="pre">Path</span></code>. (iv) Add the installation path of Microsoft C++ Build Tools to the <code class="docutils literal notranslate"><span class="pre">Path</span></code> variable. The typical path is similar to <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files</span> <span class="pre">(x86)\Microsoft</span> <span class="pre">Visual</span> <span class="pre">Studio\2019\BuildTools\VC\Tools\MSVC\14.xx.xx\bin\Hostx64\x64</span></code>, but it may vary depending on your installation version and system configuration.</p></li>
+</ol>
+<p><strong>Continuous updating…</strong></p>
+<p>Feel free to contact us if you encounter any other problems with the installation.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Songhao Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

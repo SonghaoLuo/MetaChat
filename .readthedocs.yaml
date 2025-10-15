@@ -1,0 +1,18 @@
+# .readthedocs.yaml
+
+version: 2
+
+# 设置构建工具和文档格式
+sphinx:
+  configuration: docs/conf.py
+
+# 构建工具
+build:
+  os: ubuntu-20.04
+  tools:
+    python: "3.9"
+
+# 安装依赖
+python:
+  install:
+    - requirements: docs/requirements.txt

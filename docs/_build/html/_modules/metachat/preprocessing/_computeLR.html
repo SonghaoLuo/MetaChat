@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metachat.preprocessing._computeLR &mdash; MetaChat 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=e3a6060d"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MetaChat
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/toy_example1.html">Toy example 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MetaChat</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">metachat.preprocessing._computeLR</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for metachat.preprocessing._computeLR</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">anndata</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">from</span> <span class="nn">pydpc</span> <span class="kn">import</span> <span class="n">Cluster</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance_matrix</span>
+
+<div class="viewcode-block" id="LRC_unfiltered">
+<a class="viewcode-back" href="../../../api/metachat.pp.LRC_unfiltered.html#metachat.pp.LRC_unfiltered">[docs]</a>
+<span class="k">def</span> <span class="nf">LRC_unfiltered</span><span class="p">(</span><span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+                   <span class="n">LRC_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                   <span class="n">LRC_marker_gene</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  
+                   <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">90.0</span><span class="p">,</span>
+                   <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for identifying LRC candidate (unfiltered) points based on the quantile of the marker gene.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix with shape ``n_obs`` × ``n_var``, provided as an `anndata` object.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    LRC_name</span>
+<span class="sd">        The name of the long-range channel, provided as a string, such as &quot;Blood&quot; or &quot;CSF&quot; (cerebrospinal fluid).</span>
+<span class="sd">    LRC_marker_gene</span>
+<span class="sd">        The name of the marker gene used for identifying `LRC_name`, provided as a string.</span>
+<span class="sd">    quantile</span>
+<span class="sd">        The quantile threshold for selecting candidates, provided as a float between 0.0 and 100.0. </span>
+<span class="sd">        For example, a value of 90.0 means selecting points greater than the 90th percentile.</span>
+<span class="sd">    copy</span>
+<span class="sd">        Whether to return a copy of the :class:`anndata.AnnData`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        The candidate points are added to ``.obs[&#39;LRC_&#39; + LRC_name + &#39;_unfiltered&#39;]``, with &quot;1&quot; indicating a candidate and &quot;0&quot; indicating not a candidate. </span>
+<span class="sd">        If copy=True, return the AnnData object and return None otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">LRC_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please provide an LRC name.&quot;</span>
+    <span class="k">assert</span> <span class="n">LRC_marker_gene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Please provide a marker gene for the LRC: </span><span class="si">{</span><span class="n">LRC_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+    <span class="c1"># Compute the quantile based on the marker gene expression of the long-range channel.</span>
+    <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">adata</span><span class="p">[:,</span><span class="n">LRC_marker_gene</span><span class="p">]</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">toarray</span><span class="p">(),</span> <span class="n">q</span><span class="o">=</span><span class="n">quantile</span><span class="p">)</span>
+
+    <span class="c1"># Identify candidate cells where the expression of the long-range marker gene exceeds the quantile threshold</span>
+    <span class="n">candidate_cells</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[:,</span><span class="n">LRC_marker_gene</span><span class="p">]</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+
+    <span class="c1"># Store the candidate cells in the AnnData object.</span>
+    <span class="n">candidate_cells_int</span> <span class="o">=</span> <span class="n">candidate_cells</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">candidate_cells_cat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">candidate_cells_int</span><span class="p">)</span>
+    <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_unfiltered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate_cells_cat</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cells with </span><span class="si">{</span><span class="n">LRC_marker_gene</span><span class="si">}</span><span class="s2"> expression above the </span><span class="si">{</span><span class="n">quantile</span><span class="si">}</span><span class="s2">% have been selected as candidates and stored in &#39;adata.obs[&#39;LRC_</span><span class="si">{</span><span class="n">LRC_name</span><span class="si">}</span><span class="s2">_unfiltered&#39;]&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="LRC_cluster">
+<a class="viewcode-back" href="../../../api/metachat.pp.LRC_cluster.html#metachat.pp.LRC_cluster">[docs]</a>
+<span class="k">def</span> <span class="nf">LRC_cluster</span><span class="p">(</span><span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span> 
+                <span class="n">LRC_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">density_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+                <span class="n">delta_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+                <span class="n">outlier_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> 
+                <span class="n">fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span>
+                <span class="n">plot_savepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for performing local density clustering on candidate points.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix with shape ``n_obs`` × ``n_var``, provided as an `anndata` object.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    LRC_name</span>
+<span class="sd">        The name of the long-range channel, provided as a string, such as &quot;Blood&quot; or &quot;CSF&quot; (cerebrospinal fluid).</span>
+<span class="sd">    density_cutoff</span>
+<span class="sd">        Density threshold for screening center points, provided as a float. Points that exceed both the ``density_cutoff`` and ``delta_cutoff`` are selected as center points.</span>
+<span class="sd">    delta_cutoff</span>
+<span class="sd">        Density threshold for screening center points, provided as a float. Points that exceed both the ``density_cutoff`` and ``delta_cutoff`` are selected as center points.</span>
+<span class="sd">    outlier_cutoff</span>
+<span class="sd">        Threshold for filtering outlier points, provided as a float.</span>
+<span class="sd">    fraction</span>
+<span class="sd">        The fraction of points relative to the total number of points to calculate local density and delta, provided as a float.</span>
+<span class="sd">    plot_savepath</span>
+<span class="sd">        The save path for the output plot of the clustering algorithm, provided as a string.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    LRC_cluster : pydpc.dpc.Cluster</span>
+<span class="sd">        This is the class object that is the output of the local density clustering algorithm, containing information about when the algorithm was used, and will be used as input to the ``mc.pp.LRC_filtered`` function.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">LRC_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please provide an LRC name.&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_unfiltered&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Please run the mc.pp.LRC_unfiltered function first&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Convert the LRC data to boolean to filter the cells</span>
+    <span class="n">LRC_cellsIndex</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="c1"># Extract spatial coordinates of the filtered cells</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[</span><span class="n">LRC_cellsIndex</span><span class="p">,:]</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Create a Cluster object with the spatial points and specified fraction</span>
+    <span class="n">LRC_cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">fraction</span><span class="p">,</span> <span class="n">autoplot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Disable autoplot for the cluster</span>
+    <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">autoplot</span><span class="o">=</span><span class="kc">False</span>
+
+    <span class="c1"># Assign clusters based on density and delta cutoffs</span>
+    <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">density_cutoff</span><span class="p">,</span> <span class="n">delta_cutoff</span><span class="p">)</span>
+
+    <span class="c1"># Mark outliers in the cluster based on density</span>
+    <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span> <span class="o">=</span> <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">border_member</span>
+    <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span><span class="p">[</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">density</span> <span class="o">&lt;=</span> <span class="n">outlier_cutoff</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span><span class="p">[</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">density</span> <span class="o">&gt;</span> <span class="n">outlier_cutoff</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="c1"># Plot density vs. delta in the first subplot</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">density</span><span class="p">,</span> <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">delta</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">min_density</span><span class="p">,</span> <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">density</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span> <span class="p">[</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">min_delta</span><span class="p">,</span> <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">min_delta</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">min_density</span><span class="p">,</span> <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">min_density</span><span class="p">],</span> <span class="p">[</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">min_delta</span><span class="p">,</span>  <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">outlier_cutoff</span><span class="p">,</span> <span class="n">outlier_cutoff</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;density&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;delta / a.u.&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Plot the spatial distribution of points in the second subplot</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="o">~</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="o">~</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">membership</span><span class="p">[</span><span class="o">~</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">tab10</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Save the plot if a save path is provided, otherwise show the plot</span>
+    <span class="k">if</span> <span class="n">plot_savepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_savepath</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># Return the cluster object</span>
+    <span class="k">return</span> <span class="n">LRC_cluster</span></div>
+
+
+<div class="viewcode-block" id="LRC_filtered">
+<a class="viewcode-back" href="../../../api/metachat.pp.LRC_filtered.html#metachat.pp.LRC_filtered">[docs]</a>
+<span class="k">def</span> <span class="nf">LRC_filtered</span><span class="p">(</span><span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span> 
+                 <span class="n">LRC_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">LRC_cluster</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for assigning LRC points after locak density clustering.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix with shape ``n_obs`` × ``n_var``, provided as an `anndata` object.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    LRC_name</span>
+<span class="sd">        The name of all possible long-range channel, provided as a string, such as &quot;Blood&quot; or &quot;CSF&quot; (cerebrospinal fluid).</span>
+<span class="sd">    LRC_cluster</span>
+<span class="sd">        The output of ``mc.pp.LRC_cluster`` funciton</span>
+<span class="sd">    copy</span>
+<span class="sd">        Whether to return a copy of the :class:`anndata.AnnData`.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        The points which belongs to LRC are added to ``.obs[&#39;LRC_&#39; + LRC_name + &#39;_filtered&#39;]``, with non-&quot;0&quot; indicating the cluster of LRC and &quot;0&quot; indicating not a LRC. </span>
+<span class="sd">        If copy=True, return the AnnData object and return None otherwise.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Check inputs</span>
+    <span class="k">assert</span> <span class="n">LRC_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please provide an LRC name.&quot;</span>
+    <span class="k">assert</span> <span class="n">LRC_cluster</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Please provide LRC_cluster.&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_unfiltered&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Please run the &#39;mc.pp.LRC_unfiltered&#39; function and &#39;mc.pp.LRC_cluster&#39; function first&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Increment the LRC_cluster membership by 1, so that cluster numbering starts from 1 instead of 0</span>
+    <span class="n">newcluster</span> <span class="o">=</span> <span class="n">LRC_cluster</span><span class="o">.</span><span class="n">membership</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Set the newcluster values of points marked as outliers to 0</span>
+    <span class="n">newcluster</span><span class="p">[</span><span class="n">LRC_cluster</span><span class="o">.</span><span class="n">outlier</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Convert the unfiltered LRC data to integers and store it in a new obs column, then replace the values equal to 1 with the values from newcluster and convert the column to a categorical type</span>
+    <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_unfiltered&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">][</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">newcluster</span>
+    <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Candidate points for </span><span class="si">{</span><span class="n">LRC_name</span><span class="si">}</span><span class="s2"> LRC are clustered and outliers are removed. LRC points are stored in &#39;adata.obs[&#39;LRC_</span><span class="si">{</span><span class="n">LRC_name</span><span class="si">}</span><span class="s2">_filtered&#39;]&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="compute_costDistance">
+<a class="viewcode-back" href="../../../api/metachat.pp.compute_costDistance.html#metachat.pp.compute_costDistance">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_costDistance</span><span class="p">(</span><span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+                         <span class="n">LRC_type</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">dis_thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
+                         <span class="n">k_neighb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                         <span class="n">LRC_strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
+                         <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                         <span class="n">spot_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function for computing LRC-embedding cost distance based on graph construction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        The data matrix with shape ``n_obs`` × ``n_var``, provided as an `anndata` object.</span>
+<span class="sd">        Rows correspond to cells or spots and columns to genes.</span>
+<span class="sd">    LRC_type</span>
+<span class="sd">        The name of all possible long-range channel, provided as a `list`, such as [&quot;Blood&quot;] or [&quot;CSF&quot;] or [&quot;Blood&quot;,&quot;CSF&quot;].</span>
+<span class="sd">    dis_thr</span>
+<span class="sd">        The farthest distance from a nearby cell to the LRC indicates the range of cells in which long-range communication can occur, provided as a `float`.</span>
+<span class="sd">    k_neighb</span>
+<span class="sd">        k-nearest neighbors for constructing graph, provided as an `int`.</span>
+<span class="sd">    LRC_strength</span>
+<span class="sd">        Long-range communication strength for computing LRC-embedding cost distance, provided as a `float`.</span>
+<span class="sd">    plot   </span>
+<span class="sd">        Whether or not to plot diagrams showing cells where long-range communication may occur, for each type of LRC and each LRCs in a type. </span>
+<span class="sd">    spot_size</span>
+<span class="sd">        If plot=True, The size of the spot in the figure. When .uns[&#39;spatial&#39;][library_id] does not exist, spot_size must be provided directly.</span>
+<span class="sd">    copy</span>
+<span class="sd">        Whether to return a copy of the :class:`anndata.AnnData`.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        The calculated distance will be saved in ``adata.obsp[&#39;spatial_distance_LRC_No&#39;]`` and ``adata.obsp[&#39;spatial_distance_LRC_X&#39;]`` for each LRC, where &#39;X&#39; is the LRC name.</span>
+<span class="sd">        If copy=True, return the AnnData object and return None otherwise.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Check inputs</span>
+    <span class="k">if</span> <span class="n">LRC_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You didn&#39;t input LRC_type, so long-range communication will not be consider in subsequence analysis&quot;</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Compute spatial cost distance without long-range channel...&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;spatial_distance&#39;</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">dis_mat</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial&quot;</span><span class="p">],</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial&quot;</span><span class="p">])</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance_LRC_No&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dis_mat</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dis_mat</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance&#39;</span><span class="p">]</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance_LRC_No&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dis_mat</span>
+
+    <span class="c1"># Compute spatial cost distance incorporating long-range channel</span>
+    <span class="k">if</span> <span class="n">LRC_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">LRC_element</span> <span class="ow">in</span> <span class="n">LRC_type</span><span class="p">:</span>
+
+            <span class="c1"># Check inputs</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t find the adata.obs[</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">], Please run the &#39;mc.pp.LRC_unfiltered&#39; function, &#39;mc.pp.LRC_cluster&#39; function and &#39;mc.pp.LRC_filtered&#39; function first&quot;</span><span class="p">)</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Compute spatial cost distance incorporating long-range channel of &quot;</span> <span class="o">+</span> <span class="n">LRC_element</span><span class="p">)</span>
+            <span class="n">spot_close_LR</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">spot_close_LR_type</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">LR_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">])</span>
+            <span class="n">LR_set</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Find out the points that close to LRC</span>
+            <span class="n">record_closepoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">LR_set</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">ispot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dis_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">spot_close_ind</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="p">[</span><span class="n">ispot</span><span class="p">,:]</span> <span class="o">&lt;</span> <span class="n">dis_thr</span>
+                <span class="n">temp_spot_close</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">][</span><span class="n">spot_close_ind</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">temp_spot_close</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">spot_close_LR</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ispot</span><span class="p">)</span>   
+                    <span class="n">LR_type</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">temp_spot_close</span><span class="p">[</span><span class="n">temp_spot_close</span><span class="o">!=</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">record_closepoint</span><span class="p">[</span><span class="n">ispot</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">LR_type</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">spot_close_LR_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LR_type</span><span class="p">)</span>
+            <span class="n">spot_close_LR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spot_close_LR</span><span class="p">)</span>
+
+            <span class="c1"># plot close points</span>
+            <span class="k">for</span> <span class="n">itype</span> <span class="ow">in</span> <span class="n">LR_set</span><span class="p">:</span>
+                <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_closepoint_cluster</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">itype</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_closepoint</span><span class="p">[:,</span><span class="nb">int</span><span class="p">(</span><span class="n">itype</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The points that can occur long-range communication is...&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">spot_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_closepoint_cluster</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">itype</span><span class="p">,</span> <span class="n">spot_size</span><span class="o">=</span><span class="n">spot_size</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_closepoint_cluster</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">itype</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span> 
+                    <span class="k">pass</span> 
+
+            <span class="c1"># Compute the distance between two arbitary point for each long-range channel</span>
+            <span class="n">LR_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">])</span>
+            <span class="n">LR_set</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">G_list</span> <span class="o">=</span> <span class="p">[]</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Construct network graph of long-range channel among </span><span class="si">%d</span><span class="s2"> neighborhoods...&quot;</span> <span class="o">%</span><span class="n">k_neighb</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">itype</span> <span class="ow">in</span> <span class="n">LR_set</span><span class="p">:</span>
+                <span class="n">itype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">itype</span><span class="p">)</span>
+                <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+                <span class="n">LR_channel_coords</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">][</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">itype</span><span class="p">]</span>
+
+                <span class="c1"># Add nodes</span>
+                <span class="k">for</span> <span class="n">iLR</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">LR_channel_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span> <span class="o">=</span> <span class="n">LR_channel_coords</span><span class="p">[</span><span class="n">iLR</span><span class="p">]</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">((</span><span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span><span class="p">))</span>
+
+                <span class="c1"># Add edges between k_neighb neighborh</span>
+                <span class="n">dis_mat_LR_point</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">LR_channel_coords</span><span class="p">,</span> <span class="n">LR_channel_coords</span><span class="p">)</span>
+            
+                <span class="k">for</span> <span class="n">iLR</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dis_mat_LR_point</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span> <span class="o">=</span> <span class="n">LR_channel_coords</span><span class="p">[</span><span class="n">iLR</span><span class="p">]</span>
+                    <span class="n">min_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">dis_mat_LR_point</span><span class="p">[</span><span class="n">iLR</span><span class="p">,:])[</span><span class="mi">1</span><span class="p">:</span><span class="n">k_neighb</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">ineigh</span> <span class="ow">in</span> <span class="n">min_ind</span><span class="p">:</span>
+                        <span class="n">x_coord_neigh</span><span class="p">,</span> <span class="n">y_coord_neigh</span> <span class="o">=</span> <span class="n">LR_channel_coords</span><span class="p">[</span><span class="n">ineigh</span><span class="p">]</span>
+                        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((</span><span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span><span class="p">),</span> <span class="p">(</span><span class="n">x_coord_neigh</span><span class="p">,</span> <span class="n">y_coord_neigh</span><span class="p">),</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">dis_mat_LR_point</span><span class="p">[</span><span class="n">iLR</span><span class="p">,</span><span class="n">ineigh</span><span class="p">])</span>
+                
+                <span class="k">if</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+                    <span class="n">components</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+                    <span class="n">comb</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)),</span> <span class="mi">2</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">comb</span><span class="p">:</span>
+                        <span class="n">components_A</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">components</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                        <span class="n">components_B</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">components</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
+                        <span class="n">dis_mat_subgroup</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">components_A</span><span class="p">,</span> <span class="n">components_B</span><span class="p">)</span>
+                        <span class="n">min_index_A</span><span class="p">,</span> <span class="n">min_index_B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dis_mat_subgroup</span><span class="p">),</span> <span class="n">dis_mat_subgroup</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                        <span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span> <span class="o">=</span> <span class="n">components_A</span><span class="p">[</span><span class="n">min_index_A</span><span class="p">]</span>
+                        <span class="n">x_coord_neigh</span><span class="p">,</span> <span class="n">y_coord_neigh</span> <span class="o">=</span> <span class="n">components_B</span><span class="p">[</span><span class="n">min_index_B</span><span class="p">]</span>
+                        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((</span><span class="n">x_coord</span><span class="p">,</span> <span class="n">y_coord</span><span class="p">),</span> <span class="p">(</span><span class="n">x_coord_neigh</span><span class="p">,</span> <span class="n">y_coord_neigh</span><span class="p">),</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dis_mat_subgroup</span><span class="p">))</span>
+                        
+                <span class="n">G_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+            <span class="c1"># Calculate the shortest path distance from the source to the target using the shortest path algorithm</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Calculate the shortest path distance from the source to the target using the shortest path algorithm...&quot;</span><span class="p">)</span>
+            <span class="n">dis_LR_path_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">itype</span> <span class="ow">in</span> <span class="n">LR_set</span><span class="p">:</span>
+                <span class="n">itype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">itype</span><span class="p">)</span>
+                <span class="n">dis_LR_path</span> <span class="o">=</span> <span class="p">{}</span>
+                
+                <span class="n">LR_channel_coords</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">][</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">itype</span><span class="p">]</span>
+                <span class="n">G</span> <span class="o">=</span> <span class="n">G_list</span><span class="p">[</span><span class="n">itype</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    For the long-range case of cluster </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span><span class="n">itype</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">m_ind</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">LR_channel_coords</span><span class="p">))):</span>
+                    <span class="k">for</span> <span class="n">n_ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">LR_channel_coords</span><span class="p">)):</span>
+                        <span class="n">x_coord_m</span><span class="p">,</span> <span class="n">y_coord_m</span> <span class="o">=</span> <span class="n">LR_channel_coords</span><span class="p">[</span><span class="n">m_ind</span><span class="p">]</span>
+                        <span class="n">x_coord_n</span><span class="p">,</span> <span class="n">y_coord_n</span> <span class="o">=</span> <span class="n">LR_channel_coords</span><span class="p">[</span><span class="n">n_ind</span><span class="p">]</span>
+                        <span class="n">precision_m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x_coord_m</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">precision_n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x_coord_n</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">pathname</span> <span class="o">=</span> <span class="s2">&quot;source({:.</span><span class="si">{}</span><span class="s2">f},{:.</span><span class="si">{}</span><span class="s2">f})-target({:.</span><span class="si">{}</span><span class="s2">f},{:.</span><span class="si">{}</span><span class="s2">f})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_coord_m</span><span class="p">,</span> <span class="n">precision_m</span><span class="p">,</span> <span class="n">y_coord_m</span><span class="p">,</span> <span class="n">precision_m</span><span class="p">,</span> <span class="n">x_coord_n</span><span class="p">,</span> <span class="n">precision_n</span><span class="p">,</span> <span class="n">y_coord_n</span><span class="p">,</span> <span class="n">precision_n</span><span class="p">)</span>
+                        <span class="n">dis_LR_path</span><span class="p">[</span><span class="n">pathname</span><span class="p">]</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dijkstra_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_coord_m</span><span class="p">,</span> <span class="n">y_coord_m</span><span class="p">),</span> <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_coord_n</span><span class="p">,</span> <span class="n">y_coord_n</span><span class="p">),</span> <span class="n">weight</span> <span class="o">=</span> <span class="s1">&#39;weight&#39;</span><span class="p">)</span>
+                        
+                <span class="n">dis_LR_path_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dis_LR_path</span><span class="p">)</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Rearrange distance matrix...&quot;</span><span class="p">)</span>
+            <span class="n">LR_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">])</span>
+            <span class="n">dis_mat_LR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">LR_set</span><span class="p">),</span> <span class="n">dis_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dis_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="k">for</span> <span class="n">itype</span> <span class="ow">in</span> <span class="n">LR_set</span><span class="p">:</span>
+                
+                <span class="n">itype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">itype</span><span class="p">)</span>
+
+                <span class="c1">## problem！！！##</span>
+                <span class="n">dis_LR_path</span> <span class="o">=</span> <span class="n">dis_LR_path_list</span><span class="p">[</span><span class="n">itype</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                
+                <span class="k">if</span> <span class="n">itype</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">dis_mat_LR</span><span class="p">[</span><span class="n">itype</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    For the long-range case of cluster </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span><span class="n">itype</span><span class="p">)</span>
+                    <span class="n">spot_close_LR_itype</span> <span class="o">=</span> <span class="n">spot_close_LR</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">itype</span> <span class="ow">in</span> <span class="n">set_obj</span> <span class="k">for</span> <span class="n">set_obj</span> <span class="ow">in</span> <span class="n">spot_close_LR_type</span><span class="p">])</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)]</span>
+                    <span class="n">dis2LR</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">closest_spot</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">ispot</span> <span class="ow">in</span> <span class="n">spot_close_LR_itype</span><span class="p">:</span>
+                            <span class="n">spot_close_ind</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="p">[</span><span class="n">ispot</span><span class="p">,:]</span> <span class="o">&lt;</span> <span class="n">dis_thr</span>
+                            <span class="n">spot_itype_ind</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span> <span class="o">+</span> <span class="s1">&#39;_filtered&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">itype</span>
+                            <span class="n">dis2LR_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dis_mat</span><span class="p">[</span><span class="n">ispot</span><span class="p">,</span><span class="n">spot_close_ind</span> <span class="o">&amp;</span> <span class="n">spot_itype_ind</span><span class="p">])</span>
+                            <span class="n">dis2LR</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dis2LR_temp</span><span class="p">)</span>
+
+                            <span class="n">closest_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dis_mat</span><span class="p">[</span><span class="n">ispot</span><span class="p">,</span><span class="n">spot_close_ind</span> <span class="o">&amp;</span> <span class="n">spot_itype_ind</span><span class="p">])</span>
+                            <span class="n">closest_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">spot_close_ind</span> <span class="o">&amp;</span> <span class="n">spot_itype_ind</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">closest_temp</span><span class="p">]</span>
+                            <span class="n">closest_spot_temp</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">][</span><span class="n">closest_ind</span><span class="p">]</span>
+                            <span class="n">closest_x</span><span class="p">,</span> <span class="n">closest_y</span> <span class="o">=</span> <span class="n">closest_spot_temp</span>
+                            <span class="n">closest_spot</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">closest_x</span><span class="p">,</span><span class="n">closest_y</span><span class="p">))</span>
+                    <span class="n">dis2LR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dis2LR</span><span class="p">)</span>        
+                    <span class="n">dis_LR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">dis2LR</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dis2LR</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">dis2LR</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dis2LR</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+                    
+                    <span class="n">dis_mat_LR_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">closest_spot</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">closest_spot</span><span class="p">)))</span>
+
+                    <span class="k">for</span> <span class="n">m_ind</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">dis_mat_LR_path</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                        <span class="k">for</span> <span class="n">n_ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dis_mat_LR_path</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                            <span class="n">x_coord_m</span><span class="p">,</span> <span class="n">y_coord_m</span> <span class="o">=</span> <span class="n">closest_spot</span><span class="p">[</span><span class="n">m_ind</span><span class="p">]</span>
+                            <span class="n">x_coord_n</span><span class="p">,</span> <span class="n">y_coord_n</span> <span class="o">=</span> <span class="n">closest_spot</span><span class="p">[</span><span class="n">n_ind</span><span class="p">]</span>
+                            <span class="n">precision_m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x_coord_m</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                            <span class="n">precision_n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x_coord_n</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                            <span class="n">pathname</span> <span class="o">=</span> <span class="s2">&quot;source({:.</span><span class="si">{}</span><span class="s2">f},{:.</span><span class="si">{}</span><span class="s2">f})-target({:.</span><span class="si">{}</span><span class="s2">f},{:.</span><span class="si">{}</span><span class="s2">f})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_coord_m</span><span class="p">,</span> <span class="n">precision_m</span><span class="p">,</span> <span class="n">y_coord_m</span><span class="p">,</span> <span class="n">precision_m</span><span class="p">,</span> <span class="n">x_coord_n</span><span class="p">,</span> <span class="n">precision_n</span><span class="p">,</span> <span class="n">y_coord_n</span><span class="p">,</span> <span class="n">precision_n</span><span class="p">)</span>
+                            <span class="n">dis_mat_LR_path</span><span class="p">[</span><span class="n">m_ind</span><span class="p">,</span><span class="n">n_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">dis_LR_path</span><span class="p">[</span><span class="n">pathname</span><span class="p">]</span>
+
+                    <span class="n">dis_mat_temp</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="n">dis_mat_temp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dis_mat_temp</span><span class="p">)</span>
+                    <span class="n">dis_mat_temp</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">spot_close_LR_itype</span><span class="p">,</span><span class="n">spot_close_LR_itype</span><span class="p">]</span> <span class="o">=</span> <span class="n">dis_LR</span> <span class="o">+</span> <span class="n">dis_mat_LR_path</span><span class="o">/</span><span class="n">LRC_strength</span>
+                    <span class="n">dis_mat_LR</span><span class="p">[</span><span class="n">itype</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dis_mat_temp</span><span class="p">)</span>
+            <span class="n">dis_mat_LR_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dis_mat_LR</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance_LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_element</span><span class="p">]</span> <span class="o">=</span> <span class="n">dis_mat_LR_min</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finished!&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Songhao Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
