@@ -20,9 +20,9 @@ metachat/plotting/__init__.py
 metachat/plotting/_plotting.py
 metachat/preprocessing/_MetaChatDB.py
 metachat/preprocessing/__init__.py
-metachat/preprocessing/_computeLR.py
-metachat/preprocessing/_data/MetaChatDB/MetaChatDB_human.csv
-metachat/preprocessing/_data/MetaChatDB/MetaChatDB_mouse.csv
+metachat/preprocessing/_computeCost.py
+metachat/preprocessing/_identifyLRC.py
+metachat/preprocessing/_preprocess.py
 metachat/tools/__init__.py
 metachat/tools/_downstream_analysis.py
 metachat/tools/_spatial_communication.py

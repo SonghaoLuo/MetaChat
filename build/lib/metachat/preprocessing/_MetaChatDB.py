@@ -20,7 +20,7 @@ def MetaChatDB(
 
     """
     
-    data = pkgutil.get_data(__name__, "_data/MetaChatDB/MetaChatDB_"+species+".csv")
-    df_metasen = pd.read_csv(io.BytesIO(data), index_col=0)
+    data = pkgutil.get_data(__name__, "_data/MetaChatDB/MetaChatDB_"+species+".tsv")
+    df_metasen = pd.read_csv(io.BytesIO(data), sep='\t')
 
     return df_metasen

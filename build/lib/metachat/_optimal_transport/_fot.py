@@ -4,8 +4,8 @@ from scipy import sparse
 from ._unot import unot 
 
 
-def fot_combine_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, 
-                       eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, weights=(0.25,0.25,0.25,0.25), nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_combine_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff,
+                       eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, weights=(1.0,0.0,0.0,0.0), nitermax=1e4, stopthr=1e-8, verbose=False):
     if isinstance(eps_p, tuple):
         eps_p_fot, eps_p_row, eps_p_col, eps_p_blk = eps_p
     else:
@@ -28,29 +28,56 @@ def fot_combine_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff,
         eps_nu_fot, eps_nu_row, eps_nu_col, eps_nu_blk = eps_nu
     else:
         eps_nu_fot = eps_nu_row = eps_nu_col = eps_nu_blk = eps_nu
-
-    P_fot = fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+    
+    S_copy = S.copy()
+    D_copy = D.copy()
+    P_fot_sender, P_fot_receiver = fot_sparse(S_copy, met_order, D_copy, A, M, LRC, LRC_type, cutoff, \
         eps_p=eps_p_fot, eps_mu=eps_mu_fot, eps_nu=eps_nu_fot, rho=rho_fot, \
         nitermax=nitermax, stopthr=stopthr, verbose=False)
-    P_row = fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
-        eps_p=eps_p_row, eps_mu=eps_mu_row, eps_nu=eps_nu_row, rho=rho_row, \
-        nitermax=nitermax, stopthr=stopthr, verbose=False)
-    P_col = fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
-        eps_p=eps_p_col, eps_mu=eps_mu_col, eps_nu=eps_nu_col, rho=rho_col, \
-        nitermax=nitermax, stopthr=stopthr, verbose=False)
-    P_blk = fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
-        eps_p=eps_p_blk, eps_mu=eps_mu_blk, eps_nu=eps_nu_blk, rho=rho_blk, \
-        nitermax=nitermax, stopthr=stopthr, verbose=False)
+    
+    S_copy = S.copy()
+    D_copy = D.copy()
+    if weights[1] > 0:
+        P_row_sender, P_row_receiver = fot_row_sparse(S_copy, met_order, D_copy, A, M, LRC, LRC_type, cutoff, \
+            eps_p=eps_p_row, eps_mu=eps_mu_row, eps_nu=eps_nu_row, rho=rho_row, \
+            nitermax=nitermax, stopthr=stopthr, verbose=False)
+    else:
+        P_row_sender = {key: 0 for key in P_fot_sender}
+        P_row_receiver = {key: 0 for key in P_fot_receiver}
+    
+    S_copy = S.copy()
+    D_copy = D.copy()
+    if weights[2] > 0:
+        P_col_sender, P_col_receiver = fot_col_sparse(S_copy, met_order, D_copy, A, M, LRC, LRC_type, cutoff, \
+            eps_p=eps_p_col, eps_mu=eps_mu_col, eps_nu=eps_nu_col, rho=rho_col, \
+            nitermax=nitermax, stopthr=stopthr, verbose=False)
+    else:
+        P_col_sender = {key: 0 for key in P_fot_sender}
+        P_col_receiver = {key: 0 for key in P_fot_receiver}
+    
+    S_copy = S.copy()
+    D_copy = D.copy()
+    if weights[3] > 0:
+        P_blk_sender, P_blk_receiver = fot_blk_sparse(S_copy, met_order, D_copy, A, M, LRC, LRC_type, cutoff, \
+            eps_p=eps_p_blk, eps_mu=eps_mu_blk, eps_nu=eps_nu_blk, rho=rho_blk, \
+            nitermax=nitermax, stopthr=stopthr, verbose=False)
+    else:
+        P_blk_sender = {key: 0 for key in P_fot_sender}
+        P_blk_receiver = {key: 0 for key in P_fot_receiver}
 
-    P = {}
+    P_sender = {}
+    P_receiver = {}
     for i in range(A.shape[0]):
         for j in range(A.shape[1]):
             if not np.isinf(A[i,j]):
-                P[(i,j)] = float(weights[0]) * P_fot[(i,j)] + float(weights[1]) * P_row[(i,j)] \
-                    + float(weights[2]) * P_col[(i,j)] + float(weights[3]) * P_blk[(i,j)]
-    return(P)
+                P_sender[(i,j)] = float(weights[0]) * P_fot_sender[(i,j)] + float(weights[1]) * P_row_sender[(i,j)] \
+                    + float(weights[2]) * P_col_sender[(i,j)] + float(weights[3]) * P_blk_sender[(i,j)]
+                P_receiver[(i,j)] = float(weights[0]) * P_fot_receiver[(i,j)] + float(weights[1]) * P_row_receiver[(i,j)] \
+                    + float(weights[2]) * P_col_receiver[(i,j)] + float(weights[3]) * P_blk_receiver[(i,j)]
+    return P_sender, P_receiver
 
-def fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+               eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
     """ Solve the collective optimal transport problem with distance limits in sparse format.
     
     Parameters
@@ -86,10 +113,11 @@ def fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=
     np.set_printoptions(precision=2)
     n_pos_s, ns_s = S.shape
     n_pos_d, ns_d = D.shape
-    S_max_amount = S.sum()
-    D_max_amount = D.sum()
-    S = S / S_max_amount
-    D = D / D_max_amount
+
+    S_sum_amount = S.max()
+    D_sum_amount = D.max()
+    S = S / S_sum_amount
+    D = D / D_sum_amount
 
     if eps_mu is None: eps_mu = eps_p
     if eps_nu is None: eps_nu = eps_p
@@ -111,9 +139,9 @@ def fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=
         # For each metabolite, compute the minimum distance among all possible long-range channel.
         LRC_name = LRC[met_order[i]]
         if isinstance(LRC_name, str):
-            possible_LRC = ['No'] + [element for element in LRC_type if element in LRC_name]       
+            possible_LRC = ['base'] + [element for element in LRC_type if element in LRC_name]       
         else:
-            possible_LRC = ['No']       
+            possible_LRC = ['base']       
         stacked_LRC = np.stack([M[key] for key in possible_LRC])
         M_LRC_min = np.min(stacked_LRC, axis=0)
 
@@ -159,17 +187,20 @@ def fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=
     P = P.tocsr()
 
     # Output a dictionary of transport plans
-    P_expand = {}
+    P_sender_expand = {}
+    P_receiver_expand = {}
     for i in range(ns_s):
         for j in range(ns_d):
             if not np.isinf(A[i,j]):
                 tmp_P = P[i*n_pos_s:(i+1)*n_pos_s, j*n_pos_d:(j+1)*n_pos_d]
                 # P_expand[(i,j)] = tmp_P.tocoo() * max_amount
-                P_expand[(i,j)] = tmp_P.tocoo()
+                P_sender_expand[(i,j)] = tmp_P.tocoo() * S_sum_amount
+                P_receiver_expand[(i,j)] = tmp_P.tocoo() * D_sum_amount
 
-    return P_expand    
+    return P_sender_expand, P_receiver_expand 
 
-def fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+                   eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
     """Solve for each sender species separately.
     """
     if eps_mu is None: eps_mu = eps_p
@@ -181,25 +212,28 @@ def fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
 
     n_pos_s, ns_s = S.shape
     n_pos_d, ns_d = D.shape
-    S_max_amount = S.sum()
-    D_max_amount = D.sum()
-    S = S / S_max_amount
-    D = D / D_max_amount
+
+    # S_sum_amount = S.sum()
+    # D_sum_amount = D.sum()
+    # S = S / S_sum_amount
+    # D = D / D_sum_amount
 
     # max_cutoff = cutoff.max()
     # M_row, M_col = np.where(M <= max_cutoff)
     # M_max_sp = sparse.coo_matrix((M[M_row,M_col], (M_row,M_col)), shape=M.shape)
     
     max_cutoff = cutoff.max()        
-    P_expand = {}
+    P_sender_expand = {}
+    P_receiver_expand = {}
+
     for i in range(ns_s):
 
         # For each metabolite, compute the minimum distance among all possible long-range channel.
         LRC_name = LRC[met_order[i]]
         if isinstance(LRC_name, str):
-            possible_LRC = ['No'] + [element for element in LRC_type if element in LRC_name]       
+            possible_LRC = ['base'] + [element for element in LRC_type if element in LRC_name]       
         else:
-            possible_LRC = ['No']       
+            possible_LRC = ['base']
         stacked_LRC = np.stack([M[key] for key in possible_LRC])
         M_LRC_min = np.min(stacked_LRC, axis=0)
 
@@ -207,18 +241,21 @@ def fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
         M_row, M_col = np.where(M_LRC_min <= max_cutoff)
         M_max_sp = sparse.coo_matrix((M_LRC_min[M_row,M_col], (M_row, M_col)), shape = M_LRC_min.shape)
 
-        a = S[:,i]
+        a = S[:,i].copy()
         D_ind = np.where(~np.isinf(A[i,:]))[0]
-        b = D[:,D_ind].flatten('F')
+        b = D[:,D_ind].flatten('F').copy()
         nzind_a = np.where(a > 0)[0]; nzind_b = np.where(b > 0)[0]
         if len(nzind_a)==0 or len(nzind_b)==0:
             for j in range(len(D_ind)):
-                P_expand[(i,D_ind[j])] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s, n_pos_d), dtype=float)
+                P_sender_expand[(i,D_ind[j])] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s, n_pos_d), dtype=float)
+                P_receiver_expand[(i,D_ind[j])] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s, n_pos_d), dtype=float)
             continue
-        # max_amount = max(a.sum(), b.sum())
-        # a_max_amount = a.sum()
-        # b_max_amount = b.sum()
-        # a = a / a_max_amount; b = b / b_max_amount
+
+        a_sum_amount = a.max()
+        b_sum_amount = b.max()
+        a = a / a_sum_amount
+        b = b / b_sum_amount
+
         C_data, C_row, C_col = [], [], []
         cost_scales = []
         for j in range(len(D_ind)):
@@ -226,7 +263,6 @@ def fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
             tmp_nzind_s = np.where(S[:,i] > 0)[0]
             tmp_nzind_d = np.where(D[:,D_j] > 0)[0]
             tmp_M_max_sp = coo_submatrix_pull(M_max_sp, tmp_nzind_s, tmp_nzind_d)
-            # tmp_M_max_sp = coo_submatrix_pull(M_max_sp, tmp_nzind_s, tmp_nzind_d)
             tmp_ind = np.where(tmp_M_max_sp.data <= cutoff[i,D_j])[0]
             tmp_row = tmp_nzind_s[tmp_M_max_sp.row[tmp_ind]]
             tmp_col = tmp_nzind_d[tmp_M_max_sp.col[tmp_ind]]
@@ -256,14 +292,15 @@ def fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
 
         for j in range(len(D_ind)):
             tmp_P = P[:,j*n_pos_d:(j+1)*n_pos_d]
-            # P_expand[(i,D_ind[j])] = tmp_P.tocoo() * max_amount
-            P_expand[(i,D_ind[j])] = tmp_P.tocoo()
+            P_sender_expand[(i,D_ind[j])] = tmp_P.tocoo() * a_sum_amount
+            P_receiver_expand[(i,D_ind[j])] = tmp_P.tocoo()* b_sum_amount
             
         del P
 
-    return P_expand
+    return P_sender_expand, P_receiver_expand
 
-def fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+                   eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
     """Solve for each destination species separately.
     """
     if eps_mu is None: eps_mu = eps_p
@@ -275,32 +312,38 @@ def fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
 
     n_pos_s, ns_s = S.shape
     n_pos_d, ns_d = D.shape
-    S_max_amount = S.sum()
-    D_max_amount = D.sum()
-    S = S / S_max_amount
-    D = D / D_max_amount
 
+    # S_sum_amount = S.sum()
+    # D_sum_amount = D.sum()
+    # S = S / S_sum_amount
+    # D = D / D_sum_amount
+    
     # max_cutoff = cutoff.max()
     # M_row, M_col = np.where(M <= max_cutoff)
     # M_max_sp = sparse.coo_matrix((M[M_row,M_col], (M_row,M_col)), shape=M.shape)
     
     max_cutoff = cutoff.max()
         
-    P_expand = {}
+    # P_expand = {}
+    P_sender_expand = {}
+    P_receiver_expand = {}
     for j in range(ns_d):
         S_ind = np.where(~np.isinf(A[:,j]))[0]
         met_order_new = [met_order[i] for i in S_ind]
-        a = S[:,S_ind].flatten('F')
-        b = D[:,j]
+        a = S[:,S_ind].flatten('F').copy()
+        b = D[:,j].copy()
         nzind_a = np.where(a > 0)[0]; nzind_b = np.where(b > 0)[0]
         if len(nzind_a)==0 or len(nzind_b)==0:
             for i in range(len(S_ind)):
-                P_expand[(S_ind[i],j)] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s,n_pos_d), dtype=float)
+                P_sender_expand[(S_ind[i],j)] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s,n_pos_d), dtype=float)
+                P_receiver_expand[(S_ind[i],j)] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s,n_pos_d), dtype=float)
             continue
-        # max_amount = max(a.sum(), b.sum())
-        # a_max_amount = a.sum()
-        # b_max_amount = b.sum()
-        # a = a / a_max_amount; b = b / b_max_amount
+
+        a_sum_amount = a.max()
+        b_sum_amount = b.max()
+        a = a / a_sum_amount
+        b = b / b_sum_amount
+
         C_data, C_row, C_col = [], [], []
         cost_scales = []
         for i in range(len(S_ind)):
@@ -309,9 +352,9 @@ def fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
             # For each metabolite, compute the minimum distance among all possible long-range channel.
             LRC_name = LRC[met_order_new[i]]
             if isinstance(LRC_name, str):
-                possible_LRC = ['No'] + [element for element in LRC_type if element in LRC_name]       
+                possible_LRC = ['base'] + [element for element in LRC_type if element in LRC_name]       
             else:
-                possible_LRC = ['No']       
+                possible_LRC = ['base']       
             stacked_LRC = np.stack([M[key] for key in possible_LRC])
             M_LRC_min = np.min(stacked_LRC, axis=0)
 
@@ -352,13 +395,15 @@ def fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
         for i in range(len(S_ind)):
             tmp_P = P[i*n_pos_s:(i+1)*n_pos_s,:]
             # P_expand[(S_ind[i],j)] = tmp_P.tocoo() * max_amount
-            P_expand[(S_ind[i],j)] = tmp_P.tocoo()
+            P_sender_expand[(S_ind[i],j)] = tmp_P.tocoo() * a_sum_amount
+            P_receiver_expand[(S_ind[i],j)] = tmp_P.tocoo() * b_sum_amount
 
         del P
 
-    return P_expand
+    return P_sender_expand, P_receiver_expand
 
-def fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
+def fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
+                   eps_p=1e-1, eps_mu=None, eps_nu=None, rho=1e1, nitermax=1e4, stopthr=1e-8, verbose=False):
     if eps_mu is None: eps_mu = eps_p
     if eps_nu is None: eps_nu = eps_p
     if max(abs(eps_p-eps_mu), abs(eps_p-eps_nu)) > 1e-8:
@@ -368,10 +413,11 @@ def fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
     
     n_pos_s, ns_s = S.shape
     n_pos_d, ns_d = D.shape
-    S_max_amount = S.sum()
-    D_max_amount = D.sum()
-    S = S / S_max_amount
-    D = D / D_max_amount
+
+    # S_sum_amount = S.sum()
+    # D_sum_amount = D.sum()
+    # S = S / S_sum_amount
+    # D = D / D_sum_amount
 
     # max_cutoff = cutoff.max()
     # M_row, M_col = np.where(M <= max_cutoff)
@@ -379,14 +425,16 @@ def fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
     
     max_cutoff = cutoff.max()
 
-    P_expand = {}
+    # P_expand = {}
+    P_sender_expand = {}
+    P_receiver_expand = {}
     for i in range(ns_s):
         # For each metabolite, compute the minimum distance among all possible long-range channel.
         LRC_name = LRC[met_order[i]]
         if isinstance(LRC_name, str):
-            possible_LRC = ['No'] + [element for element in LRC_type if element in LRC_name]       
+            possible_LRC = ['base'] + [element for element in LRC_type if element in LRC_name]       
         else:
-            possible_LRC = ['No']       
+            possible_LRC = ['base']       
         stacked_LRC = np.stack([M[key] for key in possible_LRC])
         M_LRC_min = np.min(stacked_LRC, axis=0)
 
@@ -396,15 +444,23 @@ def fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
 
         for j in range(ns_d):
             if not np.isinf(A[i,j]):
-                a = S[:,i]; b = D[:,j]
+                a = S[:,i].copy(); b = D[:,j].copy()
                 nzind_a = np.where(a > 0)[0]; nzind_b = np.where(b > 0)[0]
                 if len(nzind_a)==0 or len(nzind_b)==0:
-                    P_expand[(i,j)] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s, n_pos_d), dtype=float)
+                    P_sender_expand[(i,j)] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s, n_pos_d), dtype=float)
+                    P_receiver_expand[(i,j)] = sparse.coo_matrix(([],([],[])), shape=(n_pos_s, n_pos_d), dtype=float)
                     continue
+                
                 # max_amount = max(a.sum(), b.sum())
                 # a_max_amount = a.sum()
                 # b_max_amount = b.sum()
                 # a = a / a_max_amount; b = b / b_max_amount
+
+                a_sum_amount = a.max()
+                b_sum_amount = b.max()
+                a = a / a_sum_amount
+                b = b / b_sum_amount
+
                 tmp_nzind_s = np.where(S[:,i] > 0)[0]
                 tmp_nzind_d = np.where(D[:,j] > 0)[0]
                 tmp_M_max_sp = coo_submatrix_pull(M_max_sp, tmp_nzind_s, tmp_nzind_d)
@@ -429,9 +485,10 @@ def fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, eps_p=1e-1, eps
                 P = sparse.coo_matrix((tmp_P.data, (nzind_a[tmp_P.row], nzind_b[tmp_P.col])), shape=(len(a),len(b)))
 
                 # P_expand[(i,j)] = P * max_amount
-                P_expand[(i,j)] = P
+                P_sender_expand[(i,j)] = P * a_sum_amount
+                P_receiver_expand[(i,j)] = P * b_sum_amount
     
-    return P_expand
+    return P_sender_expand, P_receiver_expand
 
 def coo_submatrix_pull(matr, rows, cols):
     """
