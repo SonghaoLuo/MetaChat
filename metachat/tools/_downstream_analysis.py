@@ -1,52 +1,58 @@
-import anndata
-import random
+# ============================================================
 import itertools
 import numpy as np
 import pandas as pd
+from collections import Counter
+from typing import Optional
+
+import anndata
 import scanpy as sc
 import squidpy as sq
 import gseapy as gp
-from tqdm import tqdm
+
 import networkx as nx
-from scipy import sparse
-from typing import Optional
-from collections import Counter
-from multiprocessing import Pool
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 
-from .._utils import leiden_clustering
+from tqdm import tqdm
+from multiprocessing import Pool
+from scipy import sparse
 
-################## MCC communication summary ##################
+from .._utils import leiden_clustering
+# ============================================================
+
+# ================ MCC communication summary =================
 def summary_communication(
     adata: anndata.AnnData,
     database_name: str = None,
     sum_metabolites: list = None,
     sum_metapathways: list = None,
     sum_customerlists: dict = None,
-    copy: bool = False):
+    copy: bool = False
+):
 
     """
-    Function for summary communication signals to different metabolites set.
+    Summarize communication signals by metabolite sets, pathways, or custom lists.
 
     Parameters
     ----------
-    adata
-        The AnnData object that have run "mc.tl.metabolic_communication".
-        Rows correspond to cells or spots and columns to genes.
-    database_name
-        Name of the Metabolite-Sensor interaction database.
-    sum_metabolites
-        List of specific metabolites to summarize communication for. 
-        For example, sum_metabolites = ['HMDB0000148','HMDB0000674'].
-    sum_metapathways
+    adata : anndata.AnnData
+        AnnData object that has run :func:`mc.tl.metabolic_communication`.
+    database_name : str
+        Name of the metabolite–sensor interaction database (e.g., "MetaChatDB").
+    sum_metabolites : list of str, optional
+        List of specific metabolites to summarize communication for.
+        Example: ``['HMDB0000148', 'HMDB0000674']``.
+    sum_metapathways : list of str, optional
         List of specific metabolic pathways to summarize communication for.
-        For example, sum_metapathways = ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
-    sum_customerlists
-        Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.
-        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
-    copy
-        Whether to return a copy of the :class:`anndata.AnnData`.
+        Example: ``['Alanine, aspartate and glutamate metabolism', 'Glycerolipid Metabolism']``.
+    sum_customerlists : dict, optional
+        Custom metabolite–sensor groups.  
+        Each key represents a custom name, and the value is a list of (metabolite, sensor) tuples.  
+        Example: ``{'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 
+                    'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}``.
+    copy : bool, default=False
+        Whether to return a modified copy of the :class:`AnnData` object.
 
     Returns
     -------
@@ -59,14 +65,16 @@ def summary_communication(
         If copy=True, return the AnnData object and return None otherwise.                          
     """
 
-    # Check inputs
-    assert database_name is not None, "Please at least specify database_name."
-    assert sum_metabolites is not None or sum_metapathways is not None or sum_customerlists is not None, "Please ensure that at least one of these three parameters (sum_metabolites, sum_metapathways, sum_customerlists) is given a valid variable."
-    
+    # ==== Input checks ====
+    assert database_name is not None, "Please specify database_name."
+    assert any([sum_metabolites, sum_metapathways, sum_customerlists]), (
+        "Please provide at least one of sum_metabolites, sum_metapathways, or sum_customerlists."
+    )
+
     ncell = adata.shape[0]
     df_metasen = adata.uns["df_metasen_filtered"]
     
-    # Summary by specific metabolites
+    # ==== Summarize by metabolites ====
     if sum_metabolites is not None:
 
         P_sender_list = [sparse.csr_matrix((ncell, ncell), dtype=float) for i in range(len(sum_metabolites))]
@@ -110,7 +118,7 @@ def summary_communication(
         adata.obsm['MetaChat-' + database_name + '-sum-sender-metabolite'] = df_sender_all
         adata.obsm['MetaChat-' + database_name + '-sum-receiver-metabolite'] = df_receiver_all
 
-    # Summary by specific metabolic pathway
+    # ==== Summarize by metabolic pathways ====
     if sum_metapathways is not None:
 
         P_sender_list = [sparse.csr_matrix((ncell, ncell), dtype=float) for i in range(len(sum_metapathways))]
@@ -155,7 +163,7 @@ def summary_communication(
         adata.obsm['MetaChat-' + database_name + '-sum-sender-pathway'] = df_sender_all
         adata.obsm['MetaChat-' + database_name + '-sum-receiver-pathway'] = df_receiver_all
     
-    # Summary by specific customer list
+    # ==== Summarize by customer-defined lists ====
     if sum_customerlists is not None:
 
         P_sender_list = [sparse.csr_matrix((ncell, ncell), dtype=float) for i in range(len(sum_customerlists))]
@@ -198,7 +206,7 @@ def summary_communication(
 
     return adata if copy else None
 
-################## MCC flow ##################
+# ================ MCC flow ================
 def communication_flow(
     adata: anndata.AnnData,
     database_name: str = None,
@@ -212,46 +220,48 @@ def communication_flow(
     copy: bool = False
 ):
     """
-    Function for constructing metabolic communication flow by a vector field.
+    Construct spatial vector fields representing metabolic communication flow.
 
     Parameters
     ----------
-    adata
-        The data matrix of shape ``n_obs`` × ``n_var``.
-        Rows correspond to cells or spots and columns to genes.
-    database_name
-        Name of the Metabolite-Sensor interaction database.
-    sum_metabolites
-        List of specific metabolites to summarize communication for. 
+    adata : anndata.AnnData
+        The data matrix of shape ``n_obs`` × ``n_var``. If compute MCC flow from specific metabolites, 
+        metapathways or customerlists, please run :func:`mc.tl.summary_communication` first.
+    database_name : str
+        Name of the Metabolite-Sensor interaction database (e.g., ``"MetaChatDB"``).
+    sum_metabolites : list of str, optional
+        Specific metabolites to summarize and compute flow for.
         For example, sum_metabolites = ['HMDB0000148','HMDB0000674'].
-    sum_metapathways
-        List of specific metabolic pathways to summarize communication for.
-        For example, sum_metapathways = ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
-    sum_customerlists
-        Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.
-        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
-    k
-        Top k senders or receivers to consider when determining the direction.
-    pos_idx
-        The columns in ``.obsm['spatial']`` to use. If None, all columns are used.
-        For example, to use just the first and third columns, set pos_idx to ``numpy.array([0,2],int)``.
-    copy
-        Whether to return a copy of the :class:`anndata.AnnData`.
+    sum_metapathways : list of str, optional
+        Specific metabolic pathways to summarize and compute flow for.
+        Example: ``['Alanine, aspartate and glutamate metabolism', 'Glycerolipid Metabolism']``.
+    sum_customerlists : dict, optional
+        Custom metabolite–sensor pair groups to summarize.
+        Example: ``{'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')],
+                    'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}``.
+    sum_ms_pairs : list of str, optional
+        Specific metabolite–sensor pairs, e.g. ``['HMDB0000148-Grm5']``.
+    spatial_key : str, default='spatial'
+        Key in `.obsm` that contains spatial coordinates.
+    k : int, default=5
+        Top-k senders/receivers used for computing the flow direction.
+    pos_idx : np.ndarray, optional
+        Column indices of `.obsm[spatial_key]` to use for flow computation.
+        Example: ``np.array([0, 2])`` uses x–z coordinates.
+    copy : bool, default=False
+        If True, return a modified copy of `adata`; otherwise modify in place.
     
     Returns
     -------
-    adata : anndata.AnnData
-        sum_metabolites, sum_metapathways, sum_customerlists can provided by user in one time.  
-        Vector fields describing signaling directions are added to ``.obsm``. For example:  
-        ``.obsm['MetaChat_sender_vf-databaseX-metA-senA']`` and ``.obsm['MetaChat_receiver_vf-databaseX-metA-senA']``
-        For each "metabolite_name" in "sum_metabolites", ``adata.obsm['MetaChat_sender_vf'+database_name+'-'+metabolite_name]`` and ``adata.obsm['MetaChat_receiver_vf'+database_name+'-'+metabolite_name]``.
-        For each "pathway_name" in "sum_metapathways", ``adata.obsm['MetaChat_sender_vf'+database_name+'-'+pathway_name]`` and ``adata.obsm['MetaChat_receiver_vf'+database_name+'-'+pathway_name]``.
-        For each "customerlist_name" in "sum_customerlists", ``adata.obsm['MetaChat_sender_vf'+database_name+'-'+customerlist_name]`` and ``adata.obsm['MetaChat_receiver_vf'+database_name+'-'+customerlist_name]``.
-        If copy=True, return the AnnData object and return None otherwise.
-
+    anndata.AnnData or None
+        Adds sender and receiver vector fields to `.obsm`, for example:  
+        - ``.obsm['MetaChat-vf-databaseX-sender-HMDB0000148']``  
+        - ``.obsm['MetaChat-vf-databaseX-receiver-HMDB0000148']``  
+        If ``copy=True``, returns the modified AnnData object; otherwise returns ``None``.
     """
-    # Check inputs
-    assert database_name is not None, "Please at least specify database_name."
+    
+    # ---- Input checks ----
+    assert database_name is not None, "Please specify database_name."
 
     obsp_names_sender = []
     obsp_names_receiver = []
@@ -275,13 +285,14 @@ def communication_flow(
             obsp_names_sender.append(database_name + '-sender-' + ms_pair)
             obsp_names_receiver.append(database_name + '-receiver-' + ms_pair)
 
-    obsp_names_sender.append(database_name+'-sender-total-total')
-    obsp_names_receiver.append(database_name+'-receiver-total-total')
-    if sum_metabolites is not None and sum_metapathways is not None and sum_customerlists is not None:
-        print("Neither sum_metabolites, sum_metapathways, sum_customerlists are provided, just calculate MCC for all signals")
+    obsp_names_sender.append(f"{database_name}-sender-total-total")
+    obsp_names_receiver.append(f"{database_name}-receiver-total-total")
 
-    pts = np.array( adata.obsm[spatial_key], float )
-    if not pos_idx is None:
+    if all(x is None for x in [sum_metabolites, sum_metapathways, sum_customerlists, sum_ms_pairs]):
+        print("No subset specified — computing MCC for all signals.")
+
+    pts = np.array( adata.obsm[spatial_key], float)
+    if pos_idx is not None:
         pts = pts[:,pos_idx]
 
     for i in range(len(obsp_names_sender)):
@@ -294,89 +305,6 @@ def communication_flow(
         P_receiver = adata.obsp[key_receiver]
         P_sum_sender = np.array(P_sender.sum(axis=1)).reshape(-1)
         P_sum_receiver = np.array(P_receiver.sum(axis=0)).reshape(-1)
-
-        # # ############################## try1 #################################
-        # sender_vf = np.zeros_like(pts)
-        # receiver_vf = np.zeros_like(pts)
-
-        # S_lil = P_sender.tolil()
-        # for j in range(P_sender.shape[0]):
-        #     tmp_idx = np.array( S_lil.rows[j], int )
-        #     tmp_data = np.array( S_lil.data[j], float )
-
-        #     if len(tmp_idx) == 0:
-        #         continue
-        #     elif len(tmp_idx) != 0:
-        #         yj = pts[tmp_idx,:]
-        #         yj_ =  np.sum(yj * tmp_data.reshape(-1,1))/ np.sum(tmp_data.reshape(-1,1)) 
-        #     sender_vf[j,:] = yj_ - pts[j,:]
-        
-        # S_lil = P_receiver.T.tolil()
-        # for j in range(P_receiver.shape[1]):
-        #     tmp_idx = np.array( S_lil.rows[j], int )
-        #     tmp_data = np.array( S_lil.data[j], float )
-
-        #     if len(tmp_idx) == 0:
-        #         continue
-        #     elif len(tmp_idx) != 0:
-        #         yj = pts[tmp_idx,:]
-        #         yj_ =  np.sum(yj * tmp_data.reshape(-1,1))/ np.sum(tmp_data.reshape(-1,1)) 
-        #     receiver_vf[j,:] = pts[j,:] - yj_
-
-        # adata.obsm["MetaChat-vf-"+obsp_names_sender[i]] = sender_vf
-        # adata.obsm["MetaChat-vf-"+obsp_names_receiver[i]] = receiver_vf
-        
-        # # ############################## try2 #################################
-        # MCC_vf = np.zeros_like(pts, dtype=float)
-
-        # S_sent = P_sender.tolil()       # rows: i->* (outflow from i)
-        # S_received = P_sender.T.tolil() # rows: j<-* (inflow to j)
-        # Tii = np.asarray(P_sender.diagonal(), dtype=float)  # self-loop strengths
-
-        # n = P_sender.shape[0]
-        # for j in range(n):
-
-        #     # -------- Outflow resultant from cell j: sum_i T[j,i] * unit(j->i) --------
-        #     cols = np.array(S_sent.rows[j], dtype=int)      # indices i where T[j,i] != 0
-        #     if cols.size > 0:
-        #         # direction j->i
-        #         vec_out = pts[cols, :] - pts[j, :]          # (m, 2)
-        #         # normalize rows to unit vectors
-        #         u_out = normalize(vec_out, norm='l2', axis=1)
-        #         w_out = np.asarray(S_sent.data[j], dtype=float)  # (m,)
-        #         v_out = (u_out * w_out[:, None]).sum(axis=0)     # (2,)
-        #     else:
-        #         v_out = np.zeros(2, dtype=float)
-
-        #     # -------- Inflow resultant to cell j: sum_i T[i,j] * unit(i->j) --------
-        #     rows = np.array(S_received.rows[j], dtype=int)  # indices i where T[i,j] != 0
-        #     if rows.size > 0:
-        #         # direction i->j  (note: vec_in = j - i)
-        #         vec_in = pts[j, :] - pts[rows, :]           # (m, 2)
-        #         u_in = normalize(vec_in, norm='l2', axis=1)
-        #         w_in = np.asarray(S_received.data[j], dtype=float)  # (m,)
-        #         v_in = (u_in * w_in[:, None]).sum(axis=0)            # (2,)
-        #     else:
-        #         v_in = np.zeros(2, dtype=float)
-
-        #     # -------- Self-loop cancellation vector from Tii --------
-        #     # Normalize inflow resultant to get its direction; if zero, no cancellation.
-        #     norm_in = float(np.linalg.norm(v_in))
-        #     if norm_in > 0:
-        #         in_dir = v_in / norm_in
-        #         # coefficient: (Tii - ||in||), clipped at 0 to avoid reversing direction
-        #         coeff = max(0, Tii[j] - norm_in)
-        #         v_self_cancel = in_dir * coeff
-        #     else:
-        #         v_self_cancel = np.zeros(2, dtype=float)
-
-        #     # -------- Final per-cell vector --------
-        #     MCC_vf[j, :] = v_out - v_self_cancel
-
-        # adata.obsm["MetaChat-vf-"+obsp_names_sender[i]] = MCC_vf
-        # adata.obsm["MetaChat-vf-"+obsp_names_receiver[i]] = MCC_vf
-                
-        ####################################################################
 
         sender_vf = np.zeros_like(pts)
         receiver_vf = np.zeros_like(pts)
@@ -433,8 +361,8 @@ def communication_flow(
     return adata if copy else None
 
 
-################## Group-level MCC ##################
-def summarize_group(X, clusterid, clusternames, n_permutations=100):
+# ================ Group-level MCC ================
+def _summarize_group(X, clusterid, clusternames, n_permutations=100):
     # Input a sparse matrix of cell signaling and output a pandas dataframe
     # for group-group signaling
     n = len(clusternames)
@@ -459,7 +387,7 @@ def summarize_group(X, clusterid, clusternames, n_permutations=100):
     df_p_value = pd.DataFrame(data=p_cluster, index=clusternames, columns=clusternames)
     return df_cluster, df_p_value
 
-def init_communication_group(_adata):
+def _init_communication_group(_adata):
     global adata
     adata = _adata
 
@@ -467,7 +395,7 @@ def _compute_group_result(args):
     group_name, clusterid, celltypes, summary, obsp_name, n_permutations = args
     key = 'MetaChat-' + obsp_name
     S = adata.obsp[key]
-    tmp_df, tmp_p_value = summarize_group(S, clusterid, celltypes, n_permutations)
+    tmp_df, tmp_p_value = _summarize_group(S, clusterid, celltypes, n_permutations)
     uns_key = 'MetaChat_group-' + group_name + '-' + obsp_name
     return (uns_key, {'communication_matrix': tmp_df, 'communication_pvalue': tmp_p_value})
 
@@ -486,48 +414,54 @@ def communication_group(
     copy: bool = False
 ):
     """
-    Function for summarizng metabolic MCC communication to group-level communication and computing p-values by permutating cell/spot labels.
+    Summarize metabolic communication to group-level MCC and compute p-values via label permutation.
 
     Parameters
     ----------
-    adata
-        The data matrix of shape ``n_obs`` × ``n_var``.
-        Rows correspond to cells or spots and columns to genes.
-    database_name
+    adata : anndata.AnnData
+        The data matrix of shape ``n_obs`` × ``n_var``. If compute MCC flow from specific metabolites, 
+        metapathways or customerlists, please run :func:`mc.tl.summary_communication` first.
+    database_name : str
         Name of the Metabolite-Sensor interaction database.
-    group_name
-        Group name of the cell annotation previously saved in ``adata.obs``. 
-    sum_metabolites
-        List of specific metabolites to summarize communication for. 
-        For example, sum_metabolites = ['HMDB0000148','HMDB0000674'].
-    sum_metapathways
-        List of specific metabolic pathways to summarize communication for.
-        For example, sum_metapathways = ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
-    sum_customerlists
-        Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.
-        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
-    n_permutations
-        Number of label permutations for computing the p-value.
-    random_seed
-        The numpy random_seed for reproducible random permutations.
-    copy
-        Whether to return a copy of the :class:`anndata.AnnData`.
+    group_name : str
+        Column key in ``adata.obs`` specifying cell or spot group labels.
+    summary : {'sender', 'receiver'}, default='sender'
+        Whether to summarize sender- or receiver-side communication.
+    sum_metabolites : list of str, optional
+        List of specific metabolites to summarize, e.g. ``['HMDB0000148', 'HMDB0000674']``.
+    sum_metapathways : list of str, optional
+        List of metabolic pathways to summarize, e.g. ``['Alanine, aspartate and glutamate metabolism', 'Glycerolipid Metabolism']``.
+    sum_customerlists : dict, optional
+        Custom metabolite–sensor pair groups to summarize.
+        Example: ``{'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')],
+                    'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}``.
+    sum_ms_pairs : list of str, optional
+        Specific metabolite–sensor pairs, e.g. ``['HMDB0000148-Grm5']``.
+    n_permutations : int, default=100
+        Number of random label permutations for p-value estimation.
+    use_parallel : bool, default=True
+        Whether to use multiprocessing.
+    n_jobs : int, default=16
+        Number of parallel worker processes.
+    copy : bool, default=False
+        If True, return a copy of the AnnData object; otherwise modify in place.
     
     Returns
     -------
-    adata : anndata.AnnData
-        Add group-level communication matrix to ``.uns['MetaChat_group-'+group_name+'-'+database_name+'-'+metabolite_name]``, ``.uns['MetaChat_group-'+group_name+'-'+database_name+'-'+pathway_name]`` or ``.uns['MetaChat_group-'+group_name+'-'+database_name+'-'+customerlist_name]``
-        The first key is the communication intensity matrix ['communication_matrix']
-        The second key is the p-value ['communication_pvalue'].
-        If copy=True, return the AnnData object and return None otherwise.
-
+    anndata.AnnData or None
+        Adds group-level communication results into:
+        ``.uns['MetaChat_group-{group_name}-{database_name}-{item_name}']``  
+        Each key contains a dict with:
+        - ``['communication_matrix']`` : group × group MCC intensity  
+        - ``['communication_pvalue']`` : permutation-based p-values  
+        If ``copy=True``, returns the modified AnnData object.
     """
 
-    # Check inputs
-    assert database_name is not None, "Please at least specify database_name."
-    assert group_name is not None, "Please at least specify group_name."
+    # ==== Input checks ====
+    assert database_name is not None, "Please specify database_name."
+    assert group_name is not None, "Please specify group_name."
 
-    celltypes = list( adata.obs[group_name].unique() )
+    celltypes = list(adata.obs[group_name].unique())
     celltypes.sort()
     for i in range(len(celltypes)):
         celltypes[i] = str(celltypes[i])
@@ -552,8 +486,9 @@ def communication_group(
 
     obsp_names.append(database_name + '-' + summary + '-total-total')
     
-    if sum_metabolites is None and sum_metapathways is None and sum_customerlists is None and sum_ms_pairs is None:
-        print("None of sum_metabolites, sum_metapathways, sum_customerlists, or sum_ms_pairs is provided. Just calculate group-level MCC for all signals.")
+    if all(x is None for x in [sum_metabolites, sum_metapathways, sum_customerlists, sum_ms_pairs]):
+        print("No specific summary provided — computing group-level MCC for all signals.")
+    
     # Check keys
     for i in range(len(obsp_names)):
         key = 'MetaChat-'+obsp_names[i]
@@ -561,10 +496,10 @@ def communication_group(
             raise KeyError(f"Please check whether the mc.tl.summary_communication function run or whether {key} are in adata.obsp.keys().")
 
     task_list = [(group_name, clusterid, celltypes, summary, name, n_permutations) for name in obsp_names]
-    
     results = []
+
     if use_parallel:
-        with Pool(processes=n_jobs, initializer=init_communication_group, initargs=(adata,)) as pool:
+        with Pool(processes=n_jobs, initializer=_init_communication_group, initargs=(adata,)) as pool:
             with tqdm(total=len(task_list), desc="  Computing group-level MCC", dynamic_ncols=True) as pbar:
                 for result in pool.imap_unordered(_compute_group_result, task_list):
                     results.append(result)
@@ -579,7 +514,7 @@ def communication_group(
     
     return adata if copy else None
 
-def init_spatial_permutation(_S_list, _bin_positions, _index_obsp_list, _bin_counts_ij, _bin_total_counts_ij):
+def _init_spatial_permutation(_S_list, _bin_positions, _index_obsp_list, _bin_counts_ij, _bin_total_counts_ij):
 
     global S_list
     global bin_positions
@@ -631,51 +566,61 @@ def communication_group_spatial(
     bins_num: int = 30,
     use_parallel: bool = True,
     n_jobs: int = 16,
-    copy: bool = False):
-    
+    copy: bool = False
+):    
     """
-    Function for summarizng metabolic MCC communication to group-level communication and computing p-values based on spaital distance distribution.
+    Function for summarizing metabolic MCC communication to group-level communication
+    and computing p-values based on spatial distance distribution.
 
     Parameters
     ----------
-    adata
-        The data matrix of shape ``n_obs`` × ``n_var``.
-        Rows correspond to cells or spots and columns to genes.
-    database_name
+    adata : anndata.AnnData
+        The data matrix with shape ``n_obs`` × ``n_var``. 
+        If compute MCC flow from specific metabolites, metapathways or customerlists, 
+        please run :func:`mc.tl.summary_communication` first.
+    database_name : str
         Name of the Metabolite-Sensor interaction database.
-    group_name
-        Group name of the cell annotation previously saved in ``adata.obs``. 
-    sum_metabolites
+    group_name : str
+        Key of cell/spot group annotation in ``adata.obs``.
+    summary : str, optional
+        'sender' or 'receiver'; defines which communication direction to summarize.
+    sum_metabolites : list, optional
         List of specific metabolites to summarize communication for. 
-        For example, sum_metabolites = ['HMDB0000148','HMDB0000674'].
-    sum_metapathways
+        Example: ['HMDB0000148','HMDB0000674'].
+    sum_metapathways : list, optional
         List of specific metabolic pathways to summarize communication for.
-        For example, sum_metapathways = ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
-    sum_customerlists
-        Dictionary of custom lists to summarize communication for. Each key represents a customer name and the value is a list of metabolite-sensor pairs.
-        For example, sum_customerlists = {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
-    n_permutations
-        Number of label permutations for computing the p-value.
-    bins_num
-        Number of bins for sampling based on spaital distance distribution.
-    random_seed
-        The numpy random_seed for reproducible random permutations.
-    copy
-        Whether to return a copy of the :class:`anndata.AnnData`.
+        Example: ['Alanine, aspartate and glutamate metabolism','Glycerolipid Metabolism'].
+    sum_customerlists : dict, optional
+        Custom dictionaries of metabolite–sensor pairs.
+        Example: {'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')],
+                  'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}
+    sum_ms_pairs : list of str, optional
+        Specific metabolite–sensor pairs, e.g. ``['HMDB0000148-Grm5']``.
+    n_permutations : int, optional
+        Number of label permutations for computing p-values (default: 100).
+    bins_num : int, optional
+        Number of bins for sampling based on spatial distance distribution (default: 30).
+    use_parallel : bool, optional
+        Whether to run the computation in parallel using multiprocessing (default: True).
+    n_jobs : int, optional
+        Number of worker processes for parallelization (default: 16).
+    copy : bool, optional
+        Whether to return a modified copy of the :class:`anndata.AnnData` object.
     
     Returns
     -------
-    adata : anndata.AnnData
-        Add group-level communication matrix to ``.uns['MetaChat_group_spatial-'+group_name+'-'+database_name+'-'+metabolite_name]``, ``.uns['MetaChat_group-'+group_name+'-'+database_name+'-'+pathway_name]`` or ``.uns['MetaChat_group-'+group_name+'-'+database_name+'-'+customerlist_name]``
-        The first key is the communication intensity matrix ['communication_matrix']
-        The second key is the p-value ['communication_pvalue'].
-        If copy=True, return the AnnData object and return None otherwise.
-
+    anndata.AnnData or None
+        Adds group-level communication results to:
+        ``.uns['MetaChat_group_spatial-{group_name}-{database_name}-{signal_name}']``,
+        where each entry is a dictionary containing:
+            - ``'communication_matrix'`` : mean MCC intensity between groups
+            - ``'communication_pvalue'`` : permutation-based p-value matrix
+        Returns the AnnData object if ``copy=True``, otherwise modifies in place.
     """
 
-    # Check inputs
-    assert database_name is not None, "Please at least specify database_name."
-    assert group_name is not None, "Please at least specify group_name."
+    # ==== Check inputs ====
+    assert database_name is not None, "Please specify database_name."
+    assert group_name is not None, "Please specify group_name."
 
     celltypes = sorted(map(str, adata.obs[group_name].unique()))
     clusterid = np.array(adata.obs[group_name], str)
@@ -699,8 +644,8 @@ def communication_group_spatial(
 
     obsp_names.append(database_name + '-' + summary + '-total-total')
 
-    if sum_metabolites is None and sum_metapathways is None and sum_customerlists is None and sum_ms_pairs is None:
-        print("None of sum_metabolites, sum_metapathways, sum_customerlists, or sum_ms_pairs is provided. Just calculate group-level MCC for all signals.")
+    if all(x is None for x in [sum_metabolites, sum_metapathways, sum_customerlists, sum_ms_pairs]):
+        print("No specific summary provided — computing group-level MCC for all signals.")
 
     # Check keys
     for i in range(len(obsp_names)):
@@ -751,7 +696,7 @@ def communication_group_spatial(
     # Initialize global variables once for the pool
     results = []
     if use_parallel:
-        with Pool(processes=n_jobs, initializer=init_spatial_permutation,
+        with Pool(processes=n_jobs, initializer=_init_spatial_permutation,
                 initargs=(S_list, bin_positions, index_obsp_list, bin_counts_ij, bin_total_counts_ij)) as pool:
             with tqdm(total=len(perm_tasks), desc="  Computing group-level MCC", dynamic_ncols=True) as pbar:
                 for result in pool.imap_unordered(_compute_spatial_group_result, perm_tasks):
@@ -784,44 +729,50 @@ def communication_group_spatial(
     
     return adata if copy else None
 
-################## MCC pathway summary ##################
-def summary_pathway(adata: anndata.AnnData,
-                    database_name: str = None,
-                    group_name: str = None,
-                    summary: str = 'sender',
-                    sender_group: str = None,
-                    receiver_group: str = None,
-                    permutation_spatial: bool = False):
+# ================ MCC pathway summary ================
+def summary_pathway(
+    adata: anndata.AnnData,
+    database_name: str = None,
+    group_name: str = None,
+    summary: str = 'sender',
+    sender_group: str = None,
+    receiver_group: str = None,
+    permutation_spatial: bool = False
+):
     """
-    Function for summarizng MCC pathway pattern given specific sender group and receiver group.
+    Summarize MCC (Metabolite–Sensor Communication) patterns between specific sender
+    and receiver groups, and rank metabolic and sensor pathways.
 
     Parameters
     ----------
-    adata
+    adata : anndata.AnnData
         The data matrix of shape ``n_obs`` × ``n_var``.
-        Rows correspond to cells or spots and columns to genes.
-    database_name
+    database_name : str
         Name of the Metabolite-Sensor interaction database.
-    group_name
+    group_name : str
         Group name of the cell annotation previously saved in ``adata.obs``. 
-    sender_group
+    summary : str, default='sender'
+        The communication summary type ('sender' or 'receiver').
+    sender_group : str
         Name of the sender group
-    receiver_group
+    receiver_group : str
         Name of the receiver group
-    permutation_spatial
+    permutation_spatial : bool, default=False
         Whether to use results from ``mc.tl.communication_group_spatial``.
     
     Returns
     -------
     metapathway_rank : pd.DataFrame
-        Ranking of metabolic pathways.
+        Ranking of metabolic pathways by communication score and p-value.
     senspathway_rank : pd.DataFrame
-        Ranking of sensor's pathways.
+        Ranked sensor pathways by HITS authority score.
     ms_result : pd.DataFrame
-        The data frame of communication intensity between meatbolic pathway and sensor pathway.
+        Matrix of summed communication intensity between metabolic and sensor pathways.
+    metapathway_pair_contributions : dict[str, pd.DataFrame]
+        For each metabolic pathway, detailed metabolite–sensor pair contributions.
     """
     
-    # Check inputs
+    # ==== Check inputs ====
     assert database_name is not None, "Please at least specify database_name."
     assert group_name is not None, "Please at least specify group_name."
     assert sender_group is not None, "Please at least specify sender_group."
@@ -921,7 +872,7 @@ def summary_pathway(adata: anndata.AnnData,
 
     return metapathway_rank, senspathway_rank, ms_result, metapathway_pair_contributions
 
-################## MCC remodelling ##################
+# ================= MCC remodelling =================
 def communication_responseGenes(
     adata: anndata.AnnData,
     adata_raw: anndata.AnnData,
@@ -929,10 +880,10 @@ def communication_responseGenes(
     metabolite_name: str = None,
     metapathway_name: str = None,
     customerlist_name: str = None,
+    ms_pairs_name: str = None,
     group_name: str = None,
     subgroup: list = None,
     summary: str = 'receiver',
-    n_var_genes: int = None,
     var_genes = None,
     n_deg_genes: int = None,
     nknots: int = 6,
@@ -940,24 +891,30 @@ def communication_responseGenes(
     deg_pvalue_cutoff: float = 0.05,
 ):
     """
-    Function for identifying signals dependent genes
+    Identify signal-dependent genes responding to MCC communication patterns.
 
     Parameters
     ----------
-    adata
+    adata : anndata.AnnData
         adata.AnnData object after running inference function ``mc.tl.metabolic_communication``.
-    adata_raw
+    adata_raw : anndata.AnnData
         adata.AnnData object with raw spatial transcriptome data.
-    database_name
+    database_name : str
         Name of the Metabolite-Sensor interaction database.
-    metabolite_name
+    metabolite_name : str, optional
         Name of a specific metabolite to detect response genes. For example, metabolite_name = 'HMDB0000148'.
-    metapathway_name
+    metapathway_name : str, optional
         Name of a specific metabolic pathways to detect response genes. For example, metabolite_name = 'Alanine, aspartate and glutamate metabolism'.
-    customerlist_name
+    customerlist_name : str, optional
         Name of a specific customerlist to detect response genes. For example, customerlist_name = 'CustomerA'.
-    summary
-        'sender' or 'receiver'
+    ms_pairs_name : str, optional
+        Name of a specific metabolite-sensor pairs to detect response genes. For example, ms_pairs_name = 'HMDB0000148-Grm5'.
+    group_name : str, optional
+        Grouping column name in ``adata.obs`` for selecting subgroups.
+    subgroup : list, optional
+        Subset of groups to include.
+    summary : {'sender', 'receiver'}, default='receiver'
+        Specify whether to analyze sender or receiver side.
     n_var_genes
         The number of most variable genes to test.
     var_genes
@@ -977,9 +934,9 @@ def communication_responseGenes(
     df_deg: pd.DataFrame
         A data frame of deg analysis results, including Wald statistics, degree of freedom, and p-value.
     df_yhat: pd.DataFrame
-        A data frame of smoothed gene expression values.
-    
+        A data frame of smoothed gene expression values.   
     """
+
     # setup R environment
     import rpy2
     import anndata2ri
@@ -994,8 +951,6 @@ def communication_responseGenes(
     anndata2ri.activate()
     ro.numpy2ri.activate()
     ro.pandas2ri.activate()
-    
-    
     
     adata_deg_raw = adata_raw.copy()
     adata_deg_var = adata_raw.copy()
@@ -1028,26 +983,16 @@ def communication_responseGenes(
         adata_processed = adata_processed[adata_processed.obs[group_name].isin(subgroup)].copy()
     adata_deg_raw = adata_deg_raw[adata_processed.obs_names].copy()
 
-    # if n_var_genes is None:
-    #     sc.pp.highly_variable_genes(adata_deg_var, min_mean=0.0125, max_mean=3, min_disp=0.5)
-    # elif not n_var_genes is None:
-    #     sc.pp.highly_variable_genes(adata_deg_var, n_top_genes=n_var_genes)
-    # if var_genes is None:
-    #     adata_deg_raw = adata_deg_raw[:, adata_deg_var.var.highly_variable]
-    # else:
-    #     adata_deg_raw = adata_deg_raw[:, var_genes]
-    # del adata_deg_var
-
     if summary == 'sender':
         summary_abbr = 's'
     else:
         summary_abbr = 'r'
 
-    non_none_count = sum(x is not None for x in [metabolite_name, metapathway_name, customerlist_name])
+    non_none_count = sum(x is not None for x in [metabolite_name, metapathway_name, customerlist_name, ms_pairs_name])
     if non_none_count > 1:
         raise ValueError("Only one of 'metabolite_name', 'metapathway_name', or 'customerlist_name' can be specified.")
-    
-    if metabolite_name is None and metapathway_name is None and customerlist_name is None:
+
+    if metabolite_name is None and metapathway_name is None and customerlist_name is None and ms_pairs_name is None:
         sum_name = 'total-total'
         obsm_name = ''
     elif metabolite_name is not None:
@@ -1059,6 +1004,9 @@ def communication_responseGenes(
     elif customerlist_name is not None:
         sum_name = customerlist_name
         obsm_name = '-customer'
+    elif ms_pairs_name is not None:
+        sum_name = ms_pairs_name
+        obsm_name = ''
 
     comm_sum = adata_processed.obsm['MetaChat-' + database_name + "-sum-" + summary + obsm_name][summary_abbr + '-' + sum_name].values.reshape(-1,1)
     cell_weight = np.ones_like(comm_sum).reshape(-1,1)
@@ -1075,9 +1023,7 @@ def communication_responseGenes(
     ro.r(string_fitGAM)
     ro.r('assoRes <- data.frame( associationTest(sce, global=FALSE, lineage=TRUE) )')
     ro.r('assoRes <- assoRes[!is.na(assoRes[,"waldStat_1"]),]')
-    # ro.r('assoRes[is.nan(assoRes[,"waldStat_1"]),"waldStat_1"] <- 0.0')
-    # ro.r('assoRes[is.nan(assoRes[,"df_1"]),"df_1"] <- 0.0')
-    # ro.r('assoRes[is.nan(assoRes[,"pvalue_1"]),"pvalue_1"] <- 1.0')
+
     with localconverter(ro.pandas2ri.converter):
         df_assoRes = ro.r['assoRes']
     ro.r('assoRes = assoRes[assoRes[,"pvalue_1"] <= %f,]' % deg_pvalue_cutoff)
@@ -1117,37 +1063,43 @@ def communication_responseGenes_cluster(
 
     Parameters
     ----------
-    df_deg
-        The deg analysis summary data frame obtained by running ``ml.tl.communication_response_genes``.
-        Each row corresponds to one tested genes and columns include "waldStat" (Wald statistics), "df" (degrees of freedom), and "pvalue" (p-value of the Wald statistics).
-    df_yhat
-        The fitted (smoothed) gene expression pattern obtained by running ``ml.tl.communication_responseGenes``.
-    deg_clustering_npc
-        Number of PCs when performing PCA to cluster gene expression patterns
-    deg_clustering_knn
-        Number of neighbors when constructing the knn graph for leiden clustering.
-    deg_clustering_res
-        The resolution parameter for leiden clustering.
-    n_deg_genes
-        Number of top deg genes to cluster.
-    p_value_cutoff
-        The p-value cutoff for genes to be included in clustering analysis.
+    df_deg : pd.DataFrame
+        DEG summary DataFrame from ``mc.tl.communication_responseGenes``.
+        Each row corresponds to a tested gene with columns including:
+        "waldStat" (Wald statistics), "df" (degrees of freedom), and "pvalue" (p-value).
+    df_yhat : pd.DataFrame
+        Smoothed gene expression patterns (fitted values) from ``mc.tl.communication_responseGenes``.
+    deg_clustering_npc : int, default=10
+        Number of principal components to retain for clustering.
+    deg_clustering_knn : int, default=5
+        Number of neighbors when constructing the KNN graph for Leiden clustering.
+    deg_clustering_res : float, default=1.0
+        Resolution parameter for Leiden clustering.
+    n_deg_genes : int, default=200
+        Number of top DE genes (ranked by Wald statistics) to include in clustering.
+    p_value_cutoff : float, default=0.05
+        p-value cutoff for selecting DE genes to cluster.
 
     Returns
     -------
     df_deg_clus: pd.DataFrame
-        A data frame of clustered genes.
+        Metadata table of clustered DE genes, including columns:
+        ['waldStat', 'df', 'pvalue', 'cluster'].
     df_yhat_clus: pd.DataFrame
         The fitted gene expression patterns of the clustered genes
-
     """
-    df_deg = df_deg[df_deg['pvalue'] <= p_value_cutoff]
+
+    df_deg = df_deg[df_deg['pvalue'] <= p_value_cutoff].copy()
     n_deg_genes = min(n_deg_genes, df_deg.shape[0])
     idx = np.argsort(-df_deg['waldStat'])
     df_deg = df_deg.iloc[idx[:n_deg_genes]]
     yhat_scaled = df_yhat.loc[df_deg.index]
     x_pca = PCA(n_components=deg_clustering_npc, svd_solver='full').fit_transform(yhat_scaled.values)
-    cluster_labels = leiden_clustering(x_pca, k=deg_clustering_knn, resolution=deg_clustering_res, input='embedding')
+    cluster_labels = leiden_clustering(
+        x_pca, 
+        k=deg_clustering_knn, 
+        resolution=deg_clustering_res, 
+        input='embedding')
 
     data_tmp = np.concatenate((df_deg.values, cluster_labels.reshape(-1,1)),axis=1)
     df_metadata = pd.DataFrame(data=data_tmp, index=df_deg.index,
@@ -1157,8 +1109,8 @@ def communication_responseGenes_cluster(
 def communication_responseGenes_keggEnrich(
     gene_list: list = None,
     gene_sets: str = "KEGG_2021_Human",
-    organism: str = "Human"):
-
+    organism: str = "Human"
+):
     """
     Function for performing KEGG enrichment analysis on a given list of response genes.
 

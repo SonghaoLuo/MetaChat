@@ -215,157 +215,6 @@ def plot_communication_flow(
     )
 
     return ax, coords_plot, V_plot
-
-def plot_communication_responseGenes(
-    df_deg: pd.DataFrame,
-    df_yhat: pd.DataFrame,
-    show_gene_names: bool = True,
-    top_ngene_per_cluster: int = -1,
-    colormap: str = 'magma',
-    cluster_colormap: str = 'Plotly',
-    color_range: tuple = None,
-    font_scale: float = 1,
-    figsize: tuple = (10,10),
-    plot_savepath: str = None,
-    return_genes: bool = False
-):
-    """
-    Plot the smoothed gene expression profiles of metabolic cell communication response genes.
-
-    This function visualizes the response genes inferred from metabolic cell communication analysis. 
-    Genes are grouped by response clusters and displayed as a heatmap, where columns 
-    correspond to genes and rows represent the order of received signals.
-
-    The function allows highlighting top-ranked genes per cluster based on the Wald statistic 
-    and sorting both genes and clusters according to their expression peak locations.
-
-    This function should be run after :func:`mc.tl.communication_responseGenes` and :func:`mc.tl.communication_responseGenes_cluster`.
-
-    Parameters
-    ----------
-    df_deg : pandas.DataFrame
-        DataFrame results of response gene analysis from :func:`mc.tl.communication_responseGenes` and :func:`mc.tl.communication_responseGenes_cluster`.
-
-    df_yhat : pandas.DataFrame
-        DataFrame containing smoothed and normalized expression values of the same genes 
-
-    show_gene_names : bool, default=True
-        Whether to show gene names as x-axis tick labels in the heatmap.
-
-    top_ngene_per_cluster : int, default=-1
-        Number of top genes to display per cluster.  
-        If set to a non-negative value, only the top-ranked genes (by Wald statistic) 
-        within each cluster are plotted.  
-        If ``-1``, all genes are included.
-
-    colormap : str, default='magma'
-        Colormap used for expression values (passed to seaborn/Matplotlib).
-
-    cluster_colormap : str, default='Plotly'
-        Qualitative colormap used to color gene clusters.  
-        Accepts predefined names such as ``'Plotly'``, ``'Light24'``, ``'Dark24'``, or ``'Alphabet'``.
-
-    color_range : tuple, optional
-        Tuple ``(vmin, vmax)`` specifying the lower and upper limits for expression color scaling.  
-        Values outside this range are clipped. If ``None``, full dynamic range is used.
-
-    font_scale : float, default=1
-        Scaling factor for seaborn font sizes.
-
-    figsize : tuple of float, default=(10, 10)
-        Size of the output figure (width, height).
-
-    plot_savepath : str, optional
-        File path to save the figure.  
-        If ``None``, the figure is not saved.
-
-    return_genes : bool, default=False
-        Whether to return the list of genes displayed in the plot.
-
-    Returns
-    -------
-    selected_genes : list of str, optional
-        If ``return_genes=True``, returns a list of gene names in the order they appear 
-        in the heatmap. Otherwise, returns ``None``.
-
-    Notes
-    -----
-    - Clusters are first sorted by the mean position of the peak expression (``np.argmax`` of smoothed values).  
-    - Within each cluster, genes are ranked by the Wald statistic, and optionally truncated 
-      to the top ``N`` genes.  
-    - The resulting heatmap displays genes grouped and color-coded by cluster assignment.
-    - This function relies on :func:`get_cmap_qualitative` to obtain qualitative color palettes.
-    """
-
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-
-    cmap = get_cmap_qualitative(cluster_colormap)
-    wald_stats = df_deg['waldStat'].values
-    labels = np.array(df_deg['cluster'].values, int)
-    nlabel = np.max(labels) + 1
-    yhat_mat = df_yhat.values
-
-    if color_range is not None:
-        yhat_mat[yhat_mat > color_range[1]] = color_range[1]
-        yhat_mat[yhat_mat < color_range[0]] = color_range[0]
-
-    # Sort clusters by mean peak location
-    peak_locs = []
-    for i in range(nlabel):
-        tmp_idx = np.where(labels == i)[0]
-        tmp_y = yhat_mat[tmp_idx, :]
-        peak_locs.append(np.mean(np.argmax(tmp_y, axis=1)))
-    cluster_order = np.argsort(peak_locs)
-
-    # Get peak per gene
-    gene_peak_positions = np.argmax(yhat_mat, axis=1)
-
-    idx = np.array([], dtype=int)
-    col_colors = []
-
-    for i in cluster_order:
-        tmp_idx = np.where(labels == i)[0]
-
-        # Step 1: sort by waldStat descending
-        wald_in_cluster = wald_stats[tmp_idx]
-        top_order = np.argsort(-wald_in_cluster)
-
-        if top_ngene_per_cluster >= 0:
-            top_ngene = min(len(tmp_idx), top_ngene_per_cluster)
-        else:
-            top_ngene = len(tmp_idx)
-
-        selected_idx = tmp_idx[top_order[:top_ngene]]
-
-        # Step 2: sort those by peak position
-        peak_pos_selected = gene_peak_positions[selected_idx]
-        final_order = np.argsort(peak_pos_selected)
-        sorted_idx = selected_idx[final_order]
-
-        idx = np.concatenate((idx, sorted_idx))
-        for _ in range(len(sorted_idx)):
-            col_colors.append(cmap[i % len(cmap)])
-
-    # Plot
-    sns.set(font_scale=font_scale)
-    g = sns.clustermap(df_yhat.iloc[idx].T,
-                       row_cluster=False,
-                       col_cluster=False,
-                       col_colors=col_colors,
-                       cmap=colormap,
-                       xticklabels=show_gene_names,
-                       yticklabels=False,
-                       linewidths=0,
-                       figsize=figsize)
-    g.ax_heatmap.invert_yaxis()
-    g.cax.set_position([.1, .2, .03, .45])
-
-    if plot_savepath is not None:
-        plt.savefig(plot_savepath, dpi=300)
-
-    if return_genes:
-        return list(df_deg.iloc[idx].index)
     
 def plot_group_communication_chord(
     adata: anndata.AnnData,
@@ -776,176 +625,6 @@ def plot_group_communication_heatmap(
     
     return ax
 
-def plot_metapathway_pair_contribution_bubbleplot(
-    pathway_pair_contributions: dict,
-    pathway_name: str,
-    smallest_size: float = 10,
-    cmap: str = 'blue',
-    plot_title: str = None,
-    figsize: tuple = (12, 5),
-    ax: Optional[mpl.axes.Axes] = None,
-    plot_savepath: str = None
-):
-    """
-    Plot a bubble chart showing metabolite–sensor contributions for a selected metabolic pathway.
-
-    This function visualizes the contribution strength of metabolite–sensor pairs
-    involved in a specific metabolic pathway as a bubble plot.
-    Each bubble corresponds to a metabolite–sensor interaction, with color and size
-    indicating the relative communication score. Missing or zero scores are displayed
-    in gray bubbles with distinct outlines.
-
-    Parameters
-    ----------
-    pathway_pair_contributions : dict
-        This object is typically generated from :func:`mc.tl.summary_pathway`
-    pathway_name : str
-        The name of the metabolic pathway to visualize.
-    smallest_size : float, default=10
-        Base bubble size for missing (NA) or zero communication scores.
-    cmap : {"blue", "green", "red"}, default="blue"
-        Color gradient preset defining the color scale for communication scores.
-    plot_title : str, optional
-        Custom title for the figure.
-    figsize : tuple of float, default=(12, 5)
-        Figure size (width, height).
-    ax : matplotlib.axes.Axes, optional
-        Existing Matplotlib axis to draw on. If ``None``, a new figure and axis are created.
-    plot_savepath : str, optional
-        File path to save the figure (e.g., ``"pathway_bubbleplot.pdf"``).  
-        The format is inferred from the file extension. If ``None``, the plot is displayed
-        interactively without saving.
-
-    Returns
-    -------
-    ax : matplotlib.axes.Axes
-        Matplotlib axis containing the generated bubble plot.
-
-    Notes
-    -----
-    - This function visualizes pathway-level MCC contributions, and is typically used
-      after running pathway aggregation steps within MetaChat analysis.
-    - Bubbles are categorized into quantile-based bins (≤1/3, 1/3–2/3, >2/3 quantiles)
-      with increasing color intensity and bubble size.
-    - Missing or zero values are shown in gray to distinguish from active interactions.
-    - Legends indicate bubble categories corresponding to relative contribution scores.
-    """
-
-    # ==== Check inputs ====
-    if pathway_name not in pathway_pair_contributions:
-        raise ValueError(f"Pathway '{pathway_name}' not found in pathway_pair_contributions.")
-    
-    if cmap == 'blue':
-        grad1, grad2, grad3 = '#a6cee3', '#1f78b4', '#08306b'
-    elif cmap == 'green':
-        grad1, grad2, grad3 = '#d9f0d3', '#66c2a4', '#238b45'
-    elif cmap == 'red':
-        grad1, grad2, grad3 = '#fcbba1', '#fc9272', '#de2d26'
-    else:
-        raise ValueError(f"Unknown cmap '{cmap}'. Choose from 'blue','green','red'.")
-
-    # ==== Prepare data ====
-    df = pathway_pair_contributions[pathway_name].copy()
-    matrix = df.pivot(
-        index="Metabolite.Name",
-        columns="Sensor.Gene",
-        values="communication_score"
-    )
-
-    row_sums = matrix.sum(axis=1)
-    metabolites = row_sums.sort_values(ascending=True).index.tolist()
-    sensors = matrix.columns.tolist()
-
-    # ==== Construct plotting DataFrame ====
-    data = []
-    for i, met in enumerate(metabolites):
-        for j, sen in enumerate(sensors):
-            data.append({
-                "x": j, "y": i,
-                "Score": matrix.loc[met, sen],
-                "Metabolite": met, "Sensor": sen
-            })
-    plot_df = pd.DataFrame(data)
-
-    pos = plot_df["Score"].dropna()
-    pos = pos[pos > 0]
-    q1, q2 = (pos.quantile([0.33, 0.66]) if len(pos) > 0 else (0, 0))
-
-    def style(row):
-        v = row["Score"]
-        if pd.isna(v):
-            return {"color": "#D3D3D3", "size": smallest_size, "edge": False}
-        elif v == 0:
-            return {"color": "#D3D3D3", "size": smallest_size, "edge": True}
-        elif v <= q1:
-            return {"color": grad1,       "size": smallest_size + 20, "edge": True}
-        elif v <= q2:
-            return {"color": grad2,       "size": smallest_size + 40, "edge": True}
-        else:
-            return {"color": grad3,       "size": smallest_size + 60, "edge": True}
-
-    styles = plot_df.apply(style, axis=1)
-    plot_df["color"] = [s["color"] for s in styles]
-    plot_df["size"]  = [s["size"]  for s in styles]
-    plot_df["edge"]  = [s["edge"]  for s in styles]
-
-    # ==== Draw plot ====
-    if ax is None:
-        fig, ax = plt.subplots(figsize=figsize)
-    else:
-        fig = ax.figure
-
-    for _, row in plot_df.iterrows():
-        ax.scatter(
-            row["x"], row["y"],
-            s=row["size"],
-            c=row["color"],
-            edgecolors="black" if row["edge"] else row["color"],
-            linewidths=0.5 if row["edge"] else 0,
-            zorder=2
-        )
-    
-    ax.set_xticks(range(len(sensors)))
-    ax.set_xticklabels(sensors, rotation=45, ha="center")
-    ax.tick_params(axis='x', which='both', length=0)
-    ax.set_yticks(range(len(metabolites)))
-    ax.set_yticklabels(metabolites)
-    ax.tick_params(axis='y', which='both', length=0)
-    ax.grid(axis='y', color='lightgrey', linestyle='-', linewidth=0.5, zorder=1)
-    ax.set_xlim(-0.5, len(sensors)-0.5)
-    ax.set_xlabel("Sensors")
-    ax.set_ylabel("Metabolites")
-    ax.set_title(plot_title or f"Metabolite–Sensor contributions in {pathway_name}")
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-
-    legend_elements = [
-        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size),
-               markerfacecolor='#D3D3D3', markeredgecolor='none', label='NA'),
-        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size),
-               markerfacecolor='#D3D3D3', markeredgecolor='black', label='score = 0'),
-        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size + 20),
-               markerfacecolor=grad1, markeredgecolor='black', label='<= 1/3 quantile'),
-        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size + 40),
-               markerfacecolor=grad2, markeredgecolor='black', label='1/3–2/3 quantile'),
-        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size + 60),
-               markerfacecolor=grad3, markeredgecolor='black', label='> 2/3 quantile'),
-    ]
-    ax.legend(
-        handles=legend_elements,
-        title="Score categories",
-        bbox_to_anchor=(1.05, 1),
-        loc='upper left'
-    )
-
-    plt.tight_layout()
-
-    # ==== Save ====
-    if plot_savepath:
-        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
-
-    return ax
-
 def plot_group_communication_compare_hierarchy_diagram(
     adata_A: anndata.AnnData,
     adata_B: anndata.AnnData,
@@ -1215,7 +894,6 @@ def plot_group_communication_compare_hierarchy_diagram(
 
     return ax
 
-############################################################################################################################
 def plot_MSpair_contribute_group(
     adata: anndata.AnnData,
     database_name: str = None,
@@ -1338,110 +1016,6 @@ def plot_MSpair_contribute_group(
     
     return ax
 
-def plot_communication_responseGenes_keggEnrich(
-    df_result: pd.DataFrame,
-    organism: str = "Human",
-    show_term_order: list = [0,1,2,3,4],
-    cmap: str = 'green',
-    maxshow_gene: int = 5,
-    figsize: tuple = (6,6),
-    ax: Optional[mpl.axes.Axes] = None,  
-    plot_savepath: str = None
-):
-    """
-    Plot a horizontal bar chart summarizing KEGG enrichment results of MCC response genes.
-
-    This function visualizes the top enriched KEGG pathways identified from
-    :func:`mc.tl.communication_responseGenes`, with bar length representing 
-    -log10(p-value) and text annotations showing top associated genes.
-
-    Parameters
-    ----------
-    df_result : pandas.DataFrame
-        The KEGG enrichment results table returned by :func:`mc.tl.communication_responseGenes`.
-    organism : {"Human", "Mouse"}, default="Human"
-        If set to ``"Mouse"``, gene names are capitalized (first letter uppercase, rest lowercase).
-    show_term_order : list of int, default=[0,1,2,3,4]
-        List of row indices (in ``df_result``) specifying which pathways to show and their order.
-        If ``None``, the top 5 terms will be displayed.
-    cmap : {"green", "blue", "red"}, default="green"
-        Color theme for the barplot.
-    maxshow_gene : int, default=10
-        Maximum number of genes to display under each pathway.
-    figsize : tuple of float, default=(6, 6)
-        Figure size (width, height).
-    ax : matplotlib.axes.Axes, optional
-        Existing Matplotlib axis to draw the barplot on. If ``None``, a new figure and axis are created.
-    plot_savepath : str, optional
-        File path to save the figure (e.g., ``"results/kegg_enrich.pdf"``).  
-        The format is inferred from the file extension. If ``None``, the plot is shown interactively.
-
-    Returns
-    -------
-    ax : matplotlib.axes.Axes
-        Matplotlib axis containing the bar chart.
-
-    Notes
-    -----
-    - This visualization summarizes KEGG enrichment performed by
-      :func:`mc.tl.communication_responseGenes`.
-    - Each bar represents one KEGG pathway, with its significance shown as -log10(p-value).
-    - Up to ``maxshow_gene`` top genes per pathway are displayed below the bar label.
-    """
-    
-    # ==== Prepare data ====
-    df_show = df_result.iloc[show_term_order].copy()
-    x_names = df_show['Term'].tolist()
-    x_names.reverse()
-
-    x_to_num = {p[1]: p[0] for p in enumerate(x_names)}
-    path_to_genes = {}
-    path_to_value = {}
-
-    for _, row in df_show.iterrows():
-        gene_list = row['Genes'].split(';')
-        # Capitalize gene names if organism is Mouse
-        if organism.lower() == "mouse":
-            gene_list = [g.capitalize() for g in gene_list]
-        genename_show = gene_list[:maxshow_gene]
-        genename_show = ';'.join(genename_show)
-        path_to_genes[row['Term']] = genename_show
-        path_to_value[row['Term']] = -np.log10(row['P-value'])
-
-    bar_color = {'blue': '#C9E3F6',
-                 'green': '#ACD3B7',
-                 'red': '#F0C3AC'}
-    text_color = {'blue': '#2D3A8C',
-                  'green': '#2E5731',
-                  'red': '#AD392F'}
-
-    if ax is None:
-        fig, ax = plt.subplots(figsize=figsize)
-    else:
-        fig = ax.figure
-
-    x = [x_to_num[v] for v in x_names]
-    y = [path_to_value[v] for v in x_names]
-    ax.barh(x, y, color=bar_color[cmap], height=0.5) 
-    ax.set_facecolor('white')
-
-    for v in x_names:
-        ax.text(0 + 0.05, x_to_num[v], v, color='black', ha='left', va='center')
-        ax.text(0 + 0.05, x_to_num[v] - 0.4, path_to_genes[v], color=text_color[cmap], ha='left', va='center')
-
-    ax.set_yticklabels([])
-    ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_color('black')
-    ax.set_xticks([t + 0.5 for t in ax.get_xticks()], minor=True)
-    ax.set_ylim([-0.7, max(x) + 1])
-    ax.set_xlabel('-log10(p-value)')
-    ax.set_ylabel('KEGG pathway')
-
-    if plot_savepath:
-        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
-
-    return ax
-
 def plot_summary_pathway(
     ms_result: pd.DataFrame = None,
     metapathway_rank: pd.DataFrame = None,
@@ -1551,344 +1125,434 @@ def plot_summary_pathway(
     if plot_savepath:
         fig.write_image(plot_savepath, width=figsize[0] * 100, height=figsize[1] * 100)
 
-    return fig    
+    return fig
 
-def plot_graph_connectivity(
-    G: nx.Graph,
-    node_size: float = 10.0,
-    linewidths: float = 1.0,
-    width: float = 1.0,
-    show_weights: bool = False,
-    weight_fontsize: int = 8,
-    figsize: tuple = (8, 8),
+def plot_metapathway_pair_contribution_bubbleplot(
+    pathway_pair_contributions: dict,
+    pathway_name: str,
+    smallest_size: float = 10,
+    cmap: str = 'blue',
+    plot_title: str = None,
+    figsize: tuple = (12, 5),
+    ax: Optional[mpl.axes.Axes] = None,
     plot_savepath: str = None
 ):
     """
-    Plot a 2D visualization of a graph showing connectivity between nodes and edges.
+    Plot a bubble chart showing metabolite–sensor contributions for a selected metabolic pathway.
 
-    This function visualizes a graph structure (e.g., communication connectivity or
-    spatial relationships) using node coordinates as (x, y) positions.  
-    Optionally, edge weights can be displayed as labels.
+    This function visualizes the contribution strength of metabolite–sensor pairs
+    involved in a specific metabolic pathway as a bubble plot.
+    Each bubble corresponds to a metabolite–sensor interaction, with color and size
+    indicating the relative communication score. Missing or zero scores are displayed
+    in gray bubbles with distinct outlines.
 
     Parameters
     ----------
-    G : networkx.Graph
-        Input graph where each node represents a 2D point (tuple of x, y coordinates)
-        and edges may have an optional ``'weight'`` attribute.
-    node_size : float, default=10.0
-        Marker size of nodes.
-    linewidths : float, default=1.0
-        Line width of node borders.
-    width : float, default=1.0
-        Width of edges.
-    show_weights : bool, default=False
-        Whether to display numerical edge weights on the plot.
-    weight_fontsize : int, default=8
-        Font size of edge weight annotations (effective only if ``show_weights=True``).
-    figsize : tuple of float, default=(8, 8)
-        Figure size (width, height) in inches.
+    pathway_pair_contributions : dict
+        This object is typically generated from :func:`mc.tl.summary_pathway`
+    pathway_name : str
+        The name of the metabolic pathway to visualize.
+    smallest_size : float, default=10
+        Base bubble size for missing (NA) or zero communication scores.
+    cmap : {"blue", "green", "red"}, default="blue"
+        Color gradient preset defining the color scale for communication scores.
+    plot_title : str, optional
+        Custom title for the figure.
+    figsize : tuple of float, default=(12, 5)
+        Figure size (width, height).
+    ax : matplotlib.axes.Axes, optional
+        Existing Matplotlib axis to draw on. If ``None``, a new figure and axis are created.
     plot_savepath : str, optional
-        File path to save the figure (e.g., ``"results/graph_connectivity.png"``).  
-        If ``None``, the figure is shown interactively.
+        File path to save the figure (e.g., ``"pathway_bubbleplot.pdf"``).  
+        The format is inferred from the file extension. If ``None``, the plot is displayed
+        interactively without saving.
 
     Returns
     -------
     ax : matplotlib.axes.Axes
-        Matplotlib axis containing the rendered graph.
+        Matplotlib axis containing the generated bubble plot.
 
     Notes
     -----
-    - Node coordinates are assumed to be stored as the node keys, e.g. ``(x, y)`` tuples.
-    - Edge weights (if any) are visualized with labels when ``show_weights=True``.
-    - Commonly used for inspecting graph connectivity matrices derived from spatial MCC data.
+    - This function visualizes pathway-level MCC contributions, and is typically used
+      after running pathway aggregation steps within MetaChat analysis.
+    - Bubbles are categorized into quantile-based bins (≤1/3, 1/3–2/3, >2/3 quantiles)
+      with increasing color intensity and bubble size.
+    - Missing or zero values are shown in gray to distinguish from active interactions.
+    - Legends indicate bubble categories corresponding to relative contribution scores.
     """
+
+    # ==== Check inputs ====
+    if pathway_name not in pathway_pair_contributions:
+        raise ValueError(f"Pathway '{pathway_name}' not found in pathway_pair_contributions.")
+    
+    if cmap == 'blue':
+        grad1, grad2, grad3 = '#a6cee3', '#1f78b4', '#08306b'
+    elif cmap == 'green':
+        grad1, grad2, grad3 = '#d9f0d3', '#66c2a4', '#238b45'
+    elif cmap == 'red':
+        grad1, grad2, grad3 = '#fcbba1', '#fc9272', '#de2d26'
+    else:
+        raise ValueError(f"Unknown cmap '{cmap}'. Choose from 'blue','green','red'.")
 
     # ==== Prepare data ====
-    pos = {node: node for node in G.nodes()}
-      
-    plt.figure(figsize=figsize)
-    nx.draw(
-        G, 
-        pos, 
-        node_size=node_size, 
-        edge_color="gray", 
-        alpha=0.5,
-        linewidths=linewidths, 
-        width=width
+    df = pathway_pair_contributions[pathway_name].copy()
+    matrix = df.pivot(
+        index="Metabolite.Name",
+        columns="Sensor.Gene",
+        values="communication_score"
     )
 
-    # Display edge weights if enabled
-    if show_weights:
-        edge_labels = {
-            (u, v): f"{data['weight']:.2f}" 
-            for u, v, data in G.edges(data=True) 
-            if 'weight' in data
-        }
-        nx.draw_networkx_edge_labels(
-            G, pos, edge_labels=edge_labels, font_size=weight_fontsize
-        )
+    row_sums = matrix.sum(axis=1)
+    metabolites = row_sums.sort_values(ascending=True).index.tolist()
+    sensors = matrix.columns.tolist()
 
-    plt.title("Graph Connectivity with Edge Weights" if show_weights else "Graph Connectivity")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    plt.show()
+    # ==== Construct plotting DataFrame ====
+    data = []
+    for i, met in enumerate(metabolites):
+        for j, sen in enumerate(sensors):
+            data.append({
+                "x": j, "y": i,
+                "Score": matrix.loc[met, sen],
+                "Metabolite": met, "Sensor": sen
+            })
+    plot_df = pd.DataFrame(data)
 
-    if plot_savepath:
-        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
+    pos = plot_df["Score"].dropna()
+    pos = pos[pos > 0]
+    q1, q2 = (pos.quantile([0.33, 0.66]) if len(pos) > 0 else (0, 0))
 
-def plot_dis_thr(
-    adata: anndata.AnnData,
-    dis_thr: float,
-    spot_index: int,
-    use_existing_distance: bool = False,
-    figsize: tuple = (6, 5),
-    ax: Optional[mpl.axes.Axes] = None,
-    plot_savepath: str = None,
-):
-    """
-    Visualize spatial neighborhood within a specified distance threshold around a selected spot.
+    def style(row):
+        v = row["Score"]
+        if pd.isna(v):
+            return {"color": "#D3D3D3", "size": smallest_size, "edge": False}
+        elif v == 0:
+            return {"color": "#D3D3D3", "size": smallest_size, "edge": True}
+        elif v <= q1:
+            return {"color": grad1,       "size": smallest_size + 20, "edge": True}
+        elif v <= q2:
+            return {"color": grad2,       "size": smallest_size + 40, "edge": True}
+        else:
+            return {"color": grad3,       "size": smallest_size + 60, "edge": True}
 
-    This function highlights which spots in the spatial omics dataset fall within a given Euclidean distance (`dis_thr`) from a selected spot.  
-    The center spot is shown in a distinct color, while neighboring and non-neighboring spots are visually separated.
+    styles = plot_df.apply(style, axis=1)
+    plot_df["color"] = [s["color"] for s in styles]
+    plot_df["size"]  = [s["size"]  for s in styles]
+    plot_df["edge"]  = [s["edge"]  for s in styles]
 
-    Parameters
-    ----------
-    adata : anndata.AnnData
-        Annotated data matrix containing spatial coordinates in ``adata.obsm["spatial"]``.
-    dis_thr : float
-        Distance threshold (in pixel or micron units, depending on ``adata`` scaling) used to define spatial neighbors.
-    spot_index : int
-        Index (0-based) of the reference/center spot.
-    use_existing_distance : bool, default=False
-        Whether to reuse an existing precomputed distance matrix stored in
-        ``adata.obsp["spatial_distance"]``.  
-        If False, a new Euclidean distance matrix will be computed.
-    figsize : tuple of float, default=(6, 5)
-        Figure size (width, height) in inches.
-    ax : matplotlib.axes.Axes, optional
-        Existing Matplotlib axis to draw on.  
-        If None, a new figure and axis are created.
-    plot_savepath : str, optional
-        File path to save the plot (e.g., ``"results/dis_thr_spots.pdf"``).  
-        The format is inferred from the file extension.  
-        If None, the plot is shown interactively.
-
-    Returns
-    -------
-    ax : matplotlib.axes.Axes
-        Matplotlib axis containing the rendered spatial scatter plot.
-
-    Notes
-    -----
-    - This function helps visualize local spot neighborhoods used in spatial communication
-      or proximity-based analyses (e.g., for barrier-aware OT or diffusion modeling).
-    - The color coding is:
-        * **center** – the selected reference spot  
-        * **neighbor** – spots within `dis_thr` distance  
-        * **outside** – all other spots
-    """
-    adata_vis = adata.copy()
-
-    # compute or reuse distance matrix
-    if use_existing_distance and 'spatial_distance' in adata_vis.obsp:
-        dis_mat = adata_vis.obsp['spatial_distance']
-    else:
-        dis_mat = distance_matrix(adata_vis.obsm["spatial"], adata_vis.obsm["spatial"])
-        adata_vis.obsp['spatial_distance'] = dis_mat
-
-    # compute mask: 0 = outside, 1 = within dis_thr, 2 = center
-    mask = (dis_mat[spot_index, :] < dis_thr).astype(int)
-    spot_name = adata_vis.obs.index[spot_index]
-    mask_series = pd.Series(mask, index=adata_vis.obs.index)
-    mask_series.loc[spot_name] = 2
-
-    # map numeric to string labels
-    label_map = {0: 'outside', 1: 'neighbor', 2: 'center'}
-    label_series = mask_series.map(label_map).astype('category')
-
-    # assign to obs
-    adata_vis.obs['within_dis_thr'] = label_series
-    
-    fig, ax = plt.subplots(figsize = figsize)
-    sq.pl.spatial_scatter(
-        adata_vis,
-        color='within_dis_thr',
-        title=f'Spots within dis_thr={dis_thr} of spot {spot_index}',
-        ax = ax
-    )
-    ax.set_box_aspect(1)
-
-    if plot_savepath:
-        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
-    
-    return ax
-
-def plot_LRC_markers(
-    adata: anndata.AnnData,
-    LRC_name: str,
-    LRC_marker_genes: list, 
-    avg: bool = False,
-    figsize = (10, 5),
-    plot_savepath: str = None
-):
-    """
-    Visualize expression of LRC (Long-Range Channel) marker genes in spatial omics data.
-
-    This function plots the spatial expression of selected LRC marker genes.  
-    It can either visualize individual genes separately or compute and plot the
-    average expression of all selected markers.
-    
-    Parameters
-    ----------
-    adata : anndata.AnnData
-        Annotated data matrix with spatial coordinates stored in ``adata.obsm["spatial"]``.
-    LRC_name : str
-        Name tag for the LRC type (e.g., "CSF", "Blood").
-        Used in plot titles and output naming.
-    LRC_marker_genes : list of str
-        List of LRC marker gene names to visualize.
-        Genes not found in ``adata.var_names`` are automatically skipped.
-    avg : bool, default=False
-        If True, plots the average expression of all marker genes.  
-        If False, plots each gene separately.
-    figsize : tuple of float, default=(10, 5)
-        Figure size (width, height) in inches.
-    plot_savepath : str, optional
-        Path to save the figure (e.g. ``"results/LRC_markers_Blood.pdf"``).  
-        If None, the figure is displayed interactively.
-
-    Returns
-    -------
-    ax : matplotlib.axes.Axes or list of Axes
-        Matplotlib axis or list of axes containing the rendered plot(s).
-
-    Notes
-    -----
-    - Marker genes are filtered to retain only those present in ``adata.var_names``.
-    - Average expression is computed directly from ``adata.X`` (converted to dense if needed).
-    - When multiple genes are plotted, they are arranged in a single row of subplots.
-
-    """
-    
-    # Filter out genes not present
-    valid_genes = [g for g in LRC_marker_genes if g in adata.var_names]
-    if len(valid_genes) == 0:
-        raise ValueError("None of the input marker genes were found in adata.var_names.")
-    
-    if avg:
-        expr = adata[:, valid_genes].X
-        if not isinstance(expr, np.ndarray):
-            expr = expr.toarray()
-        avg_expr = expr.mean(axis=1)
-        obs_key = f"LRC_{LRC_name}_avg_markers"
-        adata.obs[obs_key] = avg_expr
-
-        fig, ax = plt.subplots(figsize=figsize)
-        sq.pl.spatial_scatter(adata, color=obs_key, ax=ax)
-        ax.set_title(obs_key)
-        ax.set_box_aspect(1)
-        plt.tight_layout()
-
-    else:
-        n_genes = len(valid_genes)
-        fig, axes = plt.subplots(1, n_genes, figsize=(6 * n_genes, 5))
-        if n_genes == 1:
-            axes = [axes]
-        
-        for gene, ax in zip(valid_genes, axes):
-            sq.pl.spatial_scatter(adata, color=gene, ax=ax)
-            ax.set_title(f"{gene}")
-            ax.set_box_aspect(1)
-        plt.suptitle(f"LRC markers for {LRC_name}", fontsize=14)
-        plt.tight_layout()
-    
-    if plot_savepath:
-        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
-
-    return ax
-
-def plot_spot_distance(
-    adata: anndata.AnnData,
-    dist_matrix_key: str,
-    spot_index: int,
-    figsize: tuple = (6, 5),
-    ax: Optional[mpl.axes.Axes] = None,
-    plot_savepath: str = None
-):
-    """
-    Visualize the spatial distance from a selected spot to all other spots.
-
-    This function displays the distance values (from a specified spot) stored
-    in a precomputed distance matrix under ``adata.obsp``.  
-    It helps assess local or long-range connectivity patterns in spatial data.
-
-    Parameters
-    ----------
-    adata : anndata.AnnData
-        Annotated data matrix containing spatial coordinates in
-        ``adata.obsm["spatial"]`` and a distance matrix stored in ``adata.obsp``.
-    dist_matrix_key : str
-        Key name in ``adata.obsp`` where the spatial distance matrix is stored,
-        e.g., ``"spatial_distance"`` or ``"spatial_distance_LRC_base"``.
-    spot_index : int
-        Index of the target spot (0-based) whose distances to all other spots
-        will be visualized.
-    figsize : tuple of float, default=(6, 5)
-        Figure size (width, height) in inches.
-    plot_savepath : str, optional
-        Path to save the plot (e.g. ``"results/distance_to_spot120.pdf"``).  
-        The format is inferred from the file extension.  
-        If ``None``, the figure is shown interactively.
-    ax : matplotlib.axes.Axes, optional
-        Existing Matplotlib axis to draw the plot on.  
-        If ``None``, a new figure and axis will be created.
-
-    Returns
-    -------
-    ax : matplotlib.axes.Axes
-        Matplotlib axis containing the rendered spatial distance visualization.
-
-    Notes
-    -----
-    - Distances are taken directly from the precomputed matrix in ``adata.obsp``.
-    - The distances are stored in ``adata.obs["distance_from_target"]`` for plotting.
-    - The selected target spot (by index) can be visually identified as having
-      the minimum distance (0).
-    """
-    adata_vis = adata.copy()
-
-    # ==== Extract distance vector ====
-    if dist_matrix_key not in adata_vis.obsp:
-        raise KeyError(f"Distance matrix '{dist_matrix_key}' not found in adata.obsp.")
-    dist_matrix = adata.obsp[dist_matrix_key]
-    distances_from_target = dist_matrix[spot_index]
-    adata_vis.obs["distances_from_target"] = distances_from_target
-
-    # ==== Plot ====
+    # ==== Draw plot ====
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
     else:
         fig = ax.figure
 
-    sq.pl.spatial_scatter(
-        adata_vis, 
-        color="distances_from_target", 
-        ax=ax,
-        title=f"Distance to spot index {spot_index}"
+    for _, row in plot_df.iterrows():
+        ax.scatter(
+            row["x"], row["y"],
+            s=row["size"],
+            c=row["color"],
+            edgecolors="black" if row["edge"] else row["color"],
+            linewidths=0.5 if row["edge"] else 0,
+            zorder=2
+        )
+    
+    ax.set_xticks(range(len(sensors)))
+    ax.set_xticklabels(sensors, rotation=45, ha="center")
+    ax.tick_params(axis='x', which='both', length=0)
+    ax.set_yticks(range(len(metabolites)))
+    ax.set_yticklabels(metabolites)
+    ax.tick_params(axis='y', which='both', length=0)
+    ax.grid(axis='y', color='lightgrey', linestyle='-', linewidth=0.5, zorder=1)
+    ax.set_xlim(-0.5, len(sensors)-0.5)
+    ax.set_xlabel("Sensors")
+    ax.set_ylabel("Metabolites")
+    ax.set_title(plot_title or f"Metabolite–Sensor contributions in {pathway_name}")
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    legend_elements = [
+        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size),
+               markerfacecolor='#D3D3D3', markeredgecolor='none', label='NA'),
+        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size),
+               markerfacecolor='#D3D3D3', markeredgecolor='black', label='score = 0'),
+        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size + 20),
+               markerfacecolor=grad1, markeredgecolor='black', label='<= 1/3 quantile'),
+        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size + 40),
+               markerfacecolor=grad2, markeredgecolor='black', label='1/3–2/3 quantile'),
+        Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size + 60),
+               markerfacecolor=grad3, markeredgecolor='black', label='> 2/3 quantile'),
+    ]
+    ax.legend(
+        handles=legend_elements,
+        title="Score categories",
+        bbox_to_anchor=(1.05, 1),
+        loc='upper left'
     )
 
-    ax.set_box_aspect(1)
-    ax.set_xlabel("X coordinate")
-    ax.set_ylabel("Y coordinate")
-    ax.set_ylim(ax.get_ylim()[1], ax.get_ylim()[0])  # Flip y-axis
     plt.tight_layout()
-    plt.show()
+
+    # ==== Save ====
+    if plot_savepath:
+        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
+
+    return ax
+
+def plot_communication_responseGenes(
+    df_deg: pd.DataFrame,
+    df_yhat: pd.DataFrame,
+    show_gene_names: bool = True,
+    top_ngene_per_cluster: int = -1,
+    colormap: str = 'magma',
+    cluster_colormap: str = 'Plotly',
+    color_range: tuple = None,
+    font_scale: float = 1,
+    figsize: tuple = (10,10),
+    plot_savepath: str = None,
+    return_genes: bool = False
+):
+    """
+    Plot the smoothed gene expression profiles of metabolic cell communication response genes.
+
+    This function visualizes the response genes inferred from metabolic cell communication analysis. 
+    Genes are grouped by response clusters and displayed as a heatmap, where columns 
+    correspond to genes and rows represent the order of received signals.
+
+    The function allows highlighting top-ranked genes per cluster based on the Wald statistic 
+    and sorting both genes and clusters according to their expression peak locations.
+
+    This function should be run after :func:`mc.tl.communication_responseGenes` and :func:`mc.tl.communication_responseGenes_cluster`.
+
+    Parameters
+    ----------
+    df_deg : pandas.DataFrame
+        DataFrame results of response gene analysis from :func:`mc.tl.communication_responseGenes` and :func:`mc.tl.communication_responseGenes_cluster`.
+
+    df_yhat : pandas.DataFrame
+        DataFrame containing smoothed and normalized expression values of the same genes 
+
+    show_gene_names : bool, default=True
+        Whether to show gene names as x-axis tick labels in the heatmap.
+
+    top_ngene_per_cluster : int, default=-1
+        Number of top genes to display per cluster.  
+        If set to a non-negative value, only the top-ranked genes (by Wald statistic) 
+        within each cluster are plotted.  
+        If ``-1``, all genes are included.
+
+    colormap : str, default='magma'
+        Colormap used for expression values (passed to seaborn/Matplotlib).
+
+    cluster_colormap : str, default='Plotly'
+        Qualitative colormap used to color gene clusters.  
+        Accepts predefined names such as ``'Plotly'``, ``'Light24'``, ``'Dark24'``, or ``'Alphabet'``.
+
+    color_range : tuple, optional
+        Tuple ``(vmin, vmax)`` specifying the lower and upper limits for expression color scaling.  
+        Values outside this range are clipped. If ``None``, full dynamic range is used.
+
+    font_scale : float, default=1
+        Scaling factor for seaborn font sizes.
+
+    figsize : tuple of float, default=(10, 10)
+        Size of the output figure (width, height).
+
+    plot_savepath : str, optional
+        File path to save the figure.  
+        If ``None``, the figure is not saved.
+
+    return_genes : bool, default=False
+        Whether to return the list of genes displayed in the plot.
+
+    Returns
+    -------
+    selected_genes : list of str, optional
+        If ``return_genes=True``, returns a list of gene names in the order they appear 
+        in the heatmap. Otherwise, returns ``None``.
+
+    Notes
+    -----
+    - Clusters are first sorted by the mean position of the peak expression (``np.argmax`` of smoothed values).  
+    - Within each cluster, genes are ranked by the Wald statistic, and optionally truncated 
+      to the top ``N`` genes.  
+    - The resulting heatmap displays genes grouped and color-coded by cluster assignment.
+    - This function relies on :func:`get_cmap_qualitative` to obtain qualitative color palettes.
+    """
+
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+    cmap = get_cmap_qualitative(cluster_colormap)
+    wald_stats = df_deg['waldStat'].values
+    labels = np.array(df_deg['cluster'].values, int)
+    nlabel = np.max(labels) + 1
+    yhat_mat = df_yhat.values
+
+    if color_range is not None:
+        yhat_mat[yhat_mat > color_range[1]] = color_range[1]
+        yhat_mat[yhat_mat < color_range[0]] = color_range[0]
+
+    # Sort clusters by mean peak location
+    peak_locs = []
+    for i in range(nlabel):
+        tmp_idx = np.where(labels == i)[0]
+        tmp_y = yhat_mat[tmp_idx, :]
+        peak_locs.append(np.mean(np.argmax(tmp_y, axis=1)))
+    cluster_order = np.argsort(peak_locs)
+
+    # Get peak per gene
+    gene_peak_positions = np.argmax(yhat_mat, axis=1)
+
+    idx = np.array([], dtype=int)
+    col_colors = []
+
+    for i in cluster_order:
+        tmp_idx = np.where(labels == i)[0]
+
+        # Step 1: sort by waldStat descending
+        wald_in_cluster = wald_stats[tmp_idx]
+        top_order = np.argsort(-wald_in_cluster)
+
+        if top_ngene_per_cluster >= 0:
+            top_ngene = min(len(tmp_idx), top_ngene_per_cluster)
+        else:
+            top_ngene = len(tmp_idx)
+
+        selected_idx = tmp_idx[top_order[:top_ngene]]
+
+        # Step 2: sort those by peak position
+        peak_pos_selected = gene_peak_positions[selected_idx]
+        final_order = np.argsort(peak_pos_selected)
+        sorted_idx = selected_idx[final_order]
+
+        idx = np.concatenate((idx, sorted_idx))
+        for _ in range(len(sorted_idx)):
+            col_colors.append(cmap[i % len(cmap)])
+
+    # Plot
+    sns.set(font_scale=font_scale)
+    g = sns.clustermap(df_yhat.iloc[idx].T,
+                       row_cluster=False,
+                       col_cluster=False,
+                       col_colors=col_colors,
+                       cmap=colormap,
+                       xticklabels=show_gene_names,
+                       yticklabels=False,
+                       linewidths=0,
+                       figsize=figsize)
+    g.ax_heatmap.invert_yaxis()
+    g.cax.set_position([.1, .2, .03, .45])
+
+    if plot_savepath is not None:
+        plt.savefig(plot_savepath, dpi=300)
+
+    if return_genes:
+        return list(df_deg.iloc[idx].index)
+
+
+def plot_communication_responseGenes_keggEnrich(
+    df_result: pd.DataFrame,
+    organism: str = "Human",
+    show_term_order: list = [0,1,2,3,4],
+    cmap: str = 'green',
+    maxshow_gene: int = 5,
+    figsize: tuple = (6,6),
+    ax: Optional[mpl.axes.Axes] = None,  
+    plot_savepath: str = None
+):
+    """
+    Plot a horizontal bar chart summarizing KEGG enrichment results of MCC response genes.
+
+    This function visualizes the top enriched KEGG pathways identified from
+    :func:`mc.tl.communication_responseGenes`, with bar length representing 
+    -log10(p-value) and text annotations showing top associated genes.
+
+    Parameters
+    ----------
+    df_result : pandas.DataFrame
+        The KEGG enrichment results table returned by :func:`mc.tl.communication_responseGenes`.
+    organism : {"Human", "Mouse"}, default="Human"
+        If set to ``"Mouse"``, gene names are capitalized (first letter uppercase, rest lowercase).
+    show_term_order : list of int, default=[0,1,2,3,4]
+        List of row indices (in ``df_result``) specifying which pathways to show and their order.
+        If ``None``, the top 5 terms will be displayed.
+    cmap : {"green", "blue", "red"}, default="green"
+        Color theme for the barplot.
+    maxshow_gene : int, default=10
+        Maximum number of genes to display under each pathway.
+    figsize : tuple of float, default=(6, 6)
+        Figure size (width, height).
+    ax : matplotlib.axes.Axes, optional
+        Existing Matplotlib axis to draw the barplot on. If ``None``, a new figure and axis are created.
+    plot_savepath : str, optional
+        File path to save the figure (e.g., ``"results/kegg_enrich.pdf"``).  
+        The format is inferred from the file extension. If ``None``, the plot is shown interactively.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        Matplotlib axis containing the bar chart.
+
+    Notes
+    -----
+    - This visualization summarizes KEGG enrichment performed by
+      :func:`mc.tl.communication_responseGenes`.
+    - Each bar represents one KEGG pathway, with its significance shown as -log10(p-value).
+    - Up to ``maxshow_gene`` top genes per pathway are displayed below the bar label.
+    """
+    
+    # ==== Prepare data ====
+    df_show = df_result.iloc[show_term_order].copy()
+    x_names = df_show['Term'].tolist()
+    x_names.reverse()
+
+    x_to_num = {p[1]: p[0] for p in enumerate(x_names)}
+    path_to_genes = {}
+    path_to_value = {}
+
+    for _, row in df_show.iterrows():
+        gene_list = row['Genes'].split(';')
+        # Capitalize gene names if organism is Mouse
+        if organism.lower() == "mouse":
+            gene_list = [g.capitalize() for g in gene_list]
+        genename_show = gene_list[:maxshow_gene]
+        genename_show = ';'.join(genename_show)
+        path_to_genes[row['Term']] = genename_show
+        path_to_value[row['Term']] = -np.log10(row['P-value'])
+
+    bar_color = {'blue': '#C9E3F6',
+                 'green': '#ACD3B7',
+                 'red': '#F0C3AC'}
+    text_color = {'blue': '#2D3A8C',
+                  'green': '#2E5731',
+                  'red': '#AD392F'}
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        fig = ax.figure
+
+    x = [x_to_num[v] for v in x_names]
+    y = [path_to_value[v] for v in x_names]
+    ax.barh(x, y, color=bar_color[cmap], height=0.5) 
+    ax.set_facecolor('white')
+
+    for v in x_names:
+        ax.text(0 + 0.05, x_to_num[v], v, color='black', ha='left', va='center')
+        ax.text(0 + 0.05, x_to_num[v] - 0.4, path_to_genes[v], color=text_color[cmap], ha='left', va='center')
+
+    ax.set_yticklabels([])
+    ax.spines['left'].set_color('black')
+    ax.spines['bottom'].set_color('black')
+    ax.set_xticks([t + 0.5 for t in ax.get_xticks()], minor=True)
+    ax.set_ylim([-0.7, max(x) + 1])
+    ax.set_xlabel('-log10(p-value)')
+    ax.set_ylabel('KEGG pathway')
 
     if plot_savepath:
         plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
 
     return ax
-    
+
 def plot_DEG_volcano(
     deg_result: pd.DataFrame,
     name_col: str = "names",
@@ -2229,3 +1893,339 @@ def plot_3d_feature(
         fig.write_image(plot_savepath, width=figsize[0]*100, height=figsize[1]*100)
 
     return fig
+
+def plot_dis_thr(
+    adata: anndata.AnnData,
+    dis_thr: float,
+    spot_index: int,
+    use_existing_distance: bool = False,
+    figsize: tuple = (6, 5),
+    ax: Optional[mpl.axes.Axes] = None,
+    plot_savepath: str = None,
+):
+    """
+    Visualize spatial neighborhood within a specified distance threshold around a selected spot.
+
+    This function highlights which spots in the spatial omics dataset fall within a given Euclidean distance (`dis_thr`) from a selected spot.  
+    The center spot is shown in a distinct color, while neighboring and non-neighboring spots are visually separated.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        Annotated data matrix containing spatial coordinates in ``adata.obsm["spatial"]``.
+    dis_thr : float
+        Distance threshold (in pixel or micron units, depending on ``adata`` scaling) used to define spatial neighbors.
+    spot_index : int
+        Index (0-based) of the reference/center spot.
+    use_existing_distance : bool, default=False
+        Whether to reuse an existing precomputed distance matrix stored in
+        ``adata.obsp["spatial_distance"]``.  
+        If False, a new Euclidean distance matrix will be computed.
+    figsize : tuple of float, default=(6, 5)
+        Figure size (width, height) in inches.
+    ax : matplotlib.axes.Axes, optional
+        Existing Matplotlib axis to draw on.  
+        If None, a new figure and axis are created.
+    plot_savepath : str, optional
+        File path to save the plot (e.g., ``"results/dis_thr_spots.pdf"``).  
+        The format is inferred from the file extension.  
+        If None, the plot is shown interactively.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        Matplotlib axis containing the rendered spatial scatter plot.
+
+    Notes
+    -----
+    - This function helps visualize local spot neighborhoods used in spatial communication
+      or proximity-based analyses (e.g., for barrier-aware OT or diffusion modeling).
+    - The color coding is:
+        * **center** – the selected reference spot  
+        * **neighbor** – spots within `dis_thr` distance  
+        * **outside** – all other spots
+    """
+    adata_vis = adata.copy()
+
+    # compute or reuse distance matrix
+    if use_existing_distance and 'spatial_distance' in adata_vis.obsp:
+        dis_mat = adata_vis.obsp['spatial_distance']
+    else:
+        dis_mat = distance_matrix(adata_vis.obsm["spatial"], adata_vis.obsm["spatial"])
+        adata_vis.obsp['spatial_distance'] = dis_mat
+
+    # compute mask: 0 = outside, 1 = within dis_thr, 2 = center
+    mask = (dis_mat[spot_index, :] < dis_thr).astype(int)
+    spot_name = adata_vis.obs.index[spot_index]
+    mask_series = pd.Series(mask, index=adata_vis.obs.index)
+    mask_series.loc[spot_name] = 2
+
+    # map numeric to string labels
+    label_map = {0: 'outside', 1: 'neighbor', 2: 'center'}
+    label_series = mask_series.map(label_map).astype('category')
+
+    # assign to obs
+    adata_vis.obs['within_dis_thr'] = label_series
+    
+    fig, ax = plt.subplots(figsize = figsize)
+    sq.pl.spatial_scatter(
+        adata_vis,
+        color='within_dis_thr',
+        title=f'Spots within dis_thr={dis_thr} of spot {spot_index}',
+        ax = ax
+    )
+    ax.set_box_aspect(1)
+
+    if plot_savepath:
+        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
+    
+    return ax
+
+def plot_LRC_markers(
+    adata: anndata.AnnData,
+    LRC_name: str,
+    LRC_marker_genes: list, 
+    avg: bool = False,
+    figsize = (10, 5),
+    plot_savepath: str = None
+):
+    """
+    Visualize expression of LRC (Long-Range Channel) marker genes in spatial omics data.
+
+    This function plots the spatial expression of selected LRC marker genes.  
+    It can either visualize individual genes separately or compute and plot the
+    average expression of all selected markers.
+    
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        Annotated data matrix with spatial coordinates stored in ``adata.obsm["spatial"]``.
+    LRC_name : str
+        Name tag for the LRC type (e.g., "CSF", "Blood").
+        Used in plot titles and output naming.
+    LRC_marker_genes : list of str
+        List of LRC marker gene names to visualize.
+        Genes not found in ``adata.var_names`` are automatically skipped.
+    avg : bool, default=False
+        If True, plots the average expression of all marker genes.  
+        If False, plots each gene separately.
+    figsize : tuple of float, default=(10, 5)
+        Figure size (width, height) in inches.
+    plot_savepath : str, optional
+        Path to save the figure (e.g. ``"results/LRC_markers_Blood.pdf"``).  
+        If None, the figure is displayed interactively.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes or list of Axes
+        Matplotlib axis or list of axes containing the rendered plot(s).
+
+    Notes
+    -----
+    - Marker genes are filtered to retain only those present in ``adata.var_names``.
+    - Average expression is computed directly from ``adata.X`` (converted to dense if needed).
+    - When multiple genes are plotted, they are arranged in a single row of subplots.
+
+    """
+    
+    # Filter out genes not present
+    valid_genes = [g for g in LRC_marker_genes if g in adata.var_names]
+    if len(valid_genes) == 0:
+        raise ValueError("None of the input marker genes were found in adata.var_names.")
+    
+    if avg:
+        expr = adata[:, valid_genes].X
+        if not isinstance(expr, np.ndarray):
+            expr = expr.toarray()
+        avg_expr = expr.mean(axis=1)
+        obs_key = f"LRC_{LRC_name}_avg_markers"
+        adata.obs[obs_key] = avg_expr
+
+        fig, ax = plt.subplots(figsize=figsize)
+        sq.pl.spatial_scatter(adata, color=obs_key, ax=ax)
+        ax.set_title(obs_key)
+        ax.set_box_aspect(1)
+        plt.tight_layout()
+
+    else:
+        n_genes = len(valid_genes)
+        fig, axes = plt.subplots(1, n_genes, figsize=(6 * n_genes, 5))
+        if n_genes == 1:
+            axes = [axes]
+        
+        for gene, ax in zip(valid_genes, axes):
+            sq.pl.spatial_scatter(adata, color=gene, ax=ax)
+            ax.set_title(f"{gene}")
+            ax.set_box_aspect(1)
+        plt.suptitle(f"LRC markers for {LRC_name}", fontsize=14)
+        plt.tight_layout()
+    
+    if plot_savepath:
+        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
+
+    return ax
+
+def plot_spot_distance(
+    adata: anndata.AnnData,
+    dist_matrix_key: str,
+    spot_index: int,
+    figsize: tuple = (6, 5),
+    ax: Optional[mpl.axes.Axes] = None,
+    plot_savepath: str = None
+):
+    """
+    Visualize the spatial distance from a selected spot to all other spots.
+
+    This function displays the distance values (from a specified spot) stored
+    in a precomputed distance matrix under ``adata.obsp``.  
+    It helps assess local or long-range connectivity patterns in spatial data.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        Annotated data matrix containing spatial coordinates in
+        ``adata.obsm["spatial"]`` and a distance matrix stored in ``adata.obsp``.
+    dist_matrix_key : str
+        Key name in ``adata.obsp`` where the spatial distance matrix is stored,
+        e.g., ``"spatial_distance"`` or ``"spatial_distance_LRC_base"``.
+    spot_index : int
+        Index of the target spot (0-based) whose distances to all other spots
+        will be visualized.
+    figsize : tuple of float, default=(6, 5)
+        Figure size (width, height) in inches.
+    plot_savepath : str, optional
+        Path to save the plot (e.g. ``"results/distance_to_spot120.pdf"``).  
+        The format is inferred from the file extension.  
+        If ``None``, the figure is shown interactively.
+    ax : matplotlib.axes.Axes, optional
+        Existing Matplotlib axis to draw the plot on.  
+        If ``None``, a new figure and axis will be created.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        Matplotlib axis containing the rendered spatial distance visualization.
+
+    Notes
+    -----
+    - Distances are taken directly from the precomputed matrix in ``adata.obsp``.
+    - The distances are stored in ``adata.obs["distance_from_target"]`` for plotting.
+    - The selected target spot (by index) can be visually identified as having
+      the minimum distance (0).
+    """
+    adata_vis = adata.copy()
+
+    # ==== Extract distance vector ====
+    if dist_matrix_key not in adata_vis.obsp:
+        raise KeyError(f"Distance matrix '{dist_matrix_key}' not found in adata.obsp.")
+    dist_matrix = adata.obsp[dist_matrix_key]
+    distances_from_target = dist_matrix[spot_index]
+    adata_vis.obs["distances_from_target"] = distances_from_target
+
+    # ==== Plot ====
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        fig = ax.figure
+
+    sq.pl.spatial_scatter(
+        adata_vis, 
+        color="distances_from_target", 
+        ax=ax,
+        title=f"Distance to spot index {spot_index}"
+    )
+
+    ax.set_box_aspect(1)
+    ax.set_xlabel("X coordinate")
+    ax.set_ylabel("Y coordinate")
+    ax.set_ylim(ax.get_ylim()[1], ax.get_ylim()[0])  # Flip y-axis
+    plt.tight_layout()
+    plt.show()
+
+    if plot_savepath:
+        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
+
+    return ax
+    
+def plot_graph_connectivity(
+    G: nx.Graph,
+    node_size: float = 10.0,
+    linewidths: float = 1.0,
+    width: float = 1.0,
+    show_weights: bool = False,
+    weight_fontsize: int = 8,
+    figsize: tuple = (8, 8),
+    plot_savepath: str = None
+):
+    """
+    Plot a 2D visualization of a graph showing connectivity between nodes and edges.
+
+    This function visualizes a graph structure (e.g., communication connectivity or
+    spatial relationships) using node coordinates as (x, y) positions.  
+    Optionally, edge weights can be displayed as labels.
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        Input graph where each node represents a 2D point (tuple of x, y coordinates)
+        and edges may have an optional ``'weight'`` attribute.
+    node_size : float, default=10.0
+        Marker size of nodes.
+    linewidths : float, default=1.0
+        Line width of node borders.
+    width : float, default=1.0
+        Width of edges.
+    show_weights : bool, default=False
+        Whether to display numerical edge weights on the plot.
+    weight_fontsize : int, default=8
+        Font size of edge weight annotations (effective only if ``show_weights=True``).
+    figsize : tuple of float, default=(8, 8)
+        Figure size (width, height) in inches.
+    plot_savepath : str, optional
+        File path to save the figure (e.g., ``"results/graph_connectivity.png"``).  
+        If ``None``, the figure is shown interactively.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        Matplotlib axis containing the rendered graph.
+
+    Notes
+    -----
+    - Node coordinates are assumed to be stored as the node keys, e.g. ``(x, y)`` tuples.
+    - Edge weights (if any) are visualized with labels when ``show_weights=True``.
+    - Commonly used for inspecting graph connectivity matrices derived from spatial MCC data.
+    """
+
+    # ==== Prepare data ====
+    pos = {node: node for node in G.nodes()}
+      
+    plt.figure(figsize=figsize)
+    nx.draw(
+        G, 
+        pos, 
+        node_size=node_size, 
+        edge_color="gray", 
+        alpha=0.5,
+        linewidths=linewidths, 
+        width=width
+    )
+
+    # Display edge weights if enabled
+    if show_weights:
+        edge_labels = {
+            (u, v): f"{data['weight']:.2f}" 
+            for u, v, data in G.edges(data=True) 
+            if 'weight' in data
+        }
+        nx.draw_networkx_edge_labels(
+            G, pos, edge_labels=edge_labels, font_size=weight_fontsize
+        )
+
+    plt.title("Graph Connectivity with Edge Weights" if show_weights else "Graph Connectivity")
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.show()
+
+    if plot_savepath:
+        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")

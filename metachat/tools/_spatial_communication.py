@@ -1,13 +1,15 @@
+# ============================================================
 from typing import Optional
 import gc
-import anndata
+
 import numpy as np
 import pandas as pd
 from scipy import sparse
-from scipy.spatial import distance_matrix
+
+import anndata
 
 from .._optimal_transport import fot_combine_sparse
-
+# ============================================================
 
 ### MetaChat cell communication
 class CellCommunication(object):
@@ -20,7 +22,6 @@ class CellCommunication(object):
         cost_scale,
         cost_type
     ):
-        
         # Find overlap metabolites and sensors in df_metasen
         data_var = set(adata.var_names)
         self.mets = list(set(df_metasen["HMDB.ID"]).intersection(data_var))
@@ -34,7 +35,6 @@ class CellCommunication(object):
         for i in range(len(df_metasen)):
             tmp_met = df_metasen.loc[i,"HMDB.ID"]
             tmp_sen = df_metasen.loc[i,"Sensor.Gene"]
-            ## plus
             LRC[tmp_met] = df_metasen.loc[i,"Long.Range.Channel"]
             if tmp_met in self.mets and tmp_sen in self.sens:
                 if cost_scale is None:
@@ -102,68 +102,70 @@ def metabolic_communication(
     fot_eps_p: float = 2.5e-1, 
     fot_eps_mu: Optional[float] = None, 
     fot_eps_nu: Optional[float] = None, 
-    fot_rho: float =1e-1, 
+    fot_rho: float = 1e-1, 
     fot_nitermax: int = 10000, 
     fot_weights: tuple = (1.0,0.0,0.0,0.0),
     copy: bool = False
 ):
     """
-    Function for inferring spatial metabolic cell communication.
+    Infer spatial metabolic cell communication (MCC) using the Flow Optimal Transport (FOT) framework.
 
     Parameters
     ----------
-    adata
-        The data matrix of shape ``n_obs`` × ``n_var``.
+    adata : anndata.AnnData
+        The data matrix of shape ``n_obs × n_var`` (cells/spots × genes).
         Rows correspond to cells or spots and columns to genes.
-    database_name
-        Name of the Metabolite-Sensor interaction database. Will be included in the keywords for anndata slots.
-    df_metasen
-        A data frame where each row corresponds to a metabolite-sensor pair with Metabolite, Sensor, Metabolite.Pathway, Sensor.Pathway, Metabolite.Names, Long.Range.Channel, respectively.
-    LRC_type
-        The name of all possible long-range channel, provided as a `list`, such as ["Blood"] or ["CSF"] or ["Blood","CSF"].
-    dis_thr
-        The farthest distance from a nearby cell to the LRC indicates the range of cells in which long-range communication can occur, provided as a `float`.
-    cost_scale
+    database_name : str
+        Name of the metabolite–sensor interaction database (used as prefix for storing results).
+    df_metasen : pd.DataFrame
+        DataFrame describing metabolite–sensor pairs, typically from MetaChatDB or related sources.
+        Must include columns: ``['HMDB.ID', 'Sensor.Gene', 'Metabolite.Pathway', 'Sensor.Pathway', 'Metabolite.Names', 'Long.Range.Channel']``.
+    LRC_type : list of str, optional
+        Names of long-range channels (LRCs) such as ``["Blood"]``, ``["CSF"]`` or ``["Blood", "CSF"]``.
+    dis_thr : float
+        Distance threshold for defining the region influenced by each LRC.
+    cost_scale : dict, optional
         Weight coefficients of the cost matrix for each metabolite-sensor pair, e.g. cost_scale[('metA','senA')] specifies weight for the pair metA and senA.
         If None, all pairs have the same weight. 
-    cost_type
-        If 'euc', the original Euclidean distance will be used as cost matrix. If 'euc_square', the square of the Euclidean distance will be used.
-    fot_eps_p
+    cost_type : str, {'euc', 'euc_square'}, default='euc'
+        Defines how spatial distances are used as cost matrix.
+    fot_eps_p : float, default=2.5e-1
         The coefficient of entropy regularization for transport plan.
-    fot_eps_mu
+    fot_eps_mu : float, optional
         The coefficient of entropy regularization for untransported source (metabolite). Set to equal to fot_eps_p for fast algorithm.
-    fot_eps_nu
+    fot_eps_nu : float, optional
         The coefficient of entropy regularization for unfulfilled target (sensor). Set to equal to fot_eps_p for fast algorithm.
-    fot_rho
+    fot_rho : float, optional
         The coefficient of penalty for unmatched mass.
-    fot_nitermax
+    fot_nitermax : int, default=10000
         Maximum iteration for flow optimal transport algorithm.
-    fot_weights
+    fot_weights : tuple of float, default=(1.0, 0.0, 0.0, 0.0)
         A tuple of four weights that add up to one. The weights corresponds to four setups of flow optimal transport: 
         1) all metabolite-all sensors, 2) each metabolite-all sensors, 3) all metabolite-each sensor, 4) each metabolite-each sensor.
-    copy
-        Whether to return a copy of the :class:`anndata.AnnData`.
+    copy : bool, default=False
+        Whether to return a new AnnData object or modify in place.
 
     Returns
     -------
-    adata : anndata.AnnData
-        Signaling matrices are added to ``.obsp``, e.g., for a MS interaction database named "databaseX", 
-        ``.obsp['metachat-databaseX-metA-senA']``
-        is a ``n_obs`` × ``n_obs`` matrix with the *ij* th entry being the "score" of 
-        cell *i* sending signal to cell *j* through metA and senA.
-        The marginal sums (sender and receiver) of the signaling matrices are stored in ``.obsm['metachat-databaseX-sum-sender']`` and ``.obsm['metachat-databaseX-sum-receiver']``.
-        Metadata of the analysis is added to ``.uns['metachat-databaseX-info']``.
-        If copy=True, return the AnnData object and return None otherwise.
+    adata : anndata.AnnData or None
+        Updates the following fields:
+        - ``.obsp['MetaChat-{database}-sender-{met}-{sen}']`` : n_obs × n_obs sparse matrix of sender signals.
+        - ``.obsp['MetaChat-{database}-receiver-{met}-{sen}']`` : n_obs × n_obs sparse matrix of receiver signals.
+        - ``.obsm['MetaChat-{database}-sum-sender']`` : DataFrame of per-cell sender signal sums.
+        - ``.obsm['MetaChat-{database}-sum-receiver']`` : DataFrame of per-cell receiver signal sums.
+        - ``.uns['MetaChat-{database}-info']`` : metadata including distance threshold.
+        If ``copy=True``, return a modified copy of `adata`; otherwise return None.
         
     """
-    # Check inputs
-    assert database_name is not None, "Please give a database_name"
-    assert df_metasen is not None, "Please give a Metabolite-Sensor database"
-    if LRC_type is None: 
-        print("You didn't input LRC_type, so long-range communication will not be consider in inference")
-    assert dis_thr is not None, "Please give a dis_thr"
 
-    # remove unavailable genes or metabolites from df_metasen
+    # ==== Basic checks ====
+    assert database_name is not None, "Please provide a database_name."
+    assert df_metasen is not None, "Please provide a metabolite-sensor database."
+    assert dis_thr is not None, "Please provide a dis_thr (distance threshold)."
+    if LRC_type is None: 
+        print("You didn't input LRC_type, so long-range communication will not be consider in inference.")
+
+    # ==== Filter valid metabolite–sensor pairs ====
     data_var = list(adata.var_names)
     tmp_metasen = []
     for i in range(df_metasen.shape[0]):
@@ -172,30 +174,33 @@ def metabolic_communication(
     tmp_metasen = np.array(tmp_metasen, str)
     df_metasen_filtered = pd.DataFrame(data = tmp_metasen)
     df_metasen_filtered.columns = df_metasen.columns.copy()
-
-    # Drop duplicate pairs
     df_metasen_filtered = df_metasen_filtered.drop_duplicates()
     adata.uns["df_metasen_filtered"] = df_metasen_filtered.copy()
     print("There are %d pairs were found from the spatial data." %df_metasen_filtered.shape[0])
-
-    model = CellCommunication(adata,                  
-                              df_metasen_filtered,
-                              LRC_type,
-                              dis_thr,
-                              cost_scale, 
-                              cost_type
+    
+    # ==== Initialize and run FOT-based communication model ====
+    model = CellCommunication(
+        adata,                  
+        df_metasen_filtered,
+        LRC_type,
+        dis_thr,
+        cost_scale, 
+        cost_type
     )
-    model.run_fot_signaling(fot_eps_p = fot_eps_p, 
-                            fot_eps_mu = fot_eps_mu, 
-                            fot_eps_nu = fot_eps_nu, 
-                            fot_rho = fot_rho, 
-                            fot_nitermax = fot_nitermax, 
-                            fot_weights = fot_weights
+    model.run_fot_signaling(
+        fot_eps_p = fot_eps_p, 
+        fot_eps_mu = fot_eps_mu, 
+        fot_eps_nu = fot_eps_nu, 
+        fot_rho = fot_rho, 
+        fot_nitermax = fot_nitermax, 
+        fot_weights = fot_weights
     )
-
-    adata.uns['MetaChat-'+database_name+'-info'] = {}
-    adata.uns['MetaChat-'+database_name+'-info']['distance_threshold'] = dis_thr
-
+    
+    # ==== Store metadata ====
+    adata.uns[f"MetaChat-{database_name}-info"] = {}
+    adata.uns[f"MetaChat-{database_name}-info"]['distance_threshold'] = dis_thr
+    
+    # ==== Aggregate sender and receiver matrices ====
     ncell = adata.shape[0]
     X_sender = np.empty([ncell,0], float)
     X_receiver = np.empty([ncell,0], float)
@@ -221,7 +226,8 @@ def metabolic_communication(
         X_receiver = np.concatenate((X_receiver, rec_sum), axis=1)
         col_names_sender.append("s-%s-%s" % (tmp_mets[i], tmp_sens[j]))
         col_names_receiver.append("r-%s-%s" % (tmp_mets[i], tmp_sens[j]))
-
+    
+    # ==== Add total summaries ====
     X_sender = np.concatenate((X_sender, X_sender.sum(axis=1).reshape(-1,1)), axis=1)
     X_receiver = np.concatenate((X_receiver, X_receiver.sum(axis=1).reshape(-1,1)), axis=1)
     col_names_sender.append("s-total-total")
@@ -238,4 +244,4 @@ def metabolic_communication(
     del model
     gc.collect()
 
-    return adata if copy else None
+    return adata.copy() if copy else None
