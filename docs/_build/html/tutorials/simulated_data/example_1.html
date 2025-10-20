@@ -1,18 +1,19 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Example 2 (Different types of long-range channels)" href="example_2.html"><link rel="prev" title="Simulated data" href="index.html">
+        <link rel="prefetch" href="../../_static/logo.png" as="image">
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>Toy example 1 - MetaChat 0.0.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=387cc868" />
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+        <title>Example 1 (Short- and Long-range communication) - MetaChat 0.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/override.css?v=46f5334b" />
     
@@ -21,8 +22,8 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   --color-brand-primary: #357473;
   --color-brand-content: #357473;
   --admonition-font-size: var(--font-size-normal);
@@ -97,19 +98,6 @@
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
-    </svg>
-  </symbol>
   <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
     <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -150,7 +138,7 @@
       <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
       <path d="M13.5 6.5l4 4" />
       <path d="M20 21l2 -2l-2 -2" />
-      <path d="M17 17l-2 2l2 2" /
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
   <symbol id="svg-eye" viewBox="0 0 24 24">
@@ -166,14 +154,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -183,17 +167,15 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">MetaChat 0.0.2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">MetaChat 0.0.4 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -201,8 +183,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -210,7 +191,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
-  
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
   </div>
@@ -223,9 +203,33 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../basic/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../basic/identifyLRC.html">Identifying Long-Range Channels (LRCs) in MetaChat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basic/identifyBarrier.html">Annotating barrier condition in MetaChat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basic/estimate_metabolomics/scFEA.html">Estimating spatial metabolomics from spatial transcriptomics using single-cell flux sstimation analysis (scFEA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basic/estimate_metabolomics/compass.html">Estimating spatial metabolomics from spatial transcriptomics using Compass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basic/estimate_metabolomics/mebocost.html">Estimating spatial metabolomics from spatial transcriptomics using MEBOCOST</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Example 1 (Short- and Long-range communication)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_2.html">Example 2 (Different types of long-range channels)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_3.html">Example 3 (Metabolite-Sensor competition)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_4.html">Example 4 (Multiple LRCs in one type)</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../realistic_data/index.html">Realistic data</a><input aria-label="Toggle navigation of Realistic data" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../realistic_data/multi-omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../realistic_data/multi-omics_data_LRC.html">Customizing long range channels by Napari</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../realistic_data/multi-omics_data_compare.html">Comparative analysis of metabolic cell communication</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
@@ -272,8 +276,7 @@
           
 
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -281,39 +284,39 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="toy-example-1">
-<h1>Toy example 1<a class="headerlink" href="#toy-example-1" title="Link to this heading"></a></h1>
-<div class="cell docutils container">
+          <section id="example-1-short-and-long-range-communication">
+<h1>Example 1 (Short- and Long-range communication)<a class="headerlink" href="#example-1-short-and-long-range-communication" title="Link to this heading"></a></h1>
+<p>In this tutorial, we will demonstrate the basic use of MetaChat using simulated data generated by the PDE model. In this example, we set up a situation in which both short-range and long-range communications coexist. We assume that the metabolite <code class="docutils literal notranslate"><span class="pre">M1</span></code> can communicate with proximal cells by short-range diffusion and with distal cells by long-range channel transport (<code class="docutils literal notranslate"><span class="pre">type1</span></code>).</p>
+<img src="../../_static/image/example1.jpg" alt="Example1" width="100"/><div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
-<span class="kn">import</span> <span class="nn">squidpy</span> <span class="k">as</span> <span class="nn">sq</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing packages</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">squidpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sq</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">import</span> <span class="nn">metachat</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">metachat</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mc</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>To run the examples, you’ll need to download the some pre-existing files in <code class="docutils literal notranslate"><span class="pre">docs/tutorials/simulated_data</span></code> folder and change your working directory to the <code class="docutils literal notranslate"><span class="pre">simulated_data</span></code> folder.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setting work dictionary</span>
-<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/home/Project/MetaChat_test/toy_example&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;your_path/simulated_data&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <section id="data-preprocessing">
 <h2>Data preprocessing<a class="headerlink" href="#data-preprocessing" title="Link to this heading"></a></h2>
-<section id="multi-omics-data-from-simulation">
-<h3>Multi-omics data from simulation<a class="headerlink" href="#multi-omics-data-from-simulation" title="Link to this heading"></a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data/example1/adata_example1.h5ad&quot;</span><span class="p">)</span>
@@ -328,13 +331,14 @@
 </div>
 </div>
 </div>
+<p>This dataset consists of a metabolite <code class="docutils literal notranslate"><span class="pre">M1</span></code> and a sensor <code class="docutils literal notranslate"><span class="pre">S1</span></code>. Their spatial distributions are shown below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
 <span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
                       <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;M1&quot;</span><span class="p">,</span>
                       <span class="n">size</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span>
-                      <span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;Blues&quot;</span><span class="p">,</span>
+                      <span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;Reds&quot;</span><span class="p">,</span>
                       <span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
@@ -343,7 +347,7 @@
 <span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
                       <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;S1&quot;</span><span class="p">,</span>
                       <span class="n">size</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span>
-                      <span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;Reds&quot;</span><span class="p">,</span>
+                      <span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;Blues&quot;</span><span class="p">,</span>
                       <span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
@@ -357,24 +361,28 @@
 WARNING: Please specify a valid `library_id` or set it permanently in `adata.uns[&#39;spatial&#39;]`
 </pre></div>
 </div>
-<img alt="../../_images/7d3ff3e08660a9d29efc82310fd4b1a51624ea8cc142415ea016d38d971e33c3.png" src="../../_images/7d3ff3e08660a9d29efc82310fd4b1a51624ea8cc142415ea016d38d971e33c3.png" />
+<img alt="../../_images/c9eb89c34c3c91d095fa264e1215e83fd7d29914e3a5e91d3f1a51fda13cfcdd.png" src="../../_images/c9eb89c34c3c91d095fa264e1215e83fd7d29914e3a5e91d3f1a51fda13cfcdd.png" />
 </div>
 </div>
 </section>
+<section id="mcc-inference">
+<h2>MCC Inference<a class="headerlink" href="#mcc-inference" title="Link to this heading"></a></h2>
 <section id="metabolite-sensor-database-construction">
 <h3>Metabolite-sensor database construction<a class="headerlink" href="#metabolite-sensor-database-construction" title="Link to this heading"></a></h3>
+<p>We need to artificially create a simple database which must include three columns: <code class="docutils literal notranslate"><span class="pre">Metabolite</span></code>, <code class="docutils literal notranslate"><span class="pre">Sensor</span></code>, <code class="docutils literal notranslate"><span class="pre">Long.Range.Channel</span></code>, representing the metabolite name, the sensor name, and the type of long range channel that metabolites may be entered, respectively.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">M_S_pair</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;M1&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">,</span> <span class="s1">&#39;type1&#39;</span><span class="p">]]</span>
-<span class="n">df_MetaSen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">M_S_pair</span><span class="p">)</span>
-<span class="n">df_MetaSen</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Metabolite&#39;</span><span class="p">,</span> <span class="s1">&#39;Sensor&#39;</span><span class="p">,</span> <span class="s1">&#39;Long.Range.Channel&#39;</span><span class="p">]</span>
+<span class="n">df_metasen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">M_S_pair</span><span class="p">)</span>
+<span class="n">df_metasen</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Metabolite&#39;</span><span class="p">,</span> <span class="s1">&#39;Sensor&#39;</span><span class="p">,</span> <span class="s1">&#39;Long.Range.Channel&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="long-range-channels">
-<h3>Long-range channels<a class="headerlink" href="#long-range-channels" title="Link to this heading"></a></h3>
+<section id="long-range-channels-lrc">
+<h3>Long-range channels (LRC)<a class="headerlink" href="#long-range-channels-lrc" title="Link to this heading"></a></h3>
+<p>Import the pre-defined long range channel and add it to the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_channel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;data/example1/LRC_channel.npy&#39;</span><span class="p">)</span>
@@ -384,9 +392,10 @@ WARNING: Please specify a valid `library_id` or set it permanently in `adata.uns
 </div>
 </div>
 </div>
+<p>It’s spatial distribution are shown in orange color:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
 <span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
                       <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;LRC_type1_filtered&quot;</span><span class="p">,</span>
                       <span class="n">size</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span>
@@ -394,7 +403,6 @@ WARNING: Please specify a valid `library_id` or set it permanently in `adata.uns
                       <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -403,27 +411,31 @@ WARNING: Please specify a valid `library_id` or set it permanently in `adata.uns
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING: Please specify a valid `library_id` or set it permanently in `adata.uns[&#39;spatial&#39;]`
 </pre></div>
 </div>
-<img alt="../../_images/deea3ffbffbce06c7d85055132d3a9d9de0add8c09fb0b69e47418dbb0423068.png" src="../../_images/deea3ffbffbce06c7d85055132d3a9d9de0add8c09fb0b69e47418dbb0423068.png" />
+<img alt="../../_images/c162c41f6c9f985352a09a07104ead6036ef273d9494b4b946bc1638c087e49c.png" src="../../_images/c162c41f6c9f985352a09a07104ead6036ef273d9494b4b946bc1638c087e49c.png" />
 </div>
 </div>
+</section>
+<section id="compute-the-cost-matrix-based-on-the-long-range-channels">
+<h3>Compute the cost matrix based on the long-range channels<a class="headerlink" href="#compute-the-cost-matrix-based-on-the-long-range-channels" title="Link to this heading"></a></h3>
+<p>To utilize flow-optimal transport, we need to compute the cost matrix depends mainly on two parameters:maximum communication distance (dis_thr) and long-range communication strength (LRC_strength).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">compute_longRangeDistance</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
-                                <span class="n">database_name</span> <span class="o">=</span> <span class="s2">&quot;msdb_example1&quot;</span><span class="p">,</span>
-                                <span class="n">df_MetaSen</span> <span class="o">=</span> <span class="n">df_MetaSen</span><span class="p">,</span>
-                                <span class="n">LRC_name</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;type1&quot;</span><span class="p">],</span>
-                                <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                                <span class="n">k_neighb</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-                                <span class="n">LRC_strength</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
-                                <span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                                <span class="n">spot_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">compute_costDistance</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                           <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;type1&quot;</span><span class="p">],</span>
+                           <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                           <span class="n">k_neighb</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                           <span class="n">LRC_strength</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+                           <span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                           <span class="n">spot_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compute spatial distance without long-range channel...
-There are 1 pairs were found from the spatial data.
-Compute new spatial distance incorporating long-range channel of type1
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compute spatial cost distance without long-range channel...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compute spatial cost distance incorporating long-range channel of type1
+The points that can occur long-range communication is...
 </pre></div>
 </div>
 <img alt="../../_images/f8d5476ba3dda1c1f335182a525c198f5ddcc1441636acc5bd211d56dc60fb01.png" src="../../_images/f8d5476ba3dda1c1f335182a525c198f5ddcc1441636acc5bd211d56dc60fb01.png" />
@@ -432,14 +444,14 @@ Compute new spatial distance incorporating long-range channel of type1
     For the long-range case of cluster 1...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 500/500 [03:56&lt;00:00,  2.11it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 500/500 [03:56&lt;00:00,  2.12it/s]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Rearrange distance matrix...
     For the long-range case of cluster 1...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1400/1400 [00:05&lt;00:00, 264.27it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1400/1400 [00:05&lt;00:00, 258.89it/s]
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Finished!
@@ -447,19 +459,20 @@ Compute new spatial distance incorporating long-range channel of type1
 </div>
 </div>
 </div>
+</section>
+<section id="run-the-inference-function">
+<h3>Run the inference function<a class="headerlink" href="#run-the-inference-function" title="Link to this heading"></a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In the case of with LR Channel</span>
-<span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">metabolic_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">metabolic_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
                               <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;msdb_example1&#39;</span><span class="p">,</span>
-                              <span class="n">df_MetaSen</span> <span class="o">=</span> <span class="n">df_MetaSen</span><span class="p">,</span>
+                              <span class="n">df_metasen</span> <span class="o">=</span> <span class="n">df_metasen</span><span class="p">,</span>
                               <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;type1&quot;</span><span class="p">],</span>
                               <span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
-                              <span class="n">cot_weights</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">),</span>
-                              <span class="n">cot_eps_p</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
-                              <span class="n">cot_rho</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                              <span class="n">fot_weights</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">),</span>
+                              <span class="n">fot_eps_p</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
+                              <span class="n">fot_rho</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
                               <span class="n">cost_type</span> <span class="o">=</span> <span class="s1">&#39;euc&#39;</span><span class="p">)</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;data/example1/inference_result.h5ad&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -469,6 +482,10 @@ Compute new spatial distance incorporating long-range channel of type1
 </div>
 </div>
 </div>
+</section>
+<section id="compare-metachat-results-with-the-pde-model">
+<h3>Compare MetaChat results with the PDE model<a class="headerlink" href="#compare-metachat-results-with-the-pde-model" title="Link to this heading"></a></h3>
+<p>Comparative results showed that the distribution of <code class="docutils literal notranslate"><span class="pre">M1-S1</span></code> inferred by MetaChat had a high correlation with that simulated by the PDE model.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MCC_PDE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;data/example1/pde_result.npy&#39;</span><span class="p">)</span>
@@ -507,13 +524,31 @@ Compute new spatial distance incorporating long-range channel of type1
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="example_2.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Example 2 (Different types of long-range channels)</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Simulated data</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, Songhao Luo
+                Copyright &#169; 2025, Songhao Luo
             </div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
@@ -541,11 +576,14 @@ Compute new spatial distance incorporating long-range channel of type1
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Toy example 1</a><ul>
-<li><a class="reference internal" href="#data-preprocessing">Data preprocessing</a><ul>
-<li><a class="reference internal" href="#multi-omics-data-from-simulation">Multi-omics data from simulation</a></li>
+<li><a class="reference internal" href="#">Example 1 (Short- and Long-range communication)</a><ul>
+<li><a class="reference internal" href="#data-preprocessing">Data preprocessing</a></li>
+<li><a class="reference internal" href="#mcc-inference">MCC Inference</a><ul>
 <li><a class="reference internal" href="#metabolite-sensor-database-construction">Metabolite-sensor database construction</a></li>
-<li><a class="reference internal" href="#long-range-channels">Long-range channels</a></li>
+<li><a class="reference internal" href="#long-range-channels-lrc">Long-range channels (LRC)</a></li>
+<li><a class="reference internal" href="#compute-the-cost-matrix-based-on-the-long-range-channels">Compute the cost matrix based on the long-range channels</a></li>
+<li><a class="reference internal" href="#run-the-inference-function">Run the inference function</a></li>
+<li><a class="reference internal" href="#compare-metachat-results-with-the-pde-model">Compare MetaChat results with the PDE model</a></li>
 </ul>
 </li>
 </ul>
@@ -561,10 +599,10 @@ Compute new spatial distance incorporating long-range channel of type1
   </div>
 </div><script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../_static/documentation_options.js?v=e3a6060d"></script>
+    <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     </body>
 </html>

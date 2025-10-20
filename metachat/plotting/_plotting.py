@@ -2003,7 +2003,7 @@ def plot_LRC_markers(
     LRC_name : str
         Name tag for the LRC type (e.g., "CSF", "Blood").
         Used in plot titles and output naming.
-    LRC_marker_genes : list of str
+    LRC_marker_genes : list
         List of LRC marker gene names to visualize.
         Genes not found in ``adata.var_names`` are automatically skipped.
     avg : bool, default=False
@@ -2054,6 +2054,8 @@ def plot_LRC_markers(
             axes = [axes]
         
         for gene, ax in zip(valid_genes, axes):
+            obs_key = f"LRC_{LRC_name}_marker_{gene}"
+            adata.obs[obs_key] = adata[:, gene].X.toarray().ravel()
             sq.pl.spatial_scatter(adata, color=gene, ax=ax)
             ax.set_title(f"{gene}")
             ax.set_box_aspect(1)
@@ -2138,7 +2140,7 @@ def plot_spot_distance(
     ax.set_box_aspect(1)
     ax.set_xlabel("X coordinate")
     ax.set_ylabel("Y coordinate")
-    ax.set_ylim(ax.get_ylim()[1], ax.get_ylim()[0])  # Flip y-axis
+    # ax.set_ylim(ax.get_ylim()[1], ax.get_ylim()[0])  # Flip y-axis
     plt.tight_layout()
     plt.show()
 

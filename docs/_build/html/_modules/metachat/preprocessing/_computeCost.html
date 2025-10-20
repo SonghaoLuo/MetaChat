@@ -1,0 +1,983 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+        <link rel="prefetch" href="../../../_static/logo.png" as="image">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+        <title>metachat.preprocessing._computeCost - MetaChat 0.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/override.css?v=46f5334b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  --color-brand-primary: #357473;
+  --color-brand-content: #357473;
+  --admonition-font-size: var(--font-size-normal);
+  --admonition-title-font-size: var(--font-size-normal);
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">MetaChat 0.0.4 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/logo.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../tutorials/basic/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/basic/identifyLRC.html">Identifying Long-Range Channels (LRCs) in MetaChat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/basic/identifyBarrier.html">Annotating barrier condition in MetaChat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/basic/estimate_metabolomics/scFEA.html">Estimating spatial metabolomics from spatial transcriptomics using single-cell flux sstimation analysis (scFEA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/basic/estimate_metabolomics/compass.html">Estimating spatial metabolomics from spatial transcriptomics using Compass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/basic/estimate_metabolomics/mebocost.html">Estimating spatial metabolomics from spatial transcriptomics using MEBOCOST</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../tutorials/simulated_data/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/simulated_data/example_1.html">Example 1 (Short- and Long-range communication)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/simulated_data/example_2.html">Example 2 (Different types of long-range channels)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/simulated_data/example_3.html">Example 3 (Metabolite-Sensor competition)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/simulated_data/example_4.html">Example 4 (Multiple LRCs in one type)</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../tutorials/realistic_data/index.html">Realistic data</a><input aria-label="Toggle navigation of Realistic data" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/realistic_data/multi-omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/realistic_data/multi-omics_data_LRC.html">Customizing long range channels by Napari</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/realistic_data/multi-omics_data_compare.html">Comparative analysis of metabolic cell communication</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pp.LRC_filtered.html">metachat.pp.LRC_filtered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pp.compute_costDistance.html">metachat.pp.compute_costDistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.metabolic_communication.html">metachat.tl.metabolic_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.summary_communication.html">metachat.tl.summary_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.communication_flow.html">metachat.tl.communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.communication_group.html">metachat.tl.communication_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.communication_group_spatial.html">metachat.tl.communication_group_spatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.summary_pathway.html">metachat.tl.summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.communication_responseGenes.html">metachat.tl.communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.communication_responseGenes_cluster.html">metachat.tl.communication_responseGenes_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.tl.communication_responseGenes_keggEnrich.html">metachat.tl.communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pl.plot_communication_flow.html">metachat.pl.plot_communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pl.plot_group_communication_compare_hierarchy_diagram.html">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for metachat.preprocessing._computeCost</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ============================================================</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">cpu_count</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance_matrix</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">anndata</span>
+<span class="c1"># ============================================================</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_orient</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute signed area orientation (cross product) of triangle (a, b, c).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_on_segment</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if point c lies on segment ab (within tolerance).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">tol</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">tol</span> <span class="ow">and</span>
+            <span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">tol</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">tol</span> <span class="ow">and</span>
+            <span class="nb">abs</span><span class="p">(</span><span class="n">_orient</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_segments_intersect</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">block_touch</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if line segments (p1,p2) and (q1,q2) intersect.&quot;&quot;&quot;</span>
+    <span class="n">o1</span> <span class="o">=</span> <span class="n">_orient</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q1</span><span class="p">);</span> <span class="n">o2</span> <span class="o">=</span> <span class="n">_orient</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q2</span><span class="p">)</span>
+    <span class="n">o3</span> <span class="o">=</span> <span class="n">_orient</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">p1</span><span class="p">);</span> <span class="n">o4</span> <span class="o">=</span> <span class="n">_orient</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+    <span class="c1"># proper intersection</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">o1</span> <span class="o">*</span> <span class="n">o2</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">o3</span> <span class="o">*</span> <span class="n">o4</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="c1"># collinear/touching</span>
+    <span class="k">if</span> <span class="n">block_touch</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">o1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">_on_segment</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span> <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">o2</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">_on_segment</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span> <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">o3</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">_on_segment</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span> <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">o4</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">_on_segment</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span> <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_edge_if_visible</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">line_segments</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">block_touch</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check visibility between two points, return (p1, p2, distance) or (p1, p2, None) if blocked.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span> <span class="ow">in</span> <span class="n">line_segments</span><span class="p">:</span>
+        <span class="c1"># quick AABB reject to speed up</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">q1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span>
+            <span class="nb">max</span><span class="p">(</span><span class="n">q1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span>
+            <span class="nb">max</span><span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">q1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span>
+            <span class="nb">max</span><span class="p">(</span><span class="n">q1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">_segments_intersect</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">block_touch</span><span class="o">=</span><span class="n">block_touch</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p2</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_init_visible_worker</span><span class="p">(</span><span class="n">line_segments</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store barrier line segments for multiprocessing workers.&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_LINE_SEGS</span>
+    <span class="n">_LINE_SEGS</span> <span class="o">=</span> <span class="n">line_segments</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_edge_task</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visibility check task for parallel computation.&quot;&quot;&quot;</span>
+    <span class="n">p1_org</span><span class="p">,</span> <span class="n">p2_org</span> <span class="o">=</span> <span class="n">task</span>
+    <span class="n">vis</span> <span class="o">=</span> <span class="n">_compute_edge_if_visible</span><span class="p">(</span><span class="n">p1_org</span><span class="p">,</span> <span class="n">p2_org</span><span class="p">,</span> <span class="n">_LINE_SEGS</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">block_touch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">vis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">vis</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">p1_org</span><span class="p">,</span> <span class="n">p2_org</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p1_org</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p2_org</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">p1_org</span><span class="p">,</span> <span class="n">p2_org</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_visible_graph</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">barrier_segments</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_parallel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a visibility graph from spatial coordinates with barrier constraints.</span>
+<span class="sd">    Any edge intersecting a barrier segment is excluded.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata : AnnData</span>
+<span class="sd">        Annotated data matrix containing ``adata.obsm[&quot;spatial&quot;]`` of shape (n, 2)</span>
+<span class="sd">        in the same coordinate system as barriers.</span>
+<span class="sd">    barrier_segments : list</span>
+<span class="sd">        List of barrier segments [((x1, y1), (x2, y2)), ...], typically obtained</span>
+<span class="sd">        from :func:`load_barrier_segments`.</span>
+<span class="sd">    use_parallel : bool, default=True</span>
+<span class="sd">        Whether to use multiprocessing for visibility computation.</span>
+<span class="sd">    n_jobs : int, default=-1</span>
+<span class="sd">        Number of CPU cores to use; -1 means use all available.</span>
+<span class="sd">    copy : bool, default=False</span>
+<span class="sd">        If True, return a copy of AnnData; otherwise modify in place.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    AnnData or None</span>
+<span class="sd">        Stores CSR adjacency in `adata.obsp[&#39;graph_visible&#39;]` and DataFrame of blocked pairs in `adata.uns[&#39;non_visible_pair&#39;]`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ---- Basic checks ----</span>
+    <span class="k">if</span> <span class="s2">&quot;spatial&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`adata.obsm[&#39;spatial&#39;]` is missing.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">barrier_segments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`barrier_segments` must be provided as a list of ((x,y),(x,y)) tuples.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`adata.obsm[&#39;spatial&#39;]` must have shape (n, 2).&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Work on a view or a copy?</span>
+    <span class="n">ad</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="n">adata</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ad</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">spots_positions</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span> <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">]</span>
+    <span class="n">pos_to_idx</span> <span class="o">=</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">xy</span><span class="p">):</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xy</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coords</span><span class="p">)}</span>
+
+    <span class="c1"># ---- Build pairwise task list in continuous coords ----</span>
+    <span class="n">task_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">spots_positions</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">non_visible_pair_idx</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># ---- Configure workers ----</span>
+    <span class="n">n_workers</span> <span class="o">=</span> <span class="n">cpu_count</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">n_jobs</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">n_jobs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">))</span>
+
+    <span class="c1"># ---- Run computation ----</span>
+    <span class="k">if</span> <span class="n">use_parallel</span><span class="p">:</span>
+        <span class="n">chunksize</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">task_list</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="n">n_workers</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">n_workers</span><span class="p">,</span>
+                  <span class="n">initializer</span><span class="o">=</span><span class="n">_init_visible_worker</span><span class="p">,</span>
+                  <span class="n">initargs</span><span class="o">=</span><span class="p">(</span><span class="n">barrier_segments</span><span class="p">,))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">,</span> \
+             <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">task_list</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;  Building visible graph with paralleling </span><span class="si">{</span><span class="n">n_workers</span><span class="si">}</span><span class="s2"> CPU cores...&quot;</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">u_org</span><span class="p">,</span> <span class="n">v_org</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap_unordered</span><span class="p">(</span><span class="n">_edge_task</span><span class="p">,</span> <span class="n">task_list</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">):</span>
+                    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">pos_to_idx</span><span class="p">[</span><span class="n">u_org</span><span class="p">],</span> <span class="n">pos_to_idx</span><span class="p">[</span><span class="n">v_org</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">rows</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]);</span> <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]);</span> <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">w</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">non_visible_pair_idx</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">u_org</span><span class="p">,</span> <span class="n">v_org</span><span class="p">))</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+                <span class="n">pool</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Single-process path</span>
+        <span class="k">global</span> <span class="n">_LINE_SEGS</span>
+        <span class="n">_LINE_SEGS</span> <span class="o">=</span> <span class="n">barrier_segments</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">task_list</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;  Building visible graph...&quot;</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">u_org</span><span class="p">,</span> <span class="n">v_org</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">_edge_task</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">pos_to_idx</span><span class="p">[</span><span class="n">u_org</span><span class="p">],</span> <span class="n">pos_to_idx</span><span class="p">[</span><span class="n">v_org</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]);</span> <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]);</span> <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">w</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">non_visible_pair_idx</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">u_org</span><span class="p">,</span> <span class="n">v_org</span><span class="p">))</span>
+
+    <span class="c1"># ---- Save into CSR adjacency (symmetric) ----</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">n_obs</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+
+    <span class="n">non_visible_pair_idx_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">non_visible_pair_idx</span><span class="p">],</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;coords_index_u&#39;</span><span class="p">,</span> <span class="s1">&#39;coords_index_v&#39;</span><span class="p">,</span> <span class="s1">&#39;coords_u_x&#39;</span><span class="p">,</span> <span class="s1">&#39;coords_u_y&#39;</span><span class="p">,</span> <span class="s1">&#39;coords_v_x&#39;</span><span class="p">,</span> <span class="s1">&#39;coords_v_y&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">ad</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;graph_visible&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adj</span>
+    <span class="n">ad</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;non_visible_pair&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">non_visible_pair_idx_df</span>
+
+    <span class="k">return</span> <span class="n">ad</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_graph_visible_from_obsp</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="s2">&quot;spatial&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rebuild a NetworkX Graph from `adata.obsp[key]`.</span>
+<span class="sd">    - Edge weights are taken from the sparse matrix values.</span>
+<span class="sd">    - `label=&#39;spatial&#39;` relabels nodes to tuple(coords) from `adata.obsm[&#39;spatial&#39;]`;</span>
+<span class="sd">      use `label=&#39;index&#39;` to keep integer node ids (0..n-1).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+        <span class="c1"># Convert dense to CSR for speed, if needed</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="c1"># Build undirected weighted graph from sparse matrix</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_scipy_sparse_array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">edge_attribute</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xy</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="n">coords</span><span class="p">]))}</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">relabel_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">G</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_nx_graph_to_csr</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">):</span>
+    <span class="c1"># Build symmetric COO from undirected edges; keep weights as float32</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">continue</span>  <span class="c1"># drop self-loops</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span>   <span class="c1"># undirected -&gt; insert both directions</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">])</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">w</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">A</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_visible_graph_knn</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">k_neighb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct a k-nearest neighbor (k-NN) visibility graph from an existing visibility graph.</span>
+
+<span class="sd">    This function trims the precomputed visibility graph in ``adata.obsp[&quot;graph_visible&quot;]`` </span>
+<span class="sd">    to retain only the k-nearest neighbors (based on edge weights) for each node, </span>
+<span class="sd">    resulting in a sparse but structured graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        The annotated data object containing:</span>
+<span class="sd">        - ``adata.obsm[&quot;spatial&quot;]`` : Spatial coordinates (n × 2)</span>
+<span class="sd">        - ``adata.obsp[&quot;graph_visible&quot;]`` : CSR matrix of visible edge weights, </span>
+<span class="sd">          typically produced by :func:`_build_visible_graph`.</span>
+<span class="sd">    k_neighb : int, default=5</span>
+<span class="sd">        Number of nearest neighbors to retain for each node.</span>
+<span class="sd">    copy : bool, default=False</span>
+<span class="sd">        Whether to return a modified copy of AnnData instead of modifying in place.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    anndata.AnnData or None</span>
+<span class="sd">        If ``copy=True``, returns a new AnnData object.  </span>
+<span class="sd">        Adds the following:</span>
+<span class="sd">        - ``adata.obsp[f&quot;graph_visible_kneighb_{k_neighb}&quot;]`` : CSR matrix of k-NN edges.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ---- Check inputs ----</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;graph_visible&quot;</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Missing &#39;graph_visible&#39; in adata.obsp, please run the &#39;_build_visible_graph&#39; function first&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># ---- Prepare workspace ----</span>
+    <span class="n">G_visible</span> <span class="o">=</span> <span class="n">_load_graph_visible_from_obsp</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;graph_visible&quot;</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">G_visible</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">edges_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="c1"># Retrieve all neighbors and their edge weights</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="p">[(</span><span class="n">neighbor</span><span class="p">,</span> <span class="n">G</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">neighbor</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">node</span><span class="p">)]</span>
+        <span class="c1"># Sort by edge weight (distance), keeping only the k-nearest neighbors</span>
+        <span class="n">neighbors</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">keep_edges</span> <span class="o">=</span> <span class="p">{</span><span class="n">neighbor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">[:</span><span class="n">k_neighb</span><span class="p">]}</span>
+
+        <span class="c1"># Identify edges to remove</span>
+        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keep_edges</span><span class="p">:</span>
+                <span class="n">edges_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">))</span>
+
+    <span class="c1"># Remove unnecessary edges</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">(</span><span class="n">edges_to_remove</span><span class="p">)</span>
+
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial&quot;</span><span class="p">])</span>
+    <span class="n">spots_positions</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span> <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">]</span>
+    <span class="n">pos_to_idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">pos</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spots_positions</span><span class="p">)}</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">relabel_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos_to_idx</span><span class="p">)</span>
+    <span class="n">A_knn</span> <span class="o">=</span> <span class="n">_nx_graph_to_csr</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">adata</span><span class="o">.</span><span class="n">n_obs</span><span class="p">)</span>
+
+    <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;graph_visible_kneighb_</span><span class="si">{</span><span class="n">k_neighb</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">A_knn</span>
+
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_init_graph</span><span class="p">(</span><span class="n">G_kneigh</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the global variable G_kneigh for multiprocessing.</span>
+
+<span class="sd">    This function sets a global variable G_kneigh_global, allowing all worker </span>
+<span class="sd">    processes in a multiprocessing pool to access the same graph without </span>
+<span class="sd">    repeatedly copying it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">G_kneigh_global</span>
+    <span class="n">G_kneigh_global</span> <span class="o">=</span> <span class="n">G_kneigh</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_shortest_path</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the shortest path distance between two non-visible points.</span>
+
+<span class="sd">    This function calculates the shortest path between two spatial points using </span>
+<span class="sd">    Dijkstra&#39;s algorithm on the global k-nearest neighbor graph (G_kneigh_global). </span>
+<span class="sd">    If no path exists, the distance is set to infinity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    args : tuple</span>
+<span class="sd">        A tuple containing:</span>
+<span class="sd">        - i (int): Index of the first point in the distance matrix.</span>
+<span class="sd">        - j (int): Index of the second point in the distance matrix.</span>
+<span class="sd">        - pos1 (tuple): Coordinates of the first point.</span>
+<span class="sd">        - pos2 (tuple): Coordinates of the second point.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        A tuple (i, j, shortest_path_length) where:</span>
+<span class="sd">        - i (int): Index of the first point.</span>
+<span class="sd">        - j (int): Index of the second point.</span>
+<span class="sd">        - shortest_path_length (float): The shortest path distance between the points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">global</span> <span class="n">G_kneigh_global</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">shortest_path_length</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dijkstra_path_length</span><span class="p">(</span><span class="n">G_kneigh_global</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">pos1</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">pos2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span><span class="p">,</span> <span class="n">shortest_path_length</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># No path exists</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_shortest_path_single_source</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes single-source shortest path lengths from a given node in a global graph.</span>
+
+<span class="sd">    This function is designed for use in parallel processing to compute shortest path </span>
+<span class="sd">    lengths from a source node to all reachable nodes using Dijkstra&#39;s algorithm. </span>
+<span class="sd">    It depends on a globally shared NetworkX graph (`G_kneigh_global`), which should </span>
+<span class="sd">    be initialized using `_init_graph()` prior to calling this function in a multiprocessing pool.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    args : tuple</span>
+<span class="sd">        A tuple containing:</span>
+<span class="sd">        - m : int</span>
+<span class="sd">            The index of the source node (typically local index in a cluster or spatial list).</span>
+<span class="sd">        - pos1 : tuple</span>
+<span class="sd">            The spatial coordinate (node position) of the source.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        A tuple of (m, pos1, lengths), where:</span>
+<span class="sd">        - m : int</span>
+<span class="sd">            The same index passed in for reference.</span>
+<span class="sd">        - pos1 : tuple</span>
+<span class="sd">            The same source coordinate.</span>
+<span class="sd">        - lengths : dict</span>
+<span class="sd">            A dictionary mapping each reachable node position to its shortest path </span>
+<span class="sd">            distance from the source. If no path exists, an empty dictionary is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">pos1</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">global</span> <span class="n">G_kneigh_global</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">single_source_dijkstra_path_length</span><span class="p">(</span><span class="n">G_kneigh_global</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">pos1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">:</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">,</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">lengths</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_distance_matrix</span><span class="p">(</span><span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+                          <span class="n">k_neighb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                          <span class="n">use_parallel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+                          <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constructs an updated distance matrix incorporating shortest paths for non-visible points.</span>
+
+<span class="sd">    This function initializes a distance matrix based on Euclidean distances and updates </span>
+<span class="sd">    distances for non-visible points using shortest paths computed from the k-nearest </span>
+<span class="sd">    neighbor graph (G_kneigh).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata : anndata.AnnData</span>
+<span class="sd">        The AnnData object containing spatial information.</span>
+<span class="sd">        - `adata.obsm[&quot;spatial&quot;]` : ndarray of shape (n_spots, 2)</span>
+<span class="sd">            The spatial coordinates of the spots.</span>
+<span class="sd">    non_visible_pair : list of tuple</span>
+<span class="sd">        A list of spatial coordinate pairs (pos1, pos2) representing </span>
+<span class="sd">        non-visible connections.</span>
+<span class="sd">    G_kneigh : networkx.Graph</span>
+<span class="sd">        The k-nearest neighbor graph ensuring connectivity.</span>
+<span class="sd">    use_parallel : bool, optional</span>
+<span class="sd">        Whether to use parallel processing for shortest path computation (default is True).</span>
+<span class="sd">    n_jobs : int, optional</span>
+<span class="sd">        Number of parallel jobs to use for computation (default is -1, using all available CPUs).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        A symmetric distance matrix where unreachable distances are replaced </span>
+<span class="sd">        with shortest paths from G_kneigh.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">non_visible_pair</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;non_visible_pair&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">G_kneigh</span> <span class="o">=</span> <span class="n">_load_graph_visible_from_obsp</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;graph_visible_kneighb_</span><span class="si">{</span><span class="n">k_neighb</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Create a mapping from spatial coordinates to matrix indices</span>
+    <span class="n">spots_positions</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial&quot;</span><span class="p">]]</span>
+    <span class="n">position_to_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">pos</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spots_positions</span><span class="p">)}</span>
+
+    <span class="c1"># Compute the initial Euclidean distance matrix</span>
+    <span class="n">dis_mat</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">spots_positions</span><span class="p">,</span> <span class="n">spots_positions</span><span class="p">)</span>
+    <span class="n">updated_dis_mat</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Prepare tasks for shortest path computation</span>
+    <span class="n">task_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+        <span class="n">non_visible_pair</span><span class="p">[</span><span class="s1">&#39;coords_index_u&#39;</span><span class="p">],</span>
+        <span class="n">non_visible_pair</span><span class="p">[</span><span class="s1">&#39;coords_index_v&#39;</span><span class="p">],</span>
+        <span class="nb">zip</span><span class="p">(</span><span class="n">non_visible_pair</span><span class="p">[</span><span class="s1">&#39;coords_u_x&#39;</span><span class="p">],</span> <span class="n">non_visible_pair</span><span class="p">[</span><span class="s1">&#39;coords_u_y&#39;</span><span class="p">]),</span>
+        <span class="nb">zip</span><span class="p">(</span><span class="n">non_visible_pair</span><span class="p">[</span><span class="s1">&#39;coords_v_x&#39;</span><span class="p">],</span> <span class="n">non_visible_pair</span><span class="p">[</span><span class="s1">&#39;coords_v_y&#39;</span><span class="p">])</span>
+    <span class="p">))</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">use_parallel</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">initializer</span><span class="o">=</span><span class="n">_init_graph</span><span class="p">,</span> <span class="n">initargs</span><span class="o">=</span><span class="p">(</span><span class="n">G_kneigh</span><span class="p">,))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">task_list</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;  Computing shortest paths for non-visible points&quot;</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap_unordered</span><span class="p">(</span><span class="n">_compute_shortest_path</span><span class="p">,</span> <span class="n">task_list</span><span class="p">):</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Update progress bar for each completed task</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">task_list</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;  Computing shortest paths for non-visible points&quot;</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_compute_shortest_path</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+
+    <span class="c1"># Update the distance matrix with shortest path values</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span><span class="p">,</span> <span class="n">shortest_path_length</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">updated_dis_mat</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">shortest_path_length</span>
+        <span class="n">updated_dis_mat</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">shortest_path_length</span>  <span class="c1"># Ensure symmetry</span>
+    
+    <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance_LRC_base&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_dis_mat</span>
+
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="compute_costDistance">
+<a class="viewcode-back" href="../../../api/metachat.pp.compute_costDistance.html#metachat.pp.compute_costDistance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_costDistance</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">:</span> <span class="n">anndata</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span>
+    <span class="n">LRC_type</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">LRC_strength</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">LRC_source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;marker&quot;</span><span class="p">,</span>
+    <span class="n">dis_thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
+    <span class="n">k_neighb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">barrier</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">barrier_segments</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">spatial_3d</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                        
+    <span class="n">use_parallel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute LRC-embedding cost distance based on visibility and local connectivity,</span>
+<span class="sd">    supporting both 2D and 3D spatial coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    adata</span>
+<span class="sd">        AnnData object containing spatial coordinates and LRC annotations.</span>
+<span class="sd">    LRC_type</span>
+<span class="sd">        List of long-range communication (LRC) types to process, e.g. [&quot;CSF&quot;, &quot;Blood&quot;].</span>
+<span class="sd">    LRC_strength</span>
+<span class="sd">        List of reweighting strengths corresponding to each LRC type (same length as LRC_type).</span>
+<span class="sd">    LRC_source</span>
+<span class="sd">        Labeling source in `adata.obs`, either &quot;marker&quot; (default) or &quot;manual&quot;.</span>
+<span class="sd">    dis_thr</span>
+<span class="sd">        Distance threshold for defining neighborhood around each LRC (default: 50.0).</span>
+<span class="sd">    k_neighb</span>
+<span class="sd">        Number of nearest neighbors for within-cluster graph construction (default: 5).</span>
+<span class="sd">    barrier</span>
+<span class="sd">        Whether to include visibility barriers (default: False).</span>
+<span class="sd">    barrier_segments</span>
+<span class="sd">        List of ((x1, y1), (x2, y2)) tuples describing physical barriers.</span>
+<span class="sd">    spatial_3d</span>
+<span class="sd">        Use 3D spatial coordinates (`adata.obsm[&quot;spatial_3d&quot;]`) instead of 2D (default: False).</span>
+<span class="sd">    use_parallel</span>
+<span class="sd">        Whether to parallelize shortest-path computation (default: True).</span>
+<span class="sd">    n_jobs</span>
+<span class="sd">        Number of parallel jobs; -1 uses all CPUs (default: -1).</span>
+<span class="sd">    copy</span>
+<span class="sd">        Return a copy instead of modifying in place (default: False).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    anndata.AnnData or None</span>
+<span class="sd">        If copy=True, returns a new AnnData with updated distances.  </span>
+<span class="sd">        Stores:</span>
+<span class="sd">        - ``adata.obsp[&#39;spatial_distance_LRC_base&#39;]``</span>
+<span class="sd">        - ``adata.obsp[&#39;spatial_distance_LRC_&lt;type&gt;&#39;]``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">### Check if the input is a valid.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">LRC_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">LRC_strength</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No &#39;LRC_type&#39; and &#39;LRC_strength&#39; are provided. Long-range communication will not be included in subsequent analysis.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">LRC_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">((</span><span class="n">LRC_strength</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">LRC_strength</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">LRC_type</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please provide a list of LRC_strength values that matches the length of LRC_type.&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">barrier</span> <span class="ow">and</span> <span class="s1">&#39;barrier&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;adata.obs[&#39;barrier&#39;] missing while barrier=True.&quot;</span><span class="p">)</span>
+    
+    <span class="c1">### Check parallel settings</span>
+    <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">cpu_count</span><span class="p">()</span> <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">cpu_count</span><span class="p">())</span>
+    
+    <span class="c1">### Check if the dimension of spatial coordinates is 2D or 3D</span>
+    <span class="n">spatial_key</span> <span class="o">=</span> <span class="s1">&#39;spatial_3d&#39;</span> <span class="k">if</span> <span class="n">spatial_3d</span> <span class="k">else</span> <span class="s1">&#39;spatial&#39;</span>
+    <span class="n">spatial_coords</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="n">spatial_key</span><span class="p">]</span>
+
+    <span class="c1"># ============ Baseline spatial distance without LRC ============</span>
+    <span class="k">if</span> <span class="s1">&#39;spatial_distance_LRC_base&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing baseline spatial distance without LRC.&quot;</span><span class="p">)</span>        
+        <span class="k">if</span> <span class="n">barrier</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Barrier condition is considered&quot;</span><span class="p">)</span>
+            <span class="n">_build_visible_graph</span><span class="p">(</span><span class="n">adata</span><span class="o">=</span><span class="n">adata</span><span class="p">,</span> <span class="n">barrier_segments</span><span class="o">=</span><span class="n">barrier_segments</span><span class="p">,</span> <span class="n">use_parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+            <span class="n">_build_visible_graph_knn</span><span class="p">(</span><span class="n">adata</span><span class="o">=</span><span class="n">adata</span><span class="p">,</span> <span class="n">k_neighb</span><span class="o">=</span><span class="n">k_neighb</span><span class="p">)</span>
+            <span class="n">_build_distance_matrix</span><span class="p">(</span><span class="n">adata</span><span class="o">=</span><span class="n">adata</span><span class="p">,</span> <span class="n">k_neighb</span><span class="o">=</span><span class="n">k_neighb</span><span class="p">,</span> <span class="n">use_parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Barrier condition is not considered&quot;</span><span class="p">)</span>
+            <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance_LRC_base&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">distance_matrix</span><span class="p">(</span><span class="n">spatial_coords</span><span class="p">,</span> <span class="n">spatial_coords</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>         
+    <span class="n">dis_mat</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance_LRC_base&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="n">LRC_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No LRC_type provided — skipping LRC embedding computation, &#39;adata.obsp[&#39;spatial_distance_LRC_base&#39;]&#39; has been saved.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span>
+    
+    <span class="c1"># ============ Spatial distance with LRCs ============</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing spatial distance with LRCs.&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx_LRC</span><span class="p">,</span> <span class="n">LRC_element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">LRC_type</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Processing LRC type: </span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">strength</span> <span class="o">=</span> <span class="n">LRC_strength</span><span class="p">[</span><span class="n">idx_LRC</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">LRC_source</span> <span class="o">==</span> <span class="s2">&quot;marker&quot;</span><span class="p">:</span>
+            <span class="n">key_LRC</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;LRC_</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s1">_marker_filtered&#39;</span>
+            <span class="k">if</span> <span class="n">key_LRC</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing adata.obs[&#39;</span><span class="si">{</span><span class="n">key_LRC</span><span class="si">}</span><span class="s2">&#39;] — please run LRC_unfiltered → cluster → filtered.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">LRC_source</span> <span class="o">==</span> <span class="s2">&quot;manual&quot;</span><span class="p">:</span>
+            <span class="n">key_LRC</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;LRC_</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s1">_manual_filtered&#39;</span>
+            <span class="k">if</span> <span class="n">key_LRC</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing adata.obs[&#39;</span><span class="si">{</span><span class="n">key_LRC</span><span class="si">}</span><span class="s2">&#39;] — please provide manually annotated LRC.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;LRC_source_mode must be one of [&#39;marker&#39;, &#39;manual&#39;]&quot;</span><span class="p">)</span>
+        
+        <span class="c1">## ============ Recoding close points next to each LRC ============</span>
+        <span class="n">LRC_subcluster</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">key_LRC</span><span class="p">])</span> <span class="o">-</span> <span class="p">{</span><span class="mi">0</span><span class="p">})</span>        
+        <span class="n">record_closepoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">LRC_subcluster</span><span class="p">)))</span>
+        <span class="n">spot_close_LRC</span><span class="p">,</span> <span class="n">spot_close_LRC_type</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">ispot</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dis_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">spot_close_ind</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="p">[</span><span class="n">ispot</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">dis_thr</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">key_LRC</span><span class="p">][</span><span class="n">spot_close_ind</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">temp</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">spot_close_LRC</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ispot</span><span class="p">)</span>
+                <span class="n">ispot_LRC_type</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="n">temp</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ispot_LRC_type</span><span class="p">:</span>
+                    <span class="n">record_closepoint</span><span class="p">[</span><span class="n">ispot</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">spot_close_LRC_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ispot_LRC_type</span><span class="p">)</span>
+        <span class="n">spot_close_LRC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spot_close_LRC</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">icluster</span> <span class="ow">in</span> <span class="n">LRC_subcluster</span><span class="p">:</span>
+            <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;LRC_</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s1">_closepoint_cluster</span><span class="si">{</span><span class="n">icluster</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_closepoint</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">icluster</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c1">## ============ Computing shortest path between two points in LRCs ============</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;LRC_shortest_</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s1">_dist</span><span class="si">{</span><span class="n">dis_thr</span><span class="si">}</span><span class="s1">_cluster</span><span class="si">{</span><span class="n">icluster</span><span class="si">}</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span> <span class="k">for</span> <span class="n">icluster</span> <span class="ow">in</span> <span class="n">LRC_subcluster</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Using cached matrix paths in adata.obsp for LRC type </span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s2"> under dis_thr </span><span class="si">{</span><span class="n">dis_thr</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">### ============ Construct graph for each LRC subcluster ============ ###</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Constructing graph for each LRC subcluster.&quot;</span><span class="p">)</span>
+            <span class="n">G_LRC</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">icluster</span> <span class="ow">in</span> <span class="n">LRC_subcluster</span><span class="p">:</span>
+                <span class="n">icluster</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">icluster</span><span class="p">)</span>
+                <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+                <span class="n">LRC_coords_icluster</span> <span class="o">=</span> <span class="n">spatial_coords</span><span class="p">[</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">key_LRC</span><span class="p">]</span> <span class="o">==</span> <span class="n">icluster</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">LRC_coords_icluster</span><span class="p">):</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+                <span class="n">dis_mat_local</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="p">[</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">key_LRC</span><span class="p">]</span> <span class="o">==</span> <span class="n">icluster</span><span class="p">,</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">key_LRC</span><span class="p">]</span> <span class="o">==</span> <span class="n">icluster</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">LRC_coords_icluster</span><span class="p">)):</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">dis_mat_local</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">1</span><span class="p">:</span><span class="n">k_neighb</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">LRC_coords_icluster</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span> <span class="n">weight</span><span class="o">=</span><span class="n">dis_mat_local</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+                    <span class="n">comps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">comps</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+                        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+                        <span class="n">dis</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+                        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">dis</span><span class="o">.</span><span class="n">argmin</span><span class="p">(),</span> <span class="n">dis</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span> <span class="n">weight</span><span class="o">=</span><span class="n">dis</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+                <span class="n">G_LRC</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">icluster</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span>
+
+            <span class="c1">### ============ Compute shortest path between two points in LRCs ============ ###</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Computing shortest path between two points in </span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">icluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">LRC_subcluster</span><span class="p">):</span>
+                <span class="n">icluster</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">icluster</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;      For the cluster </span><span class="si">{</span><span class="n">icluster</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="n">G_LRC_subcluster</span> <span class="o">=</span> <span class="n">G_LRC</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">icluster</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+                <span class="n">LRC_index_icluster</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">key_LRC</span><span class="p">]</span> <span class="o">==</span> <span class="n">icluster</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">LRC_coords_icluster</span> <span class="o">=</span> <span class="n">spatial_coords</span><span class="p">[</span><span class="n">LRC_index_icluster</span><span class="p">]</span>
+
+                <span class="n">task_list</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">LRC_coords_icluster</span><span class="p">[</span><span class="n">m</span><span class="p">]))</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">LRC_coords_icluster</span><span class="p">))</span>
+                <span class="p">]</span>
+
+                <span class="n">dis_LRC_shortest</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">adata</span><span class="o">.</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">adata</span><span class="o">.</span><span class="n">n_obs</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">use_parallel</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">initializer</span><span class="o">=</span><span class="n">_init_graph</span><span class="p">,</span> <span class="n">initargs</span><span class="o">=</span><span class="p">(</span><span class="n">G_LRC_subcluster</span><span class="p">,))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">task_list</span><span class="p">))</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">lengths</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap_unordered</span><span class="p">(</span><span class="n">_compute_shortest_path_single_source</span><span class="p">,</span> <span class="n">task_list</span><span class="p">):</span>
+                                <span class="n">i_global</span> <span class="o">=</span> <span class="n">LRC_index_icluster</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+                                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">LRC_coords_icluster</span><span class="p">)):</span>
+                                    <span class="n">p2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">LRC_coords_icluster</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+                                    <span class="n">j_global</span> <span class="o">=</span> <span class="n">LRC_index_icluster</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+                                    <span class="n">d</span> <span class="o">=</span> <span class="n">lengths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+                                    <span class="n">dis_LRC_shortest</span><span class="p">[</span><span class="n">i_global</span><span class="p">,</span> <span class="n">j_global</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                                    <span class="n">dis_LRC_shortest</span><span class="p">[</span><span class="n">j_global</span><span class="p">,</span> <span class="n">i_global</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_init_graph</span><span class="p">(</span><span class="n">G_LRC_subcluster</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">p1</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">task_list</span><span class="p">):</span>
+                        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">lengths</span> <span class="o">=</span> <span class="n">_compute_shortest_path_single_source</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">p1</span><span class="p">))</span>
+                        <span class="n">i_global</span> <span class="o">=</span> <span class="n">LRC_index_icluster</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">LRC_coords_icluster</span><span class="p">)):</span>
+                            <span class="n">p2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">LRC_coords_icluster</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+                            <span class="n">j_global</span> <span class="o">=</span> <span class="n">LRC_index_icluster</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="n">lengths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+                            <span class="n">dis_LRC_shortest</span><span class="p">[</span><span class="n">i_global</span><span class="p">,</span> <span class="n">j_global</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                            <span class="n">dis_LRC_shortest</span><span class="p">[</span><span class="n">j_global</span><span class="p">,</span> <span class="n">i_global</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;LRC_shortest_</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s1">_dist</span><span class="si">{</span><span class="n">dis_thr</span><span class="si">}</span><span class="s1">_cluster</span><span class="si">{</span><span class="n">icluster</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">dis_LRC_shortest</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+        <span class="c1">## ============ Rearranging distance matrix ============</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Incorporating LRC strength of &#39;</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s2">&#39; into cost distance matrix (strength = </span><span class="si">{</span><span class="n">strength</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+        <span class="n">dis_mat_LRC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">LRC_subcluster</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">dis_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+        <span class="n">dis_mat_LRC</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">dis_mat</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">icluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">LRC_subcluster</span><span class="p">):</span>
+            <span class="n">dis_LRC_shortest</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;LRC_shortest_</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s1">_dist</span><span class="si">{</span><span class="n">dis_thr</span><span class="si">}</span><span class="s1">_cluster</span><span class="si">{</span><span class="n">icluster</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">dis_LRC_shortest</span><span class="p">):</span>
+                <span class="n">dis_LRC_shortest</span> <span class="o">=</span> <span class="n">dis_LRC_shortest</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+            <span class="n">idx_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">types</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">spot_close_LRC</span><span class="p">,</span> <span class="n">spot_close_LRC_type</span><span class="p">)</span> <span class="k">if</span> <span class="n">icluster</span> <span class="ow">in</span> <span class="n">types</span><span class="p">])</span>
+            <span class="n">dis2LRC</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">closest_spot_idx</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">LRC_filter</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">key_LRC</span><span class="p">]</span> <span class="o">==</span> <span class="n">icluster</span>
+            <span class="k">for</span> <span class="n">ispot</span> <span class="ow">in</span> <span class="n">idx_mask</span><span class="p">:</span>
+                <span class="n">spot_close_ind</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="p">[</span><span class="n">ispot</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">dis_thr</span>
+                <span class="n">spot_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">spot_close_ind</span> <span class="o">&amp;</span> <span class="n">LRC_filter</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">spot_ids</span><span class="p">):</span> <span class="k">continue</span>
+                <span class="n">min_id</span> <span class="o">=</span> <span class="n">spot_ids</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dis_mat</span><span class="p">[</span><span class="n">ispot</span><span class="p">,</span> <span class="n">spot_ids</span><span class="p">])]</span>
+                <span class="n">closest_spot_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_id</span><span class="p">)</span>
+                <span class="n">dis2LRC</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dis_mat</span><span class="p">[</span><span class="n">ispot</span><span class="p">,</span> <span class="n">min_id</span><span class="p">])</span>
+            <span class="n">dis2LRC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dis2LRC</span><span class="p">)</span>
+            <span class="n">dis_LRC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">dis2LRC</span><span class="p">,</span> <span class="n">dis2LRC</span><span class="p">)</span>
+            <span class="n">dis_mat_LRC_path</span> <span class="o">=</span> <span class="n">dis_LRC_shortest</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">closest_spot_idx</span><span class="p">,</span> <span class="n">closest_spot_idx</span><span class="p">)]</span>
+            <span class="n">reweighted</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">reweighted</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">idx_mask</span><span class="p">,</span> <span class="n">idx_mask</span><span class="p">)]</span> <span class="o">=</span> <span class="n">dis_LRC</span> <span class="o">+</span> <span class="n">dis_mat_LRC_path</span> <span class="o">/</span> <span class="n">strength</span>
+            <span class="n">dis_mat_LRC</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">reweighted</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;adata.obsp[&#39;spatial_distance_LRC_</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s2">&#39;] has been saved.&quot;</span><span class="p">)</span>
+        <span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;spatial_distance_LRC_</span><span class="si">{</span><span class="n">LRC_element</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dis_mat_LRC</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finished!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">adata</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Songhao Luo
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fab fa-github" href="https://github.com/SonghaoLuo/metachat" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=8c5712d9"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

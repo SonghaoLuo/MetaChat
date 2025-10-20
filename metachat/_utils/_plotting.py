@@ -155,14 +155,15 @@ def plot_cell_signaling(
         V_grid_adj = V_grid.copy()
         V_grid[~keep] = 0.0
     
-    if group_cmap.lower() == 'plotly':
-        group_cmap = plotly.colors.qualitative.Plotly
-    elif group_cmap.lower() == 'light24':
-        group_cmap = plotly.colors.qualitative.Light24
-    elif group_cmap.lower() == 'dark24':
-        group_cmap = plotly.colors.qualitative.Dark24
-    elif group_cmap.lower() == 'alphabet':
-        group_cmap = plotly.colors.qualitative.Alphabet
+    if group_cmap is not None:
+        if group_cmap.lower() == 'plotly':
+            group_cmap = plotly.colors.qualitative.Plotly
+        elif group_cmap.lower() == 'light24':
+            group_cmap = plotly.colors.qualitative.Light24
+        elif group_cmap.lower() == 'dark24':
+            group_cmap = plotly.colors.qualitative.Dark24
+        elif group_cmap.lower() == 'alphabet':
+            group_cmap = plotly.colors.qualitative.Alphabet
 
     idx = np.argsort(ndcolor)
     if background == 'summary' or background == 'group':

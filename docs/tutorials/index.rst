@@ -10,7 +10,8 @@ These are some example scripts using the MetaChat package, which illustrates som
 
 .. toctree::
     :maxdepth: 2
+    :caption: MetaChat Tutorials
     :glob:
     
-    simulated_data/index
-    realistic_data/index
+    basic/index
+    real_data/index

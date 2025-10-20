@@ -1,0 +1,752 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Annotating barrier condition in MetaChat" href="identifyBarrier.html"><link rel="prev" title="Simulated data" href="index.html">
+        <link rel="prefetch" href="../../_static/logo.png" as="image">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+        <title>Identifying Long-Range Channels (LRCs) in MetaChat - MetaChat 0.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/override.css?v=46f5334b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  --color-brand-primary: #357473;
+  --color-brand-content: #357473;
+  --admonition-font-size: var(--font-size-normal);
+  --admonition-title-font-size: var(--font-size-normal);
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">MetaChat 0.0.4 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Identifying Long-Range Channels (LRCs) in MetaChat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="identifyBarrier.html">Annotating barrier condition in MetaChat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="estimate_metabolomics/scFEA.html">Estimating spatial metabolomics from spatial transcriptomics using single-cell flux sstimation analysis (scFEA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="estimate_metabolomics/compass.html">Estimating spatial metabolomics from spatial transcriptomics using Compass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="estimate_metabolomics/mebocost.html">Estimating spatial metabolomics from spatial transcriptomics using MEBOCOST</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../simulated_data/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../simulated_data/example_1.html">Example 1 (Short- and Long-range communication)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../simulated_data/example_2.html">Example 2 (Different types of long-range channels)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../simulated_data/example_3.html">Example 3 (Metabolite-Sensor competition)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../simulated_data/example_4.html">Example 4 (Multiple LRCs in one type)</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../realistic_data/index.html">Realistic data</a><input aria-label="Toggle navigation of Realistic data" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../realistic_data/multi-omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../realistic_data/multi-omics_data_LRC.html">Customizing long range channels by Napari</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../realistic_data/multi-omics_data_compare.html">Comparative analysis of metabolic cell communication</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_filtered.html">metachat.pp.LRC_filtered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.compute_costDistance.html">metachat.pp.compute_costDistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.metabolic_communication.html">metachat.tl.metabolic_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.summary_communication.html">metachat.tl.summary_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_flow.html">metachat.tl.communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_group.html">metachat.tl.communication_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_group_spatial.html">metachat.tl.communication_group_spatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.summary_pathway.html">metachat.tl.summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes.html">metachat.tl.communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes_cluster.html">metachat.tl.communication_responseGenes_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes_keggEnrich.html">metachat.tl.communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_flow.html">metachat.pl.plot_communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_compare_hierarchy_diagram.html">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="identifying-long-range-channels-lrcs-in-metachat">
+<h1>Identifying Long-Range Channels (LRCs) in MetaChat<a class="headerlink" href="#identifying-long-range-channels-lrcs-in-metachat" title="Link to this heading"></a></h1>
+<section id="brief-introduction">
+<h2>Brief introduction<a class="headerlink" href="#brief-introduction" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Goal:</strong> This tutorial introduces how to identify <strong>Long-Range Channels (LRCs)</strong> in spatial multi-omics datasets.</p></li>
+<li><p><strong>Concept overview:</strong></p>
+<ul>
+<li><p><em>LRCs</em> refer to spatial region through which metabolites or signaling molecules can travel across long distances within a tissue.</p></li>
+<li><p><strong>MetaChat</strong> provides two complementary approaches for LRC identification:</p>
+<ol class="arabic simple">
+<li><p><strong>Manual annotation</strong> — based on prior pathological information using <em>Napari</em>-based interactive visualization.</p></li>
+<li><p><strong>Marker-based clustering</strong> — leveraging the expression patterns of specific marker genes.</p></li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<img src="../../_static/image/identify_LRC/summary_LRCs.png" alt="summary_LRCs" width="1000"/><p>We use the multi-omics dataset of mouse brain with Parkinson’s disease as an example [<a class="reference external" href="https://www.nature.com/articles/s41587-023-01937-y">Marco et al., 2023</a>].</p>
+</section>
+<section id="manual-annotation">
+<h2>Manual annotation<a class="headerlink" href="#manual-annotation" title="Link to this heading"></a></h2>
+<p>We will give an example to show how to manually customize LRC by using Napari, an interactive tool.
+Since Napari requires an interactive interface, we recommend doing this in macOS.</p>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<p>First, we need to install the squidpy package with Napari by using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'squidpy[interactive]'</span></code> in your environment.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For basic usage of Napari, please see <a class="reference external" href="https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_napari.html#annotate-tissue-regions-with-the-shape-layer">Squidpy document</a></p>
+</div>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing packages</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">squidpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sq</span>
+<span class="c1"># import metachat as mc</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setting your work directory</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/Users/songhaoluo/Library/CloudStorage/OneDrive-UCIrvine/2_Unpublished_work/1_Metabolite_Chat/4_Codes/tutorials/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;/Users/songhaoluo/Library/CloudStorage/OneDrive-UCIrvine/2_Unpublished_work/1_Metabolite_Chat/4_Codes/tutorials/MetaChat-main/&quot;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">metachat_new</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mc</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For spatial transcriptome and spatial metabolome combined data by <a class="reference external" href="https://metachat.readthedocs.io/en/latest/tutorials/realistic_data/multi-omics_data.html">tutorial</a>, we can download processed data from <a class="reference external" href="https://zenodo.org/records/12629999">zenodo</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;datasets/mouse_brain_parkinson/adata_combined.h5ad&#39;</span><span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">][</span><span class="s1">&#39;V11L12-109_B1&#39;</span><span class="p">][</span><span class="s1">&#39;images&#39;</span><span class="p">][</span><span class="s1">&#39;hires&#39;</span><span class="p">]</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">sq</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">ImageContainer</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">library_id</span><span class="o">=</span><span class="s1">&#39;V11L12-109_B1&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;spatial&#39;</span><span class="p">][</span><span class="s1">&#39;V11L12-109_B1&#39;</span><span class="p">][</span><span class="s1">&#39;scalefactors&#39;</span><span class="p">][</span><span class="s1">&#39;tissue_hires_scalef&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>You can check the save information of your images in <code class="docutils literal notranslate"><span class="pre">adata.uns['spatial']</span></code>. The parameter <code class="docutils literal notranslate"><span class="pre">scale</span></code> in <code class="docutils literal notranslate"><span class="pre">sq.im.ImageContainer</span></code> is very important.</p>
+</div>
+<p>Next, please activate interactive interface.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">interactive</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 14:52:28.238 python[64414:34956768] +[IMKClient subclass]: chose IMKClient_Modern
+2025-10-17 14:52:28.238 python[64414:34956768] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+/Users/songhaoluo/mambaforge/envs/metachat_test/lib/python3.9/site-packages/squidpy/pl/_interactive/_utils.py:50: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  df = df.groupby(&quot;clusters&quot;)[[0, 1]].apply(lambda g: list(np.median(g.values, axis=0)))
+Traceback (most recent call last):
+  File &quot;/Users/songhaoluo/mambaforge/envs/metachat_test/lib/python3.9/site-packages/squidpy/pl/_interactive/_widgets.py&quot;, line 41, in &lt;lambda&gt;
+    self.itemDoubleClicked.connect(lambda item: self._onAction((item.text(),)))
+  File &quot;/Users/songhaoluo/mambaforge/envs/metachat_test/lib/python3.9/site-packages/squidpy/pl/_interactive/_widgets.py&quot;, line 146, in _onAction
+    self._controller.add_points(vec, key=item, layer_name=name)
+  File &quot;/Users/songhaoluo/mambaforge/envs/metachat_test/lib/python3.9/site-packages/squidpy/pl/_interactive/_controller.py&quot;, line 187, in add_points
+    self._hide_points_controls(layer, is_categorical=is_categorical_dtype(vec))
+  File &quot;/Users/songhaoluo/mambaforge/envs/metachat_test/lib/python3.9/site-packages/squidpy/pl/_interactive/_controller.py&quot;, line 307, in _hide_points_controls
+    gl: QGridLayout = points_controls.grid_layout
+AttributeError: &#39;QtPointsControls&#39; object has no attribute &#39;grid_layout&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see a interface like this:</p>
+<img src="../../_static/image/identify_LRC/LRC_1.png" alt="LRC_1" width="1000"/><p>We will consider the long-range communication of cerebrospinal fluid (CSF) in this system. Click <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">shapes</span> <span class="pre">layer</span></code>, and click <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">polygens</span></code> or <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">polygens</span> <span class="pre">lasso</span></code> to Select the contiguous region that you think will be the LRC. Then you change the layer name to ‘LRC’ and type <code class="docutils literal notranslate"><span class="pre">SHIFT</span> <span class="pre">+</span> <span class="pre">E</span></code>, you will get a observations named ‘LRC_shapes’.</p>
+<img src="../../_static/image/identify_LRC/LRC_2.png" alt="LRC_2" width="1000"/><img src="../../_static/image/identify_LRC/LRC_3.png" alt="LRC_3" width="1000"/><p>You can find the <code class="docutils literal notranslate"><span class="pre">LRC_shape</span></code> is ready in the <code class="docutils literal notranslate"><span class="pre">adata.obs['LRC_shapes']</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 3054 × 40235
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;tissue_type&#39;, &#39;LRC_shapes&#39;
+    uns: &#39;spatial&#39;, &#39;tissue_type_colors&#39;, &#39;LRC_shapes&#39;, &#39;LRC_shapes_colors&#39;
+    obsm: &#39;spatial&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Change the name of <code class="docutils literal notranslate"><span class="pre">adata.obs['LRC_shapes']</span></code> to <code class="docutils literal notranslate"><span class="pre">adata.obs['LRC_XXX_mannual_filtered']</span></code> for subsequent analysis, where <code class="docutils literal notranslate"><span class="pre">XXX</span></code> is the LRC name.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;LRC_shapes&#39;</span><span class="p">:</span> <span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">,</span>
+                      <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/68418f0492b92e3f07f07b33d658f39f04346f6bd0d558f1a751c0391f2d2a7b.png" src="../../_images/68418f0492b92e3f07f07b33d658f39f04346f6bd0d558f1a751c0391f2d2a7b.png" />
+</div>
+</div>
+<p>You can also use existing tissue types to generate preliminary candidate points, then perform clustering to obtain LRC.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
+                      <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/bb7242fb9b6b87d72ee5459c09d87e83b2f5e309a931e9a0fa4ccdc030450709.png" src="../../_images/bb7242fb9b6b87d72ee5459c09d87e83b2f5e309a931e9a0fa4ccdc030450709.png" />
+</div>
+</div>
+<p>We assume that the fiber tracts located near the ventricular systems may be partially permeated or influenced by CSF diffusion [<a class="reference external" href="https://www.science.org/doi/10.1126/sciadv.aav5447">Hablitz et al., 2019</a>].</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_manual_unfiltered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;tissue_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Fiber tracts&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_CSF_manual_unfiltered&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/54fb5a5acbc753aba74bd7aac4fbc8a15181c285875a3833f352a57f41195286.png" src="../../_images/54fb5a5acbc753aba74bd7aac4fbc8a15181c285875a3833f352a57f41195286.png" />
+</div>
+</div>
+<p>Since the unfiltered LRC still appears to contain outliers, we can use density-based clustering to filter them out [<a class="reference external" href="https://www.science.org/doi/10.1126/science.1242072">Rodriguez et al., 2014</a>]. Function <code class="docutils literal notranslate"><span class="pre">mc.pp.LRC_cluster()</span></code> uses <code class="docutils literal notranslate"><span class="pre">adata.obs['LRC_&lt;LRC_name&gt;_manual_unfiltered']</span></code> to perform clustering algorithm. Of these, points that satisfy both <code class="docutils literal notranslate"><span class="pre">density</span> <span class="pre">&gt;</span> <span class="pre">density_cutoff</span></code> and <code class="docutils literal notranslate"><span class="pre">delta</span> <span class="pre">&gt;</span> <span class="pre">delta_cutoff</span></code> will be used as cluster centers (red solid line). And points with <code class="docutils literal notranslate"><span class="pre">density</span> <span class="pre">&lt;</span> <span class="pre">outlier_cutoff</span></code> will be considered as outliers spots.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_cluster_CSF</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_cluster</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                    <span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span><span class="p">,</span>
+                                    <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;manual&quot;</span><span class="p">,</span>
+                                    <span class="n">density_cutoff</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                    <span class="n">delta_cutoff</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
+                                    <span class="n">outlier_cutoff</span> <span class="o">=</span> <span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/fe6899772844c194f5f4c378d537cd8b1bcd3126ea4b63c776b0c99a3fde357d.png" src="../../_images/fe6899772844c194f5f4c378d537cd8b1bcd3126ea4b63c776b0c99a3fde357d.png" />
+</div>
+</div>
+<p>Then, we use <code class="docutils literal notranslate"><span class="pre">mc.pp.LRC_filtered</span></code> for assigning filtered LRC to <code class="docutils literal notranslate"><span class="pre">adata.obs['LRC_&lt;LRC_name&gt;_manual_filtered']</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_filtered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                   <span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span><span class="p">,</span>
+                   <span class="n">LRC_cluster</span> <span class="o">=</span> <span class="n">LRC_cluster_CSF</span><span class="p">,</span>
+                   <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;manual&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Candidate points for CSF LRC are clustered and outliers are removed. LRC points are stored in &#39;adata.obs[&#39;LRC_CSF_manual_filtered&#39;]&#39;.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/songhaoluo/mambaforge/envs/metachat_test/lib/python3.9/site-packages/metachat/preprocessing/_identifyLRC.py:245: FutureWarning: ChainedAssignmentError: behaviour will change in pandas 3.0!
+You are setting values through chained assignment. Currently this works in certain cases, but when using Copy-on-Write (which will become the default behaviour in pandas 3.0) this will never work to update the original DataFrame or Series, because the intermediate object on which we are setting values will behave as a copy.
+A typical example is when you are setting values in a column of a DataFrame, like:
+
+df[&quot;col&quot;][row_indexer] = value
+
+Use `df.loc[row_indexer, &quot;col&quot;] = values` instead, to perform the assignment in a single step and ensure this keeps updating the original `df`.
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+
+  adata.obs[key_filtered][adata.obs[key_filtered] == 1] = newcluster
+/Users/songhaoluo/mambaforge/envs/metachat_test/lib/python3.9/site-packages/metachat/preprocessing/_identifyLRC.py:245: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  adata.obs[key_filtered][adata.obs[key_filtered] == 1] = newcluster
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 3054 × 40235
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;tissue_type&#39;, &#39;LRC_CSF_manual_filtered&#39;, &#39;LRC_CSF_manual_unfiltered&#39;
+    uns: &#39;spatial&#39;, &#39;tissue_type_colors&#39;, &#39;LRC_shapes&#39;, &#39;LRC_shapes_colors&#39;, &#39;LRC_CSF_mannual_filtered_colors&#39;, &#39;LRC_CSF_manual_filtered_colors&#39;
+    obsm: &#39;spatial&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Additionally, we will incorporate the identified ventricular system spots into the analysis.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">|</span> 
+    <span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;tissue_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Ventricular systems&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/8c181969f7c8ac67b850a5ea33bda974811a980d84759e2c37bda7b9f6e1c33f.png" src="../../_images/8c181969f7c8ac67b850a5ea33bda974811a980d84759e2c37bda7b9f6e1c33f.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="marker-based-clustering-annotation">
+<h2>Marker-based clustering annotation<a class="headerlink" href="#marker-based-clustering-annotation" title="Link to this heading"></a></h2>
+<p>When prior histologicalnatomical information is unavailable, LRCs can be alternatively identified through clustering based on gene markers. For example, CSF-associated LRCs may correspond to the expression of markers such as Gfap or other astrocytic genes, whereas blood vessel–related structures may be indicated by Mgp expression. Next, we visualize the spatial distribution of Gfap in mouse brain by using <code class="docutils literal notranslate"><span class="pre">mc.pl.plot_LRC_markers</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_LRC_markers</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                       <span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span><span class="p">,</span>
+                       <span class="n">LRC_marker_genes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Gfap&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;Gfap&#39;}, xlabel=&#39;spatial1&#39;, ylabel=&#39;spatial2&#39;&gt;
+</pre></div>
+</div>
+<img alt="../../_images/90429b62d3c22174258b68efa90ce6dd408d1d30a7965f2c938d84ea392899f6.png" src="../../_images/90429b62d3c22174258b68efa90ce6dd408d1d30a7965f2c938d84ea392899f6.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 3054 × 40235
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;tissue_type&#39;, &#39;LRC_CSF_marker_Gfap&#39;
+    uns: &#39;spatial&#39;, &#39;tissue_type_colors&#39;
+    obsm: &#39;spatial&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see a clear channel near the fiber tracts. Next, we select the spots with expression above the 85% quantile as candidate spots for LRC.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_unfiltered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                     <span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span><span class="p">,</span>
+                     <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;marker&quot;</span><span class="p">,</span>
+                     <span class="n">obs_name</span> <span class="o">=</span> <span class="s2">&quot;LRC_CSF_marker_Gfap&quot;</span><span class="p">,</span>
+                     <span class="n">quantile</span> <span class="o">=</span> <span class="mi">85</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cells above the 85% have been selected as candidates and stored in &#39;adata.obs[&#39;LRC_CSF_marker_unfiltered&#39;]&#39;.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_cluster_CSF</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_cluster</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                    <span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span><span class="p">,</span>
+                                    <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;marker&quot;</span><span class="p">,</span>
+                                    <span class="n">density_cutoff</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+                                    <span class="n">delta_cutoff</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">,</span>
+                                    <span class="n">outlier_cutoff</span> <span class="o">=</span> <span class="mf">4.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/59c56b47a71551caf20a194b695af75c484c7b057c54dced374894baf959a7a0.png" src="../../_images/59c56b47a71551caf20a194b695af75c484c7b057c54dced374894baf959a7a0.png" />
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This step allows you to keep adjusting the parameters (<code class="docutils literal notranslate"><span class="pre">density_cutoff</span></code>, <code class="docutils literal notranslate"><span class="pre">delta_cutoff</span></code> and <code class="docutils literal notranslate"><span class="pre">outlier_cutoff</span></code>) to get the best visual effect.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_filtered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                   <span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span><span class="p">,</span>
+                   <span class="n">LRC_cluster</span> <span class="o">=</span> <span class="n">LRC_cluster_CSF</span><span class="p">,</span>
+                   <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;marker&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Candidate points for CSF LRC are clustered and outliers are removed. LRC points are stored in &#39;adata.obs[&#39;LRC_CSF_marker_filtered&#39;]&#39;.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/songhaoluo/Library/CloudStorage/OneDrive-UCIrvine/2_Unpublished_work/1_Metabolite_Chat/4_Codes/tutorials/MetaChat-main/metachat_new/preprocessing/_identifyLRC.py:245: FutureWarning: ChainedAssignmentError: behaviour will change in pandas 3.0!
+You are setting values through chained assignment. Currently this works in certain cases, but when using Copy-on-Write (which will become the default behaviour in pandas 3.0) this will never work to update the original DataFrame or Series, because the intermediate object on which we are setting values will behave as a copy.
+A typical example is when you are setting values in a column of a DataFrame, like:
+
+df[&quot;col&quot;][row_indexer] = value
+
+Use `df.loc[row_indexer, &quot;col&quot;] = values` instead, to perform the assignment in a single step and ensure this keeps updating the original `df`.
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+
+  adata.obs[key_filtered][adata.obs[key_filtered] == 1] = newcluster
+/Users/songhaoluo/Library/CloudStorage/OneDrive-UCIrvine/2_Unpublished_work/1_Metabolite_Chat/4_Codes/tutorials/MetaChat-main/metachat_new/preprocessing/_identifyLRC.py:245: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  adata.obs[key_filtered][adata.obs[key_filtered] == 1] = newcluster
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_CSF_marker_filtered&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/93e56090cfc412e590af190f4beb8488802ab9cc5481e4842ce44c757e568333.png" src="../../_images/93e56090cfc412e590af190f4beb8488802ab9cc5481e4842ce44c757e568333.png" />
+</div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="identifyBarrier.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Annotating barrier condition in MetaChat</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Simulated data</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Songhao Luo
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fab fa-github" href="https://github.com/SonghaoLuo/metachat" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Identifying Long-Range Channels (LRCs) in MetaChat</a><ul>
+<li><a class="reference internal" href="#brief-introduction">Brief introduction</a></li>
+<li><a class="reference internal" href="#manual-annotation">Manual annotation</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#marker-based-clustering-annotation">Marker-based clustering annotation</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

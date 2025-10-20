@@ -14,9 +14,9 @@ sys.path[:0] = [str(HERE.parent)]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'MetaChat'
-copyright = '2024, Songhao Luo'
+copyright = '2025, Songhao Luo'
 author = 'Songhao Luo'
-release = '0.0.3'
+release = '0.0.4'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -41,9 +41,14 @@ myst_enable_extensions = [
     
 ]
 nbsphinx_allow_errors = True
-nbsphinx_execute = 'auto'
+nbsphinx_execute = 'never' # auto before
 nb_execution_mode = "off"
 sphinx_rtd_size_width = "75%"
+jupyter_execute_notebooks = 'off' # new
+sphinx_gallery_conf = {
+    'run_stale_examples': False,
+    'execute_scripts': False,
+} # new
 
 source_suffix = {
     '.rst': 'restructuredtext',

@@ -1,0 +1,975 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+        <link rel="prefetch" href="../../_static/logo.png" as="image">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+        <title>MetaChat analysis on spatial multi-omics data of mouse brain with Parkinson’s disease - MetaChat 0.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/override.css?v=46f5334b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  --color-brand-primary: #357473;
+  --color-brand-content: #357473;
+  --admonition-font-size: var(--font-size-normal);
+  --admonition-title-font-size: var(--font-size-normal);
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">MetaChat 0.0.4 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../basic/index.html">Basic</a><input aria-label="Toggle navigation of Basic" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../basic/identifyLRC.html">Identifying Long-Range Channels (LRCs) in MetaChat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basic/identifyBarrier.html">Annotating barrier condition in MetaChat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basic/estimate_metabolomics/scFEA.html">Estimating spatial metabolomics from spatial transcriptomics using single-cell flux estimation analysis (scFEA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basic/estimate_metabolomics/compass.html">Estimating spatial metabolomics from spatial transcriptomics using Compass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../basic/estimate_metabolomics/mebocost.html">Estimating spatial metabolomics from spatial transcriptomics using MEBOCOST</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../simulated_data/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../simulated_data/example_1.html">Example 1 (Short- and Long-range communication)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../simulated_data/example_2.html">Example 2 (Different types of long-range channels)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../simulated_data/example_3.html">Example 3 (Metabolite-Sensor competition)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../simulated_data/example_4.html">Example 4 (Multiple LRCs in one type)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_filtered.html">metachat.pp.LRC_filtered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.compute_costDistance.html">metachat.pp.compute_costDistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.metabolic_communication.html">metachat.tl.metabolic_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.summary_communication.html">metachat.tl.summary_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_flow.html">metachat.tl.communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_group.html">metachat.tl.communication_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_group_spatial.html">metachat.tl.communication_group_spatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.summary_pathway.html">metachat.tl.summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes.html">metachat.tl.communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes_cluster.html">metachat.tl.communication_responseGenes_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes_keggEnrich.html">metachat.tl.communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_flow.html">metachat.pl.plot_communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_compare_hierarchy_diagram.html">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="metachat-analysis-on-spatial-multi-omics-data-of-mouse-brain-with-parkinson-s-disease">
+<h1>MetaChat analysis on spatial multi-omics data of mouse brain with Parkinson’s disease<a class="headerlink" href="#metachat-analysis-on-spatial-multi-omics-data-of-mouse-brain-with-parkinson-s-disease" title="Link to this heading"></a></h1>
+<p>In this tutorial, we use mouse brain slices as an example to show the basic application of MetaChat to multi-omics data of transcriptomics and metabolomics [<a class="reference external" href="https://www.nature.com/articles/s41587-023-01937-y">Marco et al., 2023</a>].</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing packages</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">squidpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sq</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
+<span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;pdf.fonttype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setting your work dictionary</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/home/project/metachat_packages/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;/home/project/metachat_packages/MetaChat-main/&quot;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">metachat_new</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mc</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="import-dataset">
+<h2>Import dataset<a class="headerlink" href="#import-dataset" title="Link to this heading"></a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;datasets/mouse_brain_parkinson/adata_combined.h5ad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The spatial distribution of tissue types reveals well-defined anatomical layers and regions in the mouse brain section.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;tissue_type&quot;</span><span class="p">,</span>
+                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/c8f705f1a956f358901115697203d6d09f58f6d5b22a74de7d63432b9ff7310b.png" src="../../_images/c8f705f1a956f358901115697203d6d09f58f6d5b22a74de7d63432b9ff7310b.png" />
+</div>
+</div>
+</section>
+<section id="mcc-inference">
+<h2>MCC Inference<a class="headerlink" href="#mcc-inference" title="Link to this heading"></a></h2>
+<section id="import-metachatdb">
+<h3>Import MetaChatDB<a class="headerlink" href="#import-metachatdb" title="Link to this heading"></a></h3>
+<p>Load the curated MetaChat database containing metabolite–sensor interaction pairs for mouse (or human).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_metasen</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">MetaChatDB</span><span class="p">(</span><span class="n">species</span><span class="o">=</span><span class="s1">&#39;mouse&#39;</span><span class="p">)</span> <span class="c1"># If human, please input species=&#39;human&#39;.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_metasen</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Sensor.Gene</th>
+      <th>Sensor.Name</th>
+      <th>Sensor.Type</th>
+      <th>Sensor.Pathway</th>
+      <th>HMDB.ID</th>
+      <th>Metabolite.Name</th>
+      <th>Metabolite.Class</th>
+      <th>Metabolite.Pathway</th>
+      <th>Long.Range.Channel</th>
+      <th>Evidences</th>
+      <th>Sources</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Abca1</td>
+      <td>Phospholipid-transporting ATPase ABCA1 (EC 7.6...</td>
+      <td>transporter</td>
+      <td>WP4874: CAMKK2 pathway; WP4522: Metabolic path...</td>
+      <td>HMDB0006247</td>
+      <td>25-Hydroxycholesterol</td>
+      <td>Lipids and lipid-like molecules</td>
+      <td>Primary bile acid biosynthesis</td>
+      <td>Blood,Urine</td>
+      <td>16611739</td>
+      <td>Mebocost</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Abca1</td>
+      <td>Phospholipid-transporting ATPase ABCA1 (EC 7.6...</td>
+      <td>transporter</td>
+      <td>WP4874: CAMKK2 pathway; WP4522: Metabolic path...</td>
+      <td>HMDB0000067</td>
+      <td>Cholesterol</td>
+      <td>Lipids and lipid-like molecules</td>
+      <td>Primary bile acid biosynthesis; Steroid Biosyn...</td>
+      <td>Bile,Blood,Cerebrospinal Fluid (CSF),Feces,Sal...</td>
+      <td>39978466; 36521550; 37181814</td>
+      <td>MetalinkDB</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Abca13</td>
+      <td>ATP-binding cassette sub-family A member 13 (E...</td>
+      <td>transporter</td>
+      <td>WP4049: Neutrophil degranulation</td>
+      <td>HMDB0000067</td>
+      <td>Cholesterol</td>
+      <td>Lipids and lipid-like molecules</td>
+      <td>Primary bile acid biosynthesis; Steroid Biosyn...</td>
+      <td>Bile,Blood,Cerebrospinal Fluid (CSF),Feces,Sal...</td>
+      <td>33478937</td>
+      <td>MetaChatDB</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Abcb4</td>
+      <td>Phosphatidylcholine translocator ABCB4 (EC 7.6...</td>
+      <td>transporter</td>
+      <td>WP2879: Farnesoid X receptor pathway; WP1780: ...</td>
+      <td>HMDB0008138</td>
+      <td>PC(18:2(9Z,12Z)/18:2(9Z,12Z))</td>
+      <td>Lipids and lipid-like molecules</td>
+      <td>NaN</td>
+      <td>Blood,Feces,Saliva,Urine</td>
+      <td>32917728</td>
+      <td>MetaChatDB</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Abcb6</td>
+      <td>ATP-binding cassette sub-family B member 6 (AB...</td>
+      <td>transporter</td>
+      <td>WP1780: ABC-family proteins mediated transport</td>
+      <td>HMDB0001261</td>
+      <td>Coproporphyrinogen III</td>
+      <td>Organoheterocyclic compounds</td>
+      <td>Porphyrin Metabolism</td>
+      <td>Blood</td>
+      <td>23792964</td>
+      <td>MetaChatDB</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="identify-long-range-channels-lrcs">
+<h3>Identify long-range channels (LRCs)<a class="headerlink" href="#identify-long-range-channels-lrcs" title="Link to this heading"></a></h3>
+<p>In this example, prior anatomical knowledge suggests that the Fiber tracts region is likely to intersect with cerebrospinal fluid (CSF) pathways. Therefore, the spots clustered as fiber tracts are manually annotated as candidate points.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_manual_unfiltered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;tissue_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Fiber tracts&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_&#39;</span> <span class="o">+</span> <span class="n">LRC_name</span> <span class="o">+</span> <span class="s1">&#39;_manual_unfiltered&#39;</span><span class="p">,</span>
+                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/799320be371079c5b41fd152e165f098a96de535753dc02d7d6117b6843d0c4e.png" src="../../_images/799320be371079c5b41fd152e165f098a96de535753dc02d7d6117b6843d0c4e.png" />
+</div>
+</div>
+<p>Next, we performed density-based clustering on the manually annotated CSF candidate points to identify coherent LRC regions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_cluster_CSF</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_cluster</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                    <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
+                                    <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;manual&quot;</span><span class="p">,</span>
+                                    <span class="n">density_cutoff</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                    <span class="n">delta_cutoff</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
+                                    <span class="n">outlier_cutoff</span> <span class="o">=</span> <span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d0316c79d26f100e376b1423f1440893b3ad4fe9fb639e6967fe3a73b5681772.png" src="../../_images/d0316c79d26f100e376b1423f1440893b3ad4fe9fb639e6967fe3a73b5681772.png" />
+</div>
+</div>
+<p>Then, the <code class="docutils literal notranslate"><span class="pre">mc.pp.LRC_filtered()</span></code> function was executed to remove outlier points from the clustered CSF LRC candidates, and the filtered LRCs were stored in adata.obs[‘LRC_CSF_manual_filtered’].</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_filtered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                   <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
+                   <span class="n">LRC_cluster</span> <span class="o">=</span> <span class="n">LRC_cluster_CSF</span><span class="p">,</span>
+                   <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;manual&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Candidate points for CSF LRC are clustered and outliers are removed. LRC points are stored in &#39;adata.obs[&#39;LRC_CSF_manual_filtered&#39;]&#39;.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/project/metachat_packages/MetaChat-main/metachat_new/preprocessing/_identifyLRC.py:245: FutureWarning: ChainedAssignmentError: behaviour will change in pandas 3.0!
+You are setting values through chained assignment. Currently this works in certain cases, but when using Copy-on-Write (which will become the default behaviour in pandas 3.0) this will never work to update the original DataFrame or Series, because the intermediate object on which we are setting values will behave as a copy.
+A typical example is when you are setting values in a column of a DataFrame, like:
+
+df[&quot;col&quot;][row_indexer] = value
+
+Use `df.loc[row_indexer, &quot;col&quot;] = values` instead, to perform the assignment in a single step and ensure this keeps updating the original `df`.
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+
+  adata.obs[key_filtered][adata.obs[key_filtered] == 1] = newcluster
+/home/project/metachat_packages/MetaChat-main/metachat_new/preprocessing/_identifyLRC.py:245: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  adata.obs[key_filtered][adata.obs[key_filtered] == 1] = newcluster
+</pre></div>
+</div>
+</div>
+</div>
+<p>Since CSF mainly flows within the ventricular systems, we also marked this region as part of the LRCs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">|</span> 
+    <span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;tissue_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Ventricular systems&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then, we can visualize the determined LRC.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set color for LRCs</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span> <span class="o">+</span> <span class="s1">&#39;_colors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_CSF_manual_filtered&#39;</span><span class="p">,</span>
+                      <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/01afcf5d8e25c49e5de720923fcad9756c7b982677db352c343853859eab376f.png" src="../../_images/01afcf5d8e25c49e5de720923fcad9756c7b982677db352c343853859eab376f.png" />
+</div>
+</div>
+</section>
+<section id="compute-cost-distance">
+<h3>Compute cost distance<a class="headerlink" href="#compute-cost-distance" title="Link to this heading"></a></h3>
+<p>After identifying the LRCs, we compute the cost between any pair of points. In general, the cost is determined by the Euclidean distance; however, when LRCs and anatomical barriers are considered, the cost is redefined based on these additional constraints.</p>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">dis_thr</span></code> is critical for defining how far a metabolite signal is assumed to propagate. Since the spatial scale of coordinates varies across datasets, it is important to visually inspect and adjust <code class="docutils literal notranslate"><span class="pre">dis_thr</span></code>. The function <code class="docutils literal notranslate"><span class="pre">mc.pl.plot_dis_thr</span></code> allows users to visualize this threshold by specifying the distance (<code class="docutils literal notranslate"><span class="pre">dis_thr</span></code>) and the central spot (spot_index), enabling intuitive calibration of the propagation range. Here we use <code class="docutils literal notranslate"><span class="pre">dis_thr=2500</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dis_thr</span> <span class="o">=</span> <span class="mi">2500</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_dis_thr</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> <span class="n">dis_thr</span> <span class="o">=</span> <span class="n">dis_thr</span><span class="p">,</span> <span class="n">spot_index</span> <span class="o">=</span> <span class="mi">1444</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;Spots within dis_thr=2500 of spot 1444&#39;}, xlabel=&#39;spatial1&#39;, ylabel=&#39;spatial2&#39;&gt;
+</pre></div>
+</div>
+<img alt="../../_images/6277c60ae5f6aa3c598a4604e8fe74b7133fa4d801c8d67a696fcd397331e72f.png" src="../../_images/6277c60ae5f6aa3c598a4604e8fe74b7133fa4d801c8d67a696fcd397331e72f.png" />
+</div>
+</div>
+<p>The function mc.pp.compute_costDistance() calculates the spatial cost distance matrix between all spots, integrating both Euclidean proximity and long-range channel (LRC) effects. Specifically, it adjusts the pairwise distances according to the defined <code class="docutils literal notranslate"><span class="pre">LRC_type</span></code> and their corresponding <code class="docutils literal notranslate"><span class="pre">LRC_strength</span></code>, allowing metabolite diffusion or communication along designated LRC paths to be modeled more realistically.</p>
+<p>The parameters <code class="docutils literal notranslate"><span class="pre">LRC_type</span></code> and <code class="docutils literal notranslate"><span class="pre">LRC_source</span></code> should correspond to the names used in adata.obs[‘LRC_&lt;LRC_type&gt;_&lt;LRC_source&gt;_filtered’].
+A higher value of <code class="docutils literal notranslate"><span class="pre">LRC_strength</span></code> indicates a stronger influence of long-range communication, effectively expanding the propagation range through LRCs. The parameter <code class="docutils literal notranslate"><span class="pre">dis_thr</span></code> should match the distance threshold defined in the previous step.
+We support and recommend setting <code class="docutils literal notranslate"><span class="pre">use_parallel</span> <span class="pre">=</span> <span class="pre">True</span></code> and increasing <code class="docutils literal notranslate"><span class="pre">n_jobs</span></code> within the limits of your system performance, as this can significantly accelerate the computation of the cost distance matrix. The resulting distance matrix is stored in adata.obsp (e.g., adata.obsp[‘spatial_distance_LRC_CSF’]) and can be used in downstream analyses of metabolic cell communication.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">compute_costDistance</span><span class="p">(</span>
+    <span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+    <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CSF&#39;</span><span class="p">],</span>
+    <span class="n">LRC_strength</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+    <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;manual&quot;</span><span class="p">,</span>
+    <span class="n">dis_thr</span> <span class="o">=</span> <span class="n">dis_thr</span><span class="p">,</span>
+    <span class="n">k_neighb</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">use_parallel</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing baseline spatial distance without LRC.
+  Barrier condition is not considered
+Computing spatial distance with LRCs.
+  Processing LRC type: CSF
+    Constructing graph for each LRC subcluster.
+    Computing shortest path between two points in CSF.
+      For the cluster 1 in CSF.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 318/318 [00:00&lt;00:00, 778.71it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Incorporating LRC strength of &#39;CSF&#39; into cost distance matrix (strength = 10).
+adata.obsp[&#39;spatial_distance_LRC_CSF&#39;] has been saved.
+Finished!
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 3054 × 40235
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;tissue_type&#39;, &#39;LRC_CSF_manual_unfiltered&#39;, &#39;LRC_CSF_manual_filtered&#39;, &#39;LRC_CSF_closepoint_cluster1&#39;
+    uns: &#39;spatial&#39;, &#39;tissue_type_colors&#39;, &#39;LRC_CSF_manual_filtered_colors&#39;
+    obsm: &#39;spatial&#39;
+    obsp: &#39;spatial_distance_LRC_base&#39;, &#39;LRC_shortest_CSF_dist2500_cluster1&#39;, &#39;spatial_distance_LRC_CSF&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>As shown, the distances from the central spot (<code class="docutils literal notranslate"><span class="pre">spot_index</span></code>) to the surrounding spots are markedly reduced near the LRC, since these locations lie along or close to the LRC and are therefore more likely to participate in long-range communication.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_spot_distance</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                         <span class="n">dist_matrix_key</span> <span class="o">=</span> <span class="s1">&#39;spatial_distance_LRC_CSF&#39;</span><span class="p">,</span>
+                         <span class="n">spot_index</span> <span class="o">=</span> <span class="mi">1444</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/5c83729224e4c7cdc300c5b8edb9dcd0f960ab15202096d44e0385e6fcb827c9.png" src="../../_images/5c83729224e4c7cdc300c5b8edb9dcd0f960ab15202096d44e0385e6fcb827c9.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;Distance to spot index 1444&#39;}, xlabel=&#39;X coordinate&#39;, ylabel=&#39;Y coordinate&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can visualize which spatial spots are influenced by the LRC.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span>
+                      <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;LRC_CSF_closepoint_cluster1&#39;</span><span class="p">,</span>
+                      <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                      <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;LRC_CSF_closepoint_cluster1&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/eb6938332db498b5b4690bc8e19ac350cbb7f0e605072c0bf2de0101f2ae24bf.png" src="../../_images/eb6938332db498b5b4690bc8e19ac350cbb7f0e605072c0bf2de0101f2ae24bf.png" />
+</div>
+</div>
+<p>The function <code class="docutils literal notranslate"><span class="pre">mc.tl.metabolic_communication</span></code> performs the inference of MCC based on spatial proximity and the selected metabolite–sensor interaction database.
+Using the cost distance matrix and LRC information, it identifies potential sender–receiver pairs where metabolites can feasibly diffuse or be transported between spots within the defined distance threshold (<code class="docutils literal notranslate"><span class="pre">dis_thr</span></code>).
+In this example, 517 metabolite–sensor pairs were detected from the spatial data using the MetaChatDB reference and the CSF-related LRC configuration.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">metabolic_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                              <span class="n">df_metasen</span> <span class="o">=</span> <span class="n">df_metasen</span><span class="p">,</span>
+                              <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CSF&quot;</span><span class="p">],</span>
+                              <span class="n">dis_thr</span> <span class="o">=</span> <span class="n">dis_thr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>There are 517 pairs were found from the spatial data.
+</pre></div>
+</div>
+</div>
+</div>
+<p>For each metabolite–sensor pair, the inferred signaling strength between all spatial spots is stored as an <code class="docutils literal notranslate"><span class="pre">n_obs</span> <span class="pre">×</span> <span class="pre">n_obs</span></code> sparse matrix in <code class="docutils literal notranslate"><span class="pre">adata.obsp['MetaChat-MetaChatDB-sender-&lt;metabolite&gt;-&lt;sensor&gt;']</span></code> and <code class="docutils literal notranslate"><span class="pre">adata.obsp['MetaChat-MetaChatDB-receiver-&lt;metabolite&gt;-&lt;sensor&gt;']</span></code>, where each entry represents the potential communication intensity from a sender spot to a receiver spot.
+Because transcriptomic (sensor) and metabolomic (metabolite) data are measured in different units, MetaChat provides two corresponding matrices — one for the <code class="docutils literal notranslate"><span class="pre">sender</span></code> (metabolite abundance) and one for the <code class="docutils literal notranslate"><span class="pre">receiver</span></code> (sensor expression).
+Their relative values are consistent, but they differ in scale to reflect the distinct quantitative units of each modality.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 3054 × 40235
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;tissue_type&#39;, &#39;LRC_CSF_manual_unfiltered&#39;, &#39;LRC_CSF_manual_filtered&#39;, &#39;LRC_CSF_closepoint_cluster1&#39;
+    uns: &#39;spatial&#39;, &#39;tissue_type_colors&#39;, &#39;LRC_CSF_manual_filtered_colors&#39;, &#39;df_metasen_filtered&#39;, &#39;MetaChat-MetaChatDB-info&#39;
+    obsm: &#39;spatial&#39;, &#39;MetaChat-MetaChatDB-sum-sender&#39;, &#39;MetaChat-MetaChatDB-sum-receiver&#39;
+    obsp: &#39;spatial_distance_LRC_base&#39;, &#39;LRC_shortest_CSF_dist2500_cluster1&#39;, &#39;spatial_distance_LRC_CSF&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000045-Adora2a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000045-Adora2a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000045-Slc25a17&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000045-Slc25a17&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000045-Adora1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000045-Adora1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000039-Ffar3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000039-Ffar3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000039-Ffar2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000039-Ffar2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000039-Slc5a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000039-Slc5a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000039-Hcar2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000039-Hcar2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000039-Slc5a12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000039-Slc5a12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000131-Aqp3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000131-Aqp3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000696-Slc43a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000696-Slc43a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000696-Slc6a19&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000696-Slc6a19&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000696-Slc43a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000696-Slc43a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000696-Slc7a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000696-Slc7a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000696-Slc38a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000696-Slc38a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0041936-Oprm1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0041936-Oprm1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001248-Slc25a17&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001248-Slc25a17&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000902-Slc25a51&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000902-Slc25a51&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000902-Cd38&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000902-Cd38&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000902-P2rx7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000902-P2rx7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000902-Slc25a47&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000902-Slc25a47&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002183-Fabp7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002183-Fabp7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002183-Rxra&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002183-Rxra&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002183-Pparg&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002183-Pparg&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002183-Ffar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002183-Ffar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002183-Ffar4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002183-Ffar4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002183-Cd36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002183-Cd36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002183-Slc27a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002183-Slc27a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002183-Mfsd2a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002183-Mfsd2a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Gria1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Gria1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Gria3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Gria3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grm6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grm6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Gria2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Gria2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grik5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grik5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc25a13&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc25a13&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grm4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grm4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grin3a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grin3a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grik2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grik2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc1a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc1a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grik1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grik1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc7a13&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc7a13&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grm8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grm8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grid1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grid1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc1a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc1a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grik3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grik3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Gria4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Gria4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grin1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grin1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grm1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grm1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grin2a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grin2a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grid2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grid2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc25a22&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc25a22&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Best2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Best2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Lrrc8d&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Lrrc8d&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grm5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grm5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grm3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grm3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc1a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc1a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grm7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grm7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grik4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grik4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc1a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc1a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc7a11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc7a11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grin2d&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grin2d&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc1a7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc1a7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc1a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc1a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc38a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc38a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Trpv1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Trpv1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Slc38a10&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Slc38a10&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grin2b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grin2b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000148-Grm2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000148-Grm2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0029377-Tas2r110&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0029377-Tas2r110&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0029377-Pparg&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0029377-Pparg&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0006483-Slc1a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0006483-Slc1a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0006483-Slc1a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0006483-Slc1a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000063-Nr3c2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000063-Nr3c2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000063-Adgrg3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000063-Adgrg3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000063-Nr3c1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000063-Nr3c1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000063-Catsper3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000063-Catsper3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabrd&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabrd&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabrr2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabrr2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabrb2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabrb2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabrq&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabrq&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabra1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabra1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Slc7a14&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Slc7a14&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Slc6a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Slc6a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabra5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabra5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabrg2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabrg2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabra3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabra3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Slc6a11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Slc6a11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabre&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabre&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabra2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabra2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabra6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabra6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Best2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Best2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Best1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Best1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Lrrc8d&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Lrrc8d&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabbr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabbr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Slc6a12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Slc6a12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabbr2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabbr2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabrr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabrr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Slc6a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Slc6a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Slc6a13&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Slc6a13&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabrp&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabrp&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Slc6a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Slc6a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabra4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabra4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000112-Gabrb3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000112-Gabrb3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000051-Rhbg&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000051-Rhbg&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000195-Slc28a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000195-Slc28a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000195-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000195-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000195-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000195-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000195-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000195-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000014-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000014-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000064-Slc16a12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000064-Slc16a12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000064-Slc6a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000064-Slc6a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000064-Slc25a32&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000064-Slc25a32&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003406-Grid1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003406-Grid1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003406-Slc7a10&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003406-Slc7a10&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003406-Grin1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003406-Grin1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003406-Grin2a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003406-Grin2a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003406-Grid2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003406-Grid2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003406-Lrrc8d&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003406-Lrrc8d&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001161-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001161-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000071-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000071-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000223-Ucp3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000223-Ucp3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000223-Ucp2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000223-Ucp2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000089-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000089-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000089-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000089-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000089-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000089-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Ghsr&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Ghsr&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Ptger1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Ptger1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Ffar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Ffar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Slc27a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Slc27a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Ffar4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Ffar4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Ppara&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Ppara&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Cd36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Cd36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Gprc6a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Gprc6a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Ucp1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Ucp1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000220-Slc27a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000220-Slc27a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000288-Slc25a36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000288-Slc25a36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000156-Slc25a10&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000156-Slc25a10&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000156-Slc25a11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000156-Slc25a11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000156-Slc1a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000156-Slc1a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000156-Slc13a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000156-Slc13a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000156-Ucp3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000156-Ucp3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000156-Ucp2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000156-Ucp2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007855-Lpar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007855-Lpar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007855-Lpar4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007855-Lpar4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000085-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000085-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000239-Slc19a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000239-Slc19a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000239-Slc49a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000239-Slc49a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000239-Slc19a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000239-Slc19a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0015517-Taar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0015517-Taar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0031812-Abcg3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0031812-Abcg3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000125-Abcb6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000125-Abcb6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000125-Atp7b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000125-Atp7b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000125-Slc22a15&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000125-Slc22a15&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000125-Slc25a39&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000125-Slc25a39&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000125-Abcc1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000125-Abcc1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Tas1r3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Tas1r3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Adgrl1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Adgrl1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc5a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc5a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a9&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a9&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000122-Slc2a10&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000122-Slc2a10&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Adora2a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Adora2a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Ryr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Ryr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Slc28a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Slc28a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Adora3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Adora3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Adora1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Adora1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Cxcr4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Cxcr4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Drd2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Drd2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Adora2b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Adora2b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000050-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000050-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000134-Slc13a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000134-Slc13a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001954-Hcar2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001954-Hcar2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000058-Hcn4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000058-Hcn4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000058-Abcc4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000058-Abcc4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000058-Cngb1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000058-Cngb1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000058-Ryr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000058-Ryr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000058-Slc22a7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000058-Slc22a7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000058-Abcc5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000058-Abcc5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000058-Hcn3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000058-Hcn3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000058-Abcc8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000058-Abcc8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000149-Flvcr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000149-Flvcr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000149-Slc44a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000149-Slc44a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000149-Flvcr2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000149-Flvcr2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000230-Slc3a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000230-Slc3a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000674-Galr3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000674-Galr3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000674-Slc9b2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000674-Slc9b2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000033-Slc16a13&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000033-Slc16a13&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001964-Abcc2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001964-Abcc2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001442-Abcc4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001442-Abcc4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001442-Ptger1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001442-Ptger1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000243-Slc16a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000243-Slc16a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000243-Slc16a7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000243-Slc16a7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000243-Slc16a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000243-Slc16a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000243-Slc5a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000243-Slc5a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000243-Gpr31b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000243-Gpr31b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000243-Slc16a11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000243-Slc16a11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000243-Slc16a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000243-Slc16a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2rx1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2rx1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2ry1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2ry1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2rx4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2rx4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2ry12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2ry12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2ry2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2ry2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2ry6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2ry6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2rx6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2rx6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-Cftr&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-Cftr&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2ry4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2ry4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2rx2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2rx2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2rx5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2rx5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2rx3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2rx3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-Panx1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-Panx1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2rx7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2rx7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-Abcc8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-Abcc8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-Kcnj11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-Kcnj11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-Slc35b1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-Slc35b1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-P2ry13&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-P2ry13&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000538-Cacnb3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000538-Cacnb3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0006285-Rarb&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0006285-Rarb&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0006285-Rara&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0006285-Rara&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000133-Slc28a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000133-Slc28a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000133-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000133-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000133-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000133-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000133-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000133-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001173-Adora2b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001173-Adora2b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000034-Hnrnpa2b1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000034-Hnrnpa2b1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000034-Ryr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000034-Ryr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000034-Slc43a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000034-Slc43a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000034-Slc29a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000034-Slc29a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000034-Slc35f5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000034-Slc35f5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000034-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000034-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000034-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000034-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001429-Slc25a30&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001429-Slc25a30&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001429-Slc20a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001429-Slc20a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003502-Gle1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003502-Gle1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0010382-Gpr4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0010382-Gpr4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000286-Slc35d3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000286-Slc35d3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000286-P2ry14&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000286-P2ry14&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000286-Gpr17&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000286-Gpr17&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000251-Slc6a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000251-Slc6a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000251-Slc16a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000251-Slc16a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000251-Slc27a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000251-Slc27a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000254-Sucnr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000254-Sucnr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000254-Slc13a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000254-Slc13a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000254-Slc13a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000254-Slc13a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0006224-Abcc4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0006224-Abcc4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000492-Slc4a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000492-Slc4a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000492-Slc4a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000492-Slc4a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000492-Slc26a11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000492-Slc26a11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000492-Clcnka&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000492-Clcnka&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000492-Slc17a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000492-Slc17a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000492-Slc4a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000492-Slc4a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000492-Slc4a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000492-Slc4a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001847-Adora2a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001847-Adora2a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000262-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000262-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000716-Slc6a20b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000716-Slc6a20b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001149-Tspo2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001149-Tspo2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0011733-Slc15a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0011733-Slc15a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Slc7a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Slc7a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Slc7a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Slc7a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Slc3a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Slc3a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Slc38a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Slc38a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Slc38a9&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Slc38a9&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Avpr2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Avpr2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Slc7a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Slc7a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Casr&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Casr&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Slc25a29&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Slc25a29&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Slc38a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Slc38a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000517-Gprc6a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000517-Gprc6a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000194-Slc16a13&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000194-Slc16a13&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000827-Ffar4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000827-Ffar4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000827-Ppara&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000827-Ppara&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000827-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000827-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000827-Cd36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000827-Cd36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000827-Slc27a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000827-Slc27a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0029943-Tas2r118&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0029943-Tas2r118&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000138-Slc10a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000138-Slc10a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000138-Nr1h4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000138-Nr1h4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000138-Slc51b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000138-Slc51b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000588-Kcnt1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000588-Kcnt1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000763-Gpr35&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000763-Gpr35&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000715-Slc22a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000715-Slc22a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000715-Gpr35&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000715-Gpr35&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000715-Slc22a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000715-Slc22a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001372-Slc25a19&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001372-Slc25a19&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001372-Slc44a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001372-Slc44a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001514-Slc2a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001514-Slc2a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001514-Slc2a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001514-Slc2a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001514-Slc2a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001514-Slc2a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001067-Grm3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001067-Grm3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Drd4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Drd4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Drd3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Drd3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Drd1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Drd1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Slc29a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Slc29a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Ccr9&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Ccr9&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Slc6a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Slc6a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Slc18a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Slc18a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Slc22a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Slc22a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Drd5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Drd5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Slc18a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Slc18a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Slc22a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Slc22a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Adra2c&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Adra2c&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Drd2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Drd2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Trpv1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Trpv1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000073-Slc6a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000073-Slc6a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000595-Slc4a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000595-Slc4a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000595-Cftr&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000595-Cftr&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000595-Slc4a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000595-Slc4a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000595-Slc4a7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000595-Slc4a7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000595-Slc4a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000595-Slc4a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000595-Slc4a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000595-Slc4a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000158-Slc16a10&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000158-Slc16a10&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000158-Slco3a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000158-Slco3a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000158-Gpr35&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000158-Gpr35&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000158-Slc7a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000158-Slc7a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001257-Slc18b1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001257-Slc18b1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001257-Grin2b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001257-Grin2b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001264-Slc2a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001264-Slc2a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001264-Slc2a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001264-Slc2a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001264-Slc2a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001264-Slc2a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001264-Slc2a10&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001264-Slc2a10&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0114742-Lpar4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0114742-Lpar4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001341-P2ry1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001341-P2ry1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001341-P2ry12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001341-P2ry12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001341-P2ry2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001341-P2ry2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001341-Slc25a42&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001341-Slc25a42&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001341-Slc35b1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001341-Slc35b1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001341-P2ry13&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001341-P2ry13&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0008138-Abcb4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0008138-Abcb4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000225-Slc25a21&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000225-Slc25a21&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000606-Slc1a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000606-Slc1a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc38a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc38a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc7a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc7a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc3a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc3a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc38a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc38a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc6a19&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc6a19&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc6a17&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc6a17&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc43a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc43a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc7a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc7a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc25a23&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc25a23&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc38a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc38a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc7a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc7a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc1a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc1a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc38a7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc38a7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc6a15&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc6a15&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc36a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc36a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc38a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc38a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc38a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc38a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc7a7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc7a7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc38a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc38a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000641-Slc38a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000641-Slc38a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000292-Adora1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000292-Adora1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000714-Slc22a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000714-Slc22a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000157-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000157-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001256-Atp13a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001256-Atp13a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001256-Slc22a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001256-Slc22a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001256-Slc22a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001256-Slc22a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001256-Casr&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001256-Casr&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001256-Grin2b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001256-Grin2b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Cnga1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Cnga1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Hcn4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Hcn4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Abcc4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Abcc4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Cngb1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Cngb1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Cnga2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Cnga2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Slc22a7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Slc22a7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Cngb3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Cngb3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Trpc6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Trpc6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001314-Cnga3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001314-Cnga3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000691-Ucp3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000691-Ucp3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003229-Ffar4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003229-Ffar4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003229-Cd36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003229-Cd36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003229-Ucp1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003229-Ucp1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003229-Fzd2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003229-Fzd2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003229-Slc27a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003229-Slc27a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000824-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000824-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000295-Slc25a33&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000295-Slc25a33&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000295-P2ry6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000295-P2ry6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000295-Slc25a36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000295-Slc25a36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000896-Gpbar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000896-Gpbar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000561-Rarb&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000561-Rarb&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000561-Rarg&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000561-Rarg&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000561-Rara&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000561-Rara&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000142-Slc26a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000142-Slc26a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000142-Slc25a32&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000142-Slc25a32&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr5a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr5a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Slc29a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Slc29a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr3a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr3a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr1f&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr1f&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr1a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr1a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr3b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr3b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Slc18a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Slc18a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Slc22a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Slc22a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Slc22a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Slc22a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Slc6a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Slc6a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr2a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr2a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Trpc6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Trpc6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Slc18a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Slc18a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Slc22a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Slc22a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr2c&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr2c&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr1b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr1b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000259-Htr2b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000259-Htr2b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000042-Ffar3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000042-Ffar3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000042-Ffar2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000042-Ffar2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000042-Fabp4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000042-Fabp4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001546-Slc25a33&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001546-Slc25a33&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001546-Slc25a36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001546-Slc25a36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001178-Trpm2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001178-Trpm2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001178-Cd38&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001178-Cd38&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000094-Pnpt1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000094-Pnpt1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000094-Slc13a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000094-Slc13a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000094-Slc13a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000094-Slc13a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000094-Slc25a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000094-Slc25a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000094-Slc13a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000094-Slc13a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000094-Sfxn5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000094-Sfxn5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000062-Slc22a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000062-Slc22a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000062-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000062-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adra2a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adra2a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Drd4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Drd4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Slc29a4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Slc29a4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adra2b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adra2b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adra1b&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adra1b&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adra1a&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adra1a&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Slc22a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Slc22a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Slc22a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Slc22a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Drd5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Drd5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adrb2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adrb2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Slc22a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Slc22a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adra2c&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adra2c&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adrb1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adrb1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adra1d&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adra1d&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Adrb3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Adrb3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000216-Slc6a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000216-Slc6a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000247-Gprc5c&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000247-Gprc5c&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0012958-Ndufb8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0012958-Ndufb8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0004970-Gltp&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0004970-Gltp&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000201-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000201-Slc22a21&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000201-Slc25a20&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000201-Slc25a20&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0002925-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0002925-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000273-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000273-Slc29a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000273-Slc5a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000273-Slc5a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000273-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000273-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000273-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000273-Slc28a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000208-Slc25a11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000208-Slc25a11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000208-Oxgr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000208-Oxgr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000774-Slc10a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000774-Slc10a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000774-Catsper3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000774-Catsper3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000774-Slco2b1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000774-Slco2b1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000022-Taar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000022-Taar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000022-Taar2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000022-Taar2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007853-Lpar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007853-Lpar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007853-Lpar2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007853-Lpar2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007853-Lpar3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007853-Lpar3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007853-Lpar4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007853-Lpar4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007853-Lpar6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007853-Lpar6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007853-Gpr35&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007853-Gpr35&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0007853-Lpar5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0007853-Lpar5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000619-Slc10a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000619-Slc10a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000619-Slc10a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000619-Slc10a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000619-Mrgpra1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000619-Mrgpra1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000619-Gpbar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000619-Gpbar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000619-Nr1i2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000619-Nr1i2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000673-Fabp7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000673-Fabp7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000673-Fabp1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000673-Fabp1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000673-Ffar1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000673-Ffar1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000673-Slc27a6&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000673-Slc27a6&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000673-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000673-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000673-Cd36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000673-Cd36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000673-Trpv4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000673-Trpv4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000673-Fabp5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000673-Fabp5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000294-Slc5a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000294-Slc5a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000294-Slc14a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000294-Slc14a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000294-Slc14a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000294-Slc14a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000294-Slc5a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000294-Slc5a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000132-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000132-Slc29a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000574-Slc1a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000574-Slc1a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000574-Slc43a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000574-Slc43a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000574-Mfsd12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000574-Mfsd12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000574-Slc7a11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000574-Slc7a11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003550-Lrp2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003550-Lrp2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003550-Cubn&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003550-Cubn&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003550-Vdr&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003550-Vdr&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0003550-Gc&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0003550-Gc&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000128-Slc6a11&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000128-Slc6a11&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Adipor2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Adipor2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Fabp7&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Fabp7&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Rxra&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Rxra&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Slc3a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Slc3a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Pparg&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Pparg&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Fabp3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Fabp3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Ppara&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Ppara&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Kcnk4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Kcnk4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Slc27a5&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Cd36&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Cd36&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Trpv3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Trpv3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Slc27a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Slc27a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Kcnk2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Kcnk2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001043-Trpv4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001043-Trpv4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001401-Slc37a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001401-Slc37a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0060666-Esr1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0060666-Esr1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000289-Slc23a2&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000289-Slc23a2&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000289-Slc2a12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000289-Slc2a12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000289-Abcc4&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000289-Abcc4&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000289-Slc17a3&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000289-Slc17a3&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000289-Slc22a12&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000289-Slc22a12&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000289-Slc17a1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000289-Slc17a1&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000289-Slc2a9&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000289-Slc2a9&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0000289-Slc22a8&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0000289-Slc22a8&#39;, &#39;MetaChat-MetaChatDB-sender-HMDB0001487-Vdac1&#39;, &#39;MetaChat-MetaChatDB-receiver-HMDB0001487-Vdac1&#39;, &#39;MetaChat-MetaChatDB-sender-total-total&#39;, &#39;MetaChat-MetaChatDB-receiver-total-total&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>The matrices <code class="docutils literal notranslate"><span class="pre">adata.obsm['MetaChat–MetaChatDB–sum–sender']</span></code> and <code class="docutils literal notranslate"><span class="pre">adata.obsm['MetaChat–MetaChatDB–sum–receiver']</span></code> represent the total communication strength of each spot acting as a sender or receiver, respectively.
+Technically, these values are obtained by summing the corresponding rows (for senders) and columns (for receivers) of each metabolite–sensor communication matrix, providing a global measure of how actively each spot participates in metabolite-mediated signaling.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-MetaChatDB-sum-sender&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>s-HMDB0000045-Adora2a</th>
+      <th>s-HMDB0000045-Slc25a17</th>
+      <th>s-HMDB0000045-Adora1</th>
+      <th>s-HMDB0000039-Ffar3</th>
+      <th>s-HMDB0000039-Ffar2</th>
+      <th>s-HMDB0000039-Slc5a8</th>
+      <th>s-HMDB0000039-Hcar2</th>
+      <th>s-HMDB0000039-Slc5a12</th>
+      <th>s-HMDB0000131-Aqp3</th>
+      <th>s-HMDB0000696-Slc43a2</th>
+      <th>...</th>
+      <th>s-HMDB0000289-Slc23a2</th>
+      <th>s-HMDB0000289-Slc2a12</th>
+      <th>s-HMDB0000289-Abcc4</th>
+      <th>s-HMDB0000289-Slc17a3</th>
+      <th>s-HMDB0000289-Slc22a12</th>
+      <th>s-HMDB0000289-Slc17a1</th>
+      <th>s-HMDB0000289-Slc2a9</th>
+      <th>s-HMDB0000289-Slc22a8</th>
+      <th>s-HMDB0001487-Vdac1</th>
+      <th>s-total-total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>AACATTGGTCAGCCGT-1</th>
+      <td>0.071503</td>
+      <td>0.161238</td>
+      <td>0.221024</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.071454</td>
+      <td>...</td>
+      <td>0.755577</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.629386</td>
+      <td>37.958825</td>
+    </tr>
+    <tr>
+      <th>CATCGAATGGATCTCT-1</th>
+      <td>0.136678</td>
+      <td>0.351099</td>
+      <td>0.143152</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.048621</td>
+      <td>...</td>
+      <td>0.790403</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.710351</td>
+      <td>40.189007</td>
+    </tr>
+    <tr>
+      <th>GCTACACTGTCCGAAC-1</th>
+      <td>0.325290</td>
+      <td>0.571884</td>
+      <td>0.077498</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.523431</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.541005</td>
+      <td>32.871915</td>
+    </tr>
+    <tr>
+      <th>CGGGTTGTAGCTTTGG-1</th>
+      <td>0.147289</td>
+      <td>0.644495</td>
+      <td>0.171332</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.059072</td>
+      <td>...</td>
+      <td>0.269556</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.636987</td>
+      <td>49.277569</td>
+    </tr>
+    <tr>
+      <th>TCTGTGACTGACCGTT-1</th>
+      <td>0.078227</td>
+      <td>0.538769</td>
+      <td>0.273929</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.791016</td>
+      <td>0.0</td>
+      <td>0.002029</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.005934</td>
+      <td>1.498829</td>
+      <td>49.828129</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 518 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;datasets/mouse_brain_parkinson/metachat_result.h5ad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Songhao Luo
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fab fa-github" href="https://github.com/SonghaoLuo/metachat" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">MetaChat analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</a><ul>
+<li><a class="reference internal" href="#import-dataset">Import dataset</a></li>
+<li><a class="reference internal" href="#mcc-inference">MCC Inference</a><ul>
+<li><a class="reference internal" href="#import-metachatdb">Import MetaChatDB</a></li>
+<li><a class="reference internal" href="#identify-long-range-channels-lrcs">Identify long-range channels (LRCs)</a></li>
+<li><a class="reference internal" href="#compute-cost-distance">Compute cost distance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>
