@@ -47,7 +47,7 @@ MetaChatDB is a literature-supported database for metabolite-sensor interactions
 the metabolite-sensor interactions are reported based on peer-reviewed publications. Specifically, we manually 
 build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt) that are being continually updated.
 
-.. image:: _static/image/metachat_db.jpg
+.. image:: _static/image/MetaChatDB.jpg
    :width: 600px
    :align: center
    :alt: MetaChatDB
