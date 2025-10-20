@@ -1125,8 +1125,6 @@ def plot_summary_pathway(
     if plot_savepath:
         fig.write_image(plot_savepath, width=figsize[0] * 100, height=figsize[1] * 100)
 
-    return fig
-
 def plot_metapathway_pair_contribution_bubbleplot(
     pathway_pair_contributions: dict,
     pathway_name: str,

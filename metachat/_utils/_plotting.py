@@ -155,7 +155,7 @@ def plot_cell_signaling(
         V_grid_adj = V_grid.copy()
         V_grid[~keep] = 0.0
     
-    if group_cmap is not None:
+    if group_cmap is not None and not isinstance(group_cmap, dict):
         if group_cmap.lower() == 'plotly':
             group_cmap = plotly.colors.qualitative.Plotly
         elif group_cmap.lower() == 'light24':
