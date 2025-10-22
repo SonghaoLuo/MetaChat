@@ -17,3 +17,4 @@ from ._plotting import plot_dis_thr
 from ._plotting import plot_LRC_markers
 from ._plotting import plot_spot_distance
 from ._plotting import plot_graph_connectivity
+from ._plotting import plot_direction_similarity

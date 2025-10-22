@@ -20,9 +20,20 @@ Examples of real dataset
    1.2_mouse_brain_parkinson_comparasion
    1.3_mouse_brain_parkinson_downstream
 
+
 .. toctree::
    :maxdepth: 1
    :caption: Spatial multi-omics data from human gastric cancer
    :glob:
 
    2.1_human_gastric_cancer_metachat
+   2.2_human_gastric_cancer_downstream
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Visium HD dataset from mouse small intestine
+   :glob:
+
+   3.1_mouse_small_intestine_metachat
+   3.2_mouse_small_intestine_downstream

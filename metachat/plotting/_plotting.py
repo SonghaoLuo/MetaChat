@@ -11,6 +11,8 @@ import matplotlib.colors as mcolors
 from matplotlib.cm import ScalarMappable
 from matplotlib.lines import Line2D
 from matplotlib.colors import TwoSlopeNorm
+import matplotlib.patches as patches
+import matplotlib.lines as mlines
 
 import seaborn as sns
 import squidpy as sq
@@ -2229,3 +2231,137 @@ def plot_graph_connectivity(
 
     if plot_savepath:
         plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
+
+def plot_direction_similarity(
+    df_direction: pd.DataFrame,
+    cluster_labels: np.ndarray,
+    cmap="mako",
+    figsize=(9, 7),
+    title="Flow pattern similarity (Euclidean-based)",
+    savepath=None
+):
+    """
+    Plot a block-ordered similarity heatmap for direction-based flow clusters.
+
+    This function visualizes the pairwise similarity of MCC flow direction histograms
+    across all metabolite–sensor pairs, ordered by K-means cluster labels.
+    The resulting heatmap highlights within-cluster consistency and
+    between-cluster differences in flow directionality patterns.
+
+    The similarity between two pairs is defined as:
+        ``S = 1 - D / D.max()``,
+    where ``D`` is the pairwise Euclidean distance between direction histograms.
+    Thus, S ranges from 0 (completely dissimilar) to 1 (identical).
+
+    Parameters
+    ----------
+    df_direction : pandas.DataFrame
+        Matrix of direction histogram features (rows = metabolite–sensor pairs,
+        columns = direction bins, typically 18 bins).
+    cluster_labels : numpy.ndarray or array-like
+        Cluster assignments for each M–S pair, usually obtained from K-means or
+        hierarchical clustering.
+    cmap : str or matplotlib Colormap, default="mako"
+        Colormap for the similarity heatmap. Can be any seaborn or matplotlib colormap.
+    figsize : tuple of (float, float), default=(9, 7)
+        Figure size in inches.
+    title : str, default="Flow pattern similarity (Euclidean-based)"
+        Title displayed at the top of the plot.
+    savepath : str or None, optional
+        If provided, saves the figure to the specified file path.
+
+    Returns
+    -------
+    None
+        Displays a block-ordered heatmap showing inter-pair similarity
+        and cluster boundaries.
+
+    Notes
+    -----
+    - The similarity matrix is computed as ``1 - D / D.max()``,
+      where D is the Euclidean distance matrix among all histograms.
+    - The function automatically sorts rows and columns by cluster label
+      to create block-like patterns for visual cluster inspection.
+    - Colored sidebars indicate cluster membership along both axes.
+    - A legend summarizes each flow pattern cluster with its sample size.
+    """
+    
+    # ---------- Compute similarity ----------
+    X = df_direction.values.astype(float)
+    from sklearn.metrics import pairwise_distances
+    D = pairwise_distances(X, metric="euclidean")
+    S = 1 - D / D.max()
+    np.fill_diagonal(S, 1.0)
+
+    # ---------- Order by cluster ----------
+    order = np.argsort(cluster_labels)
+    S_ord = S[order][:, order]
+    labs_ord = cluster_labels[order]
+    uniq = np.unique(labs_ord)
+
+    # ---------- Cluster color mapping ----------
+    palette = list(mcolors.TABLEAU_COLORS.values())
+    cmap_by_cluster = {c: palette[i % len(palette)] for i, c in enumerate(uniq)}
+
+    # ---------- Cluster bounds ----------
+    bounds, sizes = [], {}
+    start = 0
+    for c in uniq:
+        k = int((labs_ord == c).sum())
+        sizes[c] = k
+        bounds.append((c, start, start + k))
+        start += k
+
+    # ---------- Plot ----------
+    fig, ax = plt.subplots(figsize=figsize)
+    sns.heatmap(
+        S_ord,
+        vmin=np.percentile(S, 2),
+        vmax=np.percentile(S, 98),
+        cmap = cmap,
+        square=True,
+        xticklabels=False,
+        yticklabels=False,
+        cbar_kws={"label": "Similarity (1 - normalized Euclidean distance)"}
+    )
+
+    # White grid lines
+    n = S_ord.shape[0]
+    ax.plot(np.arange(n) + 0.5, np.arange(n) + 0.5, color="white", lw=0.5, zorder=5)
+    for _, s, e in bounds:
+        ax.axhline(s, color="white", lw=0.6)
+        ax.axhline(e, color="white", lw=0.6)
+        ax.axvline(s, color="white", lw=0.6)
+        ax.axvline(e, color="white", lw=0.6)
+
+    # Sidebars
+    bar_width = 3.0
+    for c, s, e in bounds:
+        ax.add_patch(patches.Rectangle((-bar_width, s), bar_width, (e - s),
+                        facecolor=cmap_by_cluster[c], edgecolor="none",
+                        transform=ax.transData, clip_on=False, zorder=10))
+        ax.add_patch(patches.Rectangle((s, -bar_width), (e - s), bar_width,
+                        facecolor=cmap_by_cluster[c], edgecolor="none",
+                        transform=ax.transData, clip_on=False, zorder=10))
+
+    # Legend
+    handles = [
+        mlines.Line2D([], [], color=cmap_by_cluster[c], marker="s", linestyle="None",
+                      markersize=8, label=f"Pattern {c} (n={sizes[c]})")
+        for c in uniq
+    ]
+    ax.legend(
+        handles=handles,
+        title="Flow patterns",
+        frameon=False,
+        ncol=1,
+        loc="upper left",
+        bbox_to_anchor=(1.2, 1.0),
+        borderaxespad=0.0
+    )
+
+    ax.set_title(title)
+    plt.tight_layout()
+    if savepath:
+        fig.savefig(savepath, dpi=300, bbox_inches="tight")
+    plt.show()

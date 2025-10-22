@@ -486,8 +486,8 @@ def compute_costDistance(
     if (LRC_type is not None) and ((LRC_strength is None) or (len(LRC_strength) != len(LRC_type))):
         raise ValueError("Please provide a list of LRC_strength values that matches the length of LRC_type.")
     
-    if barrier and 'barrier' not in adata.obs:
-        raise KeyError("adata.obs['barrier'] missing while barrier=True.")
+    if (barrier is True) and (barrier_segments is None):
+        raise KeyError("If barrier is true, please load barrier condition to parameter 'barrier_segments'")
     
     ### Check parallel settings
     n_jobs = cpu_count() if n_jobs == -1 else min(n_jobs, cpu_count())
