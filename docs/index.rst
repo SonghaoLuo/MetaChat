@@ -89,7 +89,8 @@ Luo S., Almet A.A., Zhao W., He C., Tsai Y.-C., Ozaki H., Sugita B.K., Du K., Sh
    :caption: Contents:
 
    installation
-   tutorials/index
+   Basic tutorials <basic/index>
+   Real dataset tutorials <real_data/index>
    api/index
 
 Indices and tables

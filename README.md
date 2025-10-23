@@ -10,6 +10,7 @@ Metabolic cell-cell communication (MCC) occurs when sensor proteins in the recei
 
 ### MetaChatDB
 MetaChatDB is a literature-supported database for metabolite-sensor interactions for both human and mouse. All the metabolite-sensor interactions are reported based on peer-reviewed publications. Specifically, we manually build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt) that are being continually updated.
+
 <img width="700" alt="image2" src="https://github.com/user-attachments/assets/1601f7f1-0997-4bdf-96da-5d2ae1fd28a2" />
 
 ### Documentation, and Tutorials
