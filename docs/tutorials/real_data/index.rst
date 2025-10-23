@@ -16,9 +16,9 @@ Examples of real dataset
    :caption: Spatial multi-omics data from mouse brain with Parkinson’s disease
    :glob:
 
-   1.1_mouse_brain_parkinson_metachat
-   1.2_mouse_brain_parkinson_comparasion
-   1.3_mouse_brain_parkinson_downstream
+   MetaChat analysis <1.1_mouse_brain_parkinson_metachat>
+   Comparative analysis <1.2_mouse_brain_parkinson_comparasion>
+   Downstream analysis <1.3_mouse_brain_parkinson_downstream>
 
 
 .. toctree::
@@ -26,8 +26,8 @@ Examples of real dataset
    :caption: Spatial multi-omics data from human gastric cancer
    :glob:
 
-   2.1_human_gastric_cancer_metachat
-   2.2_human_gastric_cancer_downstream
+   MetaChat analysis <2.1_human_gastric_cancer_metachat>
+   Downstream analysis <2.2_human_gastric_cancer_downstream>
 
 
 .. toctree::
@@ -35,12 +35,12 @@ Examples of real dataset
    :caption: Visium HD dataset from mouse small intestine
    :glob:
 
-   3.1_mouse_small_intestine_metachat
-   3.2_mouse_small_intestine_downstream
+   MetaChat analysis <3.1_mouse_small_intestine_metachat>
+   Downstream analysis <3.2_mouse_small_intestine_downstream>
 
 .. toctree::
    :maxdepth: 1
    :caption: 3D transcriptomics dataset from whole mouse brain
    :glob:
 
-   4.1_mouse_brain_3D_metachat
+   MetaChat analysis and Downstream analysis <4.1_mouse_brain_3D_metachat>

@@ -11,14 +11,14 @@ Basic Tutorials
    :glob:
    :caption: Identifying anatomical features
 
-   identifyLRC
-   identifyBarrier
+   Identifying Long-Range Channels (LRCs) <identifyLRC>
+   Annotating barrier condition <identifyBarrier>
 
 .. toctree::
    :maxdepth: 1
    :caption: Estimating spatial metabolomics from spatial transcriptomics
    :glob:
 
-   estimate_metabolomics/scFEA
-   estimate_metabolomics/compass
-   estimate_metabolomics/mebocost
+   Using scFEA <estimate_metabolomics/scFEA>
+   Using Compass <estimate_metabolomics/compass>
+   Using MEBOCOST <estimate_metabolomics/mebocost>
