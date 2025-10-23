@@ -37,3 +37,10 @@ Examples of real dataset
 
    3.1_mouse_small_intestine_metachat
    3.2_mouse_small_intestine_downstream
+
+.. toctree::
+   :maxdepth: 1
+   :caption: 3D transcriptomics dataset from whole mouse brain
+   :glob:
+
+   4.1_mouse_brain_3D_metachat
