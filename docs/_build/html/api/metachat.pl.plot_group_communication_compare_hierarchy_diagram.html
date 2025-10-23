@@ -3,15 +3,15 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="metachat.pl.plot_MSpair_contribute_group" href="metachat.pl.plot_MSpair_contribute_group.html"><link rel="prev" title="metachat.pl.plot_communication_responseGenes" href="metachat.pl.plot_communication_responseGenes.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="metachat.pl.plot_MSpair_contribute_group" href="metachat.pl.plot_MSpair_contribute_group.html"><link rel="prev" title="metachat.pl.plot_group_communication_heatmap" href="metachat.pl.plot_group_communication_heatmap.html">
         <link rel="prefetch" href="../_static/logo.png" as="image">
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
-        <title>metachat.pl.plot_group_communication_compare_hierarchy_diagram - MetaChat 0.0.4 documentation</title>
+        <title>metachat.pl.plot_group_communication_compare_hierarchy_diagram - MetaChat 0.0.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
@@ -171,7 +171,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">MetaChat 0.0.4 documentation</div></a>
+      <a href="../index.html"><div class="brand">MetaChat 0.0.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -206,31 +206,34 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/basic/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/basic/index.html">Basic Tutorials</a><input aria-label="Toggle navigation of Basic Tutorials" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/identifyLRC.html">Identifying Long-Range Channels (LRCs) in MetaChat</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/identifyBarrier.html">Annotating barrier condition in MetaChat</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/estimate_metabolomics/scFEA.html">Estimating spatial metabolomics from spatial transcriptomics using single-cell flux sstimation analysis (scFEA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/estimate_metabolomics/scFEA.html">Estimating spatial metabolomics from spatial transcriptomics using single-cell flux estimation analysis (scFEA)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/estimate_metabolomics/compass.html">Estimating spatial metabolomics from spatial transcriptomics using Compass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/estimate_metabolomics/mebocost.html">Estimating spatial metabolomics from spatial transcriptomics using MEBOCOST</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/simulated_data/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/simulated_data/example_1.html">Example 1 (Short- and Long-range communication)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/simulated_data/example_2.html">Example 2 (Different types of long-range channels)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/simulated_data/example_3.html">Example 3 (Metabolite-Sensor competition)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/simulated_data/example_4.html">Example 4 (Multiple LRCs in one type)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/real_data/index.html">Examples of real dataset</a><input aria-label="Toggle navigation of Examples of real dataset" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/1.1_mouse_brain_parkinson_metachat.html">MetaChat analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/1.2_mouse_brain_parkinson_comparasion.html">Comparative analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/1.3_mouse_brain_parkinson_downstream.html">Downstream analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/2.1_human_gastric_cancer_metachat.html">MetaChat analysis on spatial multi-omics data of human gastric cancer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/2.2_human_gastric_cancer_downstream.html">Downstream analysis on spatial multi-omics data of human gastric cancer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/3.1_mouse_small_intestine_metachat.html">MetaChat analysis on Visium HD data of mouse small intestine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/3.2_mouse_small_intestine_downstream.html">Downstream analysis on Visium HD data of mouse small intestine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/4.1_mouse_brain_3D_metachat.html">MetaChat and downstream analysis on 3D transcriptomics from whole mouse brain</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/realistic_data/index.html">Realistic data</a><input aria-label="Toggle navigation of Realistic data" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/realistic_data/multi-omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/realistic_data/multi-omics_data_LRC.html">Customizing long range channels by Napari</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/realistic_data/multi-omics_data_compare.html">Comparative analysis of metabolic cell communication</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API</a><input aria-label="Toggle navigation of API" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API</a><input aria-label="Toggle navigation of API" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.generate_adata_met_compass.html">metachat.pp.generate_adata_met_compass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.generate_adata_met_scFEA.html">metachat.pp.generate_adata_met_scFEA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.generate_adata_met_mebocost.html">metachat.pp.generate_adata_met_mebocost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.global_intensity_scaling.html">metachat.pp.global_intensity_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.load_barrier_segments.html">metachat.pp.load_barrier_segments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pp.LRC_filtered.html">metachat.pp.LRC_filtered</a></li>
@@ -244,14 +247,24 @@
 <li class="toctree-l2"><a class="reference internal" href="metachat.tl.communication_responseGenes.html">metachat.tl.communication_responseGenes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.tl.communication_responseGenes_cluster.html">metachat.tl.communication_responseGenes_cluster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.tl.communication_responseGenes_keggEnrich.html">metachat.tl.communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.tl.compute_direction_histogram_per_pair.html">metachat.tl.compute_direction_histogram_per_pair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_flow.html">metachat.pl.plot_communication_flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_metapathway_pair_contribution_bubbleplot.html">metachat.pl.plot_metapathway_pair_contribution_bubbleplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_DEG_volcano.html">metachat.pl.plot_DEG_volcano</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_3d_feature.html">metachat.pl.plot_3d_feature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_3d_LRC_with_two_slices.html">metachat.pl.plot_3d_LRC_with_two_slices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_dis_thr.html">metachat.pl.plot_dis_thr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_LRC_markers.html">metachat.pl.plot_LRC_markers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_spot_distance.html">metachat.pl.plot_spot_distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_graph_connectivity.html">metachat.pl.plot_graph_connectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_direction_similarity.html">metachat.pl.plot_direction_similarity</a></li>
 </ul>
 </li>
 </ul>
@@ -298,43 +311,64 @@
 cell communication (MCC) between two conditions (e.g., Control vs Disease).
 Sender–receiver relationships are represented as directed edges between nodes
 on two parallel panels, showing both conditions side by side.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>adata_A</strong> (<em>anndata.AnnData</em>) – Annotated data matrix for condition A. Must contain group-level MCC results.</p></li>
-<li><p><strong>adata_B</strong> (<em>anndata.AnnData</em>) – Annotated data matrix for condition B. Must contain the same structure as <code class="docutils literal notranslate"><span class="pre">adata_A</span></code>.</p></li>
-<li><p><strong>condition_name_A</strong> (<em>str</em><em>, </em><em>optional</em>) – Label for condition A, shown on the left panel (e.g., “Control”).</p></li>
-<li><p><strong>condition_name_B</strong> (<em>str</em><em>, </em><em>optional</em>) – Label for condition B, shown on the right panel (e.g., “Disease”).</p></li>
-<li><p><strong>database_name</strong> (<em>str</em>) – Name of the metabolite–sensor interaction database used for MCC computation.</p></li>
-<li><p><strong>group_name</strong> (<em>str</em>) – Column name in <code class="docutils literal notranslate"><span class="pre">adata.obs</span></code> containing group/cell-type annotations.</p></li>
-<li><p><strong>summary</strong> (<em>{&quot;sender&quot;</em><em>, </em><em>&quot;receiver&quot;}</em><em>, </em><em>default=&quot;sender&quot;</em>) – Direction of communication summary to visualize.</p></li>
-<li><p><strong>metabolite_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Specific metabolite to visualize.</p></li>
-<li><p><strong>metapathway_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Specific metabolic pathway to visualize.</p></li>
-<li><p><strong>customerlist_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Custom metabolite list name to visualize.</p></li>
-<li><p><strong>ms_pair_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of a specific metabolite–sensor pair to visualize.</p></li>
-<li><p><strong>permutation_spatial</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to use spatially permuted results from <code class="xref py py-func docutils literal notranslate"><span class="pre">mc.tl.communication_group_spatial()</span></code>.</p></li>
-<li><p><strong>p_value_cutoff</strong> (<em>float</em><em>, </em><em>default=0.05</em>) – Threshold for significance in group-level communication.</p></li>
-<li><p><strong>node_sizes_limit</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>default=</em><em>(</em><em>50</em><em>, </em><em>300</em><em>)</em>) – Minimum and maximum node size for scaling group strength.</p></li>
-<li><p><strong>edge_sizes_limit</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>default=</em><em>(</em><em>0.5</em><em>, </em><em>10</em><em>)</em>) – Minimum and maximum edge width for scaling communication intensity.</p></li>
-<li><p><strong>group_cmap</strong> (<em>dict</em><em>, </em><em>optional</em>) – Mapping from group names to colors. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, retrieved from
-<code class="docutils literal notranslate"><span class="pre">adata.obs[group_name].cat.categories</span></code> and corresponding color table in <code class="docutils literal notranslate"><span class="pre">adata.uns[group_name</span> <span class="pre">+</span> <span class="pre">&quot;_colors&quot;]</span></code>.</p></li>
-<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>default=0.5</em>) – Transparency for non-significant edges.</p></li>
-<li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>default=</em><em>(</em><em>10</em><em>, </em><em>3</em><em>)</em>) – Figure size (width, height).</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Existing Matplotlib axis to draw the hierarchy diagram on.
-If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a new figure and axis are created.</p></li>
-<li><p><strong>plot_savepath</strong> (<em>str</em><em>, </em><em>optional</em>) – File path to save the figure (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;results/group_compare_hierarchy.pdf&quot;</span></code>).
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>adata_A<span class="classifier">anndata.AnnData</span></dt><dd><p>Annotated data matrix for condition A. Must contain group-level MCC results.</p>
+</dd>
+<dt>adata_B<span class="classifier">anndata.AnnData</span></dt><dd><p>Annotated data matrix for condition B. Must contain the same structure as <code class="docutils literal notranslate"><span class="pre">adata_A</span></code>.</p>
+</dd>
+<dt>condition_name_A<span class="classifier">str, optional</span></dt><dd><p>Label for condition A, shown on the left panel (e.g., “Control”).</p>
+</dd>
+<dt>condition_name_B<span class="classifier">str, optional</span></dt><dd><p>Label for condition B, shown on the right panel (e.g., “Disease”).</p>
+</dd>
+<dt>database_name<span class="classifier">str</span></dt><dd><p>Name of the metabolite–sensor interaction database used for MCC computation.</p>
+</dd>
+<dt>group_name<span class="classifier">str</span></dt><dd><p>Column name in <code class="docutils literal notranslate"><span class="pre">adata.obs</span></code> containing group/cell-type annotations.</p>
+</dd>
+<dt>summary<span class="classifier">{“sender”, “receiver”}, default=”sender”</span></dt><dd><p>Direction of communication summary to visualize.</p>
+</dd>
+<dt>metabolite_name<span class="classifier">str, optional</span></dt><dd><p>Specific metabolite to visualize.</p>
+</dd>
+<dt>metapathway_name<span class="classifier">str, optional</span></dt><dd><p>Specific metabolic pathway to visualize.</p>
+</dd>
+<dt>customerlist_name<span class="classifier">str, optional</span></dt><dd><p>Custom metabolite list name to visualize.</p>
+</dd>
+<dt>ms_pair_name<span class="classifier">str, optional</span></dt><dd><p>Name of a specific metabolite–sensor pair to visualize.</p>
+</dd>
+<dt>permutation_spatial<span class="classifier">bool, default=False</span></dt><dd><p>Whether to use spatially permuted results from <code class="xref py py-func docutils literal notranslate"><span class="pre">mc.tl.communication_group_spatial()</span></code>.</p>
+</dd>
+<dt>p_value_cutoff<span class="classifier">float, default=0.05</span></dt><dd><p>Threshold for significance in group-level communication.</p>
+</dd>
+<dt>node_sizes_limit<span class="classifier">tuple of float, default=(50, 300)</span></dt><dd><p>Minimum and maximum node size for scaling group strength.</p>
+</dd>
+<dt>edge_sizes_limit<span class="classifier">tuple of float, default=(0.5, 10)</span></dt><dd><p>Minimum and maximum edge width for scaling communication intensity.</p>
+</dd>
+<dt>group_cmap<span class="classifier">dict, optional</span></dt><dd><p>Mapping from group names to colors. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, retrieved from
+<code class="docutils literal notranslate"><span class="pre">adata.obs[group_name].cat.categories</span></code> and corresponding color table in <code class="docutils literal notranslate"><span class="pre">adata.uns[group_name</span> <span class="pre">+</span> <span class="pre">&quot;_colors&quot;]</span></code>.</p>
+</dd>
+<dt>alpha<span class="classifier">float, default=0.5</span></dt><dd><p>Transparency for non-significant edges.</p>
+</dd>
+<dt>figsize<span class="classifier">tuple of float, default=(10, 3)</span></dt><dd><p>Figure size (width, height).</p>
+</dd>
+<dt>ax<span class="classifier">matplotlib.axes.Axes, optional</span></dt><dd><p>Existing Matplotlib axis to draw the hierarchy diagram on.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a new figure and axis are created.</p>
+</dd>
+<dt>plot_savepath<span class="classifier">str, optional</span></dt><dd><p>File path to save the figure (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;results/group_compare_hierarchy.pdf&quot;</span></code>).
 The format is inferred from the file extension. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the plot is displayed
-interactively without saving.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong> – Matplotlib axis containing the hierarchy comparison diagram.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib.axes.Axes</p>
+interactively without saving.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>ax<span class="classifier">matplotlib.axes.Axes</span></dt><dd><p>Matplotlib axis containing the hierarchy comparison diagram.</p>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>This function visualizes the output from <code class="xref py py-func docutils literal notranslate"><span class="pre">mc.tl.communication_group()</span></code>
 or <code class="xref py py-func docutils literal notranslate"><span class="pre">mc.tl.communication_group_spatial()</span></code> for two different conditions.</p></li>
@@ -342,6 +376,7 @@ or <code class="xref py py-func docutils literal notranslate"><span class="pre">
 <li><p>Edge width and color indicate direction and magnitude of communication.</p></li>
 <li><p>Non-significant edges (p ≥ cutoff) are rendered transparent with reduced opacity.</p></li>
 </ul>
+</section>
 </dd></dl>
 
 </section>
@@ -360,14 +395,14 @@ or <code class="xref py py-func docutils literal notranslate"><span class="pre">
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="metachat.pl.plot_communication_responseGenes.html">
+          <a class="prev-page" href="metachat.pl.plot_group_communication_heatmap.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">metachat.pl.plot_communication_responseGenes</div>
+                <div class="title">metachat.pl.plot_group_communication_heatmap</div>
                 
               </div>
             </a>
@@ -418,7 +453,7 @@ or <code class="xref py py-func docutils literal notranslate"><span class="pre">
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=8c5712d9"></script>
+    <script src="../_static/documentation_options.js?v=282f96c0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -1,5 +1,4 @@
 from ._importData import MetaChatDB
-from ._importData import scFEA_annotation
 from ._importData import generate_adata_met_compass
 from ._importData import generate_adata_met_scFEA
 from ._importData import generate_adata_met_mebocost

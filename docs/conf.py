@@ -40,6 +40,10 @@ myst_enable_extensions = [
     'colon_fence',
     
 ]
+autosummary_generate = True
+autodoc_member_order = "bysource"
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
 nbsphinx_allow_errors = True
 nbsphinx_execute = 'never' # auto before
 nb_execution_mode = "off"

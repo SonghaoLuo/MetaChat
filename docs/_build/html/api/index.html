@@ -3,15 +3,15 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="metachat.pp.MetaChatDB" href="metachat.pp.MetaChatDB.html"><link rel="prev" title="Comparative analysis of metabolic cell communication" href="../tutorials/realistic_data/multi-omics_data_compare.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="metachat.pp.MetaChatDB" href="metachat.pp.MetaChatDB.html"><link rel="prev" title="MetaChat and downstream analysis on 3D transcriptomics from whole mouse brain" href="../tutorials/real_data/4.1_mouse_brain_3D_metachat.html">
         <link rel="prefetch" href="../_static/logo.png" as="image">
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
-        <title>API - MetaChat 0.0.4 documentation</title>
+        <title>API - MetaChat 0.0.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
@@ -171,7 +171,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">MetaChat 0.0.4 documentation</div></a>
+      <a href="../index.html"><div class="brand">MetaChat 0.0.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -206,31 +206,34 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/basic/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/basic/index.html">Basic Tutorials</a><input aria-label="Toggle navigation of Basic Tutorials" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/identifyLRC.html">Identifying Long-Range Channels (LRCs) in MetaChat</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/identifyBarrier.html">Annotating barrier condition in MetaChat</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/estimate_metabolomics/scFEA.html">Estimating spatial metabolomics from spatial transcriptomics using single-cell flux sstimation analysis (scFEA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/estimate_metabolomics/scFEA.html">Estimating spatial metabolomics from spatial transcriptomics using single-cell flux estimation analysis (scFEA)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/estimate_metabolomics/compass.html">Estimating spatial metabolomics from spatial transcriptomics using Compass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/basic/estimate_metabolomics/mebocost.html">Estimating spatial metabolomics from spatial transcriptomics using MEBOCOST</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/simulated_data/index.html">Simulated data</a><input aria-label="Toggle navigation of Simulated data" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/simulated_data/example_1.html">Example 1 (Short- and Long-range communication)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/simulated_data/example_2.html">Example 2 (Different types of long-range channels)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/simulated_data/example_3.html">Example 3 (Metabolite-Sensor competition)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/simulated_data/example_4.html">Example 4 (Multiple LRCs in one type)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/real_data/index.html">Examples of real dataset</a><input aria-label="Toggle navigation of Examples of real dataset" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/1.1_mouse_brain_parkinson_metachat.html">MetaChat analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/1.2_mouse_brain_parkinson_comparasion.html">Comparative analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/1.3_mouse_brain_parkinson_downstream.html">Downstream analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/2.1_human_gastric_cancer_metachat.html">MetaChat analysis on spatial multi-omics data of human gastric cancer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/2.2_human_gastric_cancer_downstream.html">Downstream analysis on spatial multi-omics data of human gastric cancer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/3.1_mouse_small_intestine_metachat.html">MetaChat analysis on Visium HD data of mouse small intestine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/3.2_mouse_small_intestine_downstream.html">Downstream analysis on Visium HD data of mouse small intestine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/real_data/4.1_mouse_brain_3D_metachat.html">MetaChat and downstream analysis on 3D transcriptomics from whole mouse brain</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/realistic_data/index.html">Realistic data</a><input aria-label="Toggle navigation of Realistic data" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/realistic_data/multi-omics_data.html">Example of spatial multi-omics data (mouse brain with Parkinson’s disease)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/realistic_data/multi-omics_data_LRC.html">Customizing long range channels by Napari</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tutorials/realistic_data/multi-omics_data_compare.html">Comparative analysis of metabolic cell communication</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">API</a><input aria-label="Toggle navigation of API" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">API</a><input aria-label="Toggle navigation of API" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.generate_adata_met_compass.html">metachat.pp.generate_adata_met_compass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.generate_adata_met_scFEA.html">metachat.pp.generate_adata_met_scFEA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.generate_adata_met_mebocost.html">metachat.pp.generate_adata_met_mebocost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.global_intensity_scaling.html">metachat.pp.global_intensity_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pp.load_barrier_segments.html">metachat.pp.load_barrier_segments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pp.LRC_filtered.html">metachat.pp.LRC_filtered</a></li>
@@ -244,14 +247,24 @@
 <li class="toctree-l2"><a class="reference internal" href="metachat.tl.communication_responseGenes.html">metachat.tl.communication_responseGenes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.tl.communication_responseGenes_cluster.html">metachat.tl.communication_responseGenes_cluster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.tl.communication_responseGenes_keggEnrich.html">metachat.tl.communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.tl.compute_direction_histogram_per_pair.html">metachat.tl.compute_direction_histogram_per_pair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_flow.html">metachat.pl.plot_communication_flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_group_communication_compare_hierarchy_diagram.html">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_metapathway_pair_contribution_bubbleplot.html">metachat.pl.plot_metapathway_pair_contribution_bubbleplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_DEG_volcano.html">metachat.pl.plot_DEG_volcano</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_3d_feature.html">metachat.pl.plot_3d_feature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_3d_LRC_with_two_slices.html">metachat.pl.plot_3d_LRC_with_two_slices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_dis_thr.html">metachat.pl.plot_dis_thr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_LRC_markers.html">metachat.pl.plot_LRC_markers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_spot_distance.html">metachat.pl.plot_spot_distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_graph_connectivity.html">metachat.pl.plot_graph_connectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metachat.pl.plot_direction_similarity.html">metachat.pl.plot_direction_similarity</a></li>
 </ul>
 </li>
 </ul>
@@ -298,16 +311,31 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.MetaChatDB.html#metachat.pp.MetaChatDB" title="metachat.pp.MetaChatDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.MetaChatDB</span></code></a>([species])</p></td>
 <td><p>Extract metabolite-sensor pairs from MetaChatDB.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.LRC_unfiltered.html#metachat.pp.LRC_unfiltered" title="metachat.pp.LRC_unfiltered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_unfiltered</span></code></a>(adata[, LRC_name, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.generate_adata_met_compass.html#metachat.pp.generate_adata_met_compass" title="metachat.pp.generate_adata_met_compass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.generate_adata_met_compass</span></code></a>(data_path[, ...])</p></td>
+<td><p>Generate processed metabolite matrix for COMPASS analysis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.generate_adata_met_scFEA.html#metachat.pp.generate_adata_met_scFEA" title="metachat.pp.generate_adata_met_scFEA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.generate_adata_met_scFEA</span></code></a>(data_path)</p></td>
+<td><p>Generate processed metabolite matrix for scFEA analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.generate_adata_met_mebocost.html#metachat.pp.generate_adata_met_mebocost" title="metachat.pp.generate_adata_met_mebocost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.generate_adata_met_mebocost</span></code></a>(data_path)</p></td>
+<td><p>Generate processed metabolite matrix for scFEA analysis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.global_intensity_scaling.html#metachat.pp.global_intensity_scaling" title="metachat.pp.global_intensity_scaling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.global_intensity_scaling</span></code></a>(adata_ref, ...)</p></td>
+<td><p>Perform global intensity scaling of <cite>adata_target</cite> to match <cite>adata_ref</cite>, using either total ion current (TIC) or root-mean-square (RMS) normalization.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.load_barrier_segments.html#metachat.pp.load_barrier_segments" title="metachat.pp.load_barrier_segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.load_barrier_segments</span></code></a>([csv_path, ...])</p></td>
+<td><p>Parse Napari shapes CSV and extract barrier line segments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.LRC_unfiltered.html#metachat.pp.LRC_unfiltered" title="metachat.pp.LRC_unfiltered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_unfiltered</span></code></a>(adata[, LRC_name, ...])</p></td>
 <td><p>Identify unfiltered candidate LRC (long-range channel) spots based on the quantile of a marker feature.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.LRC_cluster.html#metachat.pp.LRC_cluster" title="metachat.pp.LRC_cluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_cluster</span></code></a>(adata[, LRC_name, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.LRC_cluster.html#metachat.pp.LRC_cluster" title="metachat.pp.LRC_cluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_cluster</span></code></a>(adata[, LRC_name, ...])</p></td>
 <td><p>Perform local density clustering on unfiltered LRC candidate points.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.LRC_filtered.html#metachat.pp.LRC_filtered" title="metachat.pp.LRC_filtered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_filtered</span></code></a>(adata[, LRC_name, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.LRC_filtered.html#metachat.pp.LRC_filtered" title="metachat.pp.LRC_filtered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.LRC_filtered</span></code></a>(adata[, LRC_name, ...])</p></td>
 <td><p>Assign final LRC (long-range channel) clusters after local density clustering.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pp.compute_costDistance.html#metachat.pp.compute_costDistance" title="metachat.pp.compute_costDistance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.compute_costDistance</span></code></a>(adata[, LRC_type, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pp.compute_costDistance.html#metachat.pp.compute_costDistance" title="metachat.pp.compute_costDistance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pp.compute_costDistance</span></code></a>(adata[, LRC_type, ...])</p></td>
 <td><p>Compute LRC-embedding cost distance based on visibility and local connectivity, supporting both 2D and 3D spatial coordinates.</p></td>
 </tr>
 </tbody>
@@ -346,6 +374,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="metachat.tl.communication_responseGenes_keggEnrich.html#metachat.tl.communication_responseGenes_keggEnrich" title="metachat.tl.communication_responseGenes_keggEnrich"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.communication_responseGenes_keggEnrich</span></code></a>([...])</p></td>
 <td><p>Function for performing KEGG enrichment analysis on a given list of response genes.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.tl.compute_direction_histogram_per_pair.html#metachat.tl.compute_direction_histogram_per_pair" title="metachat.tl.compute_direction_histogram_per_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tl.compute_direction_histogram_per_pair</span></code></a>(...)</p></td>
+<td><p>Compute per-pair directional histograms for MCC vector fields.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -364,20 +395,47 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_group_communication_heatmap.html#metachat.pl.plot_group_communication_heatmap" title="metachat.pl.plot_group_communication_heatmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_group_communication_heatmap</span></code></a>(adata[, ...])</p></td>
 <td><p>Plot a heatmap diagram for group-level metabolic cell communication (MCC).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html#metachat.pl.plot_communication_responseGenes" title="metachat.pl.plot_communication_responseGenes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_communication_responseGenes</span></code></a>(df_deg, ...)</p></td>
-<td><p>Plot the smoothed gene expression profiles of metabolic cell communication response genes.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_group_communication_compare_hierarchy_diagram.html#metachat.pl.plot_group_communication_compare_hierarchy_diagram" title="metachat.pl.plot_group_communication_compare_hierarchy_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_group_communication_compare_hierarchy_diagram</span></code></a>(...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_group_communication_compare_hierarchy_diagram.html#metachat.pl.plot_group_communication_compare_hierarchy_diagram" title="metachat.pl.plot_group_communication_compare_hierarchy_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_group_communication_compare_hierarchy_diagram</span></code></a>(...)</p></td>
 <td><p>Plot a hierarchy-style diagram comparing group-level MCC between two conditions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_MSpair_contribute_group.html#metachat.pl.plot_MSpair_contribute_group" title="metachat.pl.plot_MSpair_contribute_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_MSpair_contribute_group</span></code></a>(adata[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_MSpair_contribute_group.html#metachat.pl.plot_MSpair_contribute_group" title="metachat.pl.plot_MSpair_contribute_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_MSpair_contribute_group</span></code></a>(adata[, ...])</p></td>
 <td><p>Plot a heatmap showing group-level contributions of metabolite–sensor pairs for a specific metabolite.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_summary_pathway.html#metachat.pl.plot_summary_pathway" title="metachat.pl.plot_summary_pathway"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_summary_pathway</span></code></a>([ms_result, ...])</p></td>
+<td><p>Plot a Sankey diagram summarizing metabolic cell communication between metabolite and sensor pathways.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_metapathway_pair_contribution_bubbleplot.html#metachat.pl.plot_metapathway_pair_contribution_bubbleplot" title="metachat.pl.plot_metapathway_pair_contribution_bubbleplot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_metapathway_pair_contribution_bubbleplot</span></code></a>(...)</p></td>
+<td><p>Plot a bubble chart showing metabolite–sensor contributions for a selected metabolic pathway.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_communication_responseGenes.html#metachat.pl.plot_communication_responseGenes" title="metachat.pl.plot_communication_responseGenes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_communication_responseGenes</span></code></a>(df_deg, ...)</p></td>
+<td><p>Plot the smoothed gene expression profiles of metabolic cell communication response genes.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_communication_responseGenes_keggEnrich.html#metachat.pl.plot_communication_responseGenes_keggEnrich" title="metachat.pl.plot_communication_responseGenes_keggEnrich"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_communication_responseGenes_keggEnrich</span></code></a>(...)</p></td>
 <td><p>Plot a horizontal bar chart summarizing KEGG enrichment results of MCC response genes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_summary_pathway.html#metachat.pl.plot_summary_pathway" title="metachat.pl.plot_summary_pathway"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_summary_pathway</span></code></a>([ms_result, ...])</p></td>
-<td><p>Plot a Sankey diagram summarizing metabolic cell communication between metabolite and sensor pathways.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_DEG_volcano.html#metachat.pl.plot_DEG_volcano" title="metachat.pl.plot_DEG_volcano"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_DEG_volcano</span></code></a>(deg_result[, name_col, ...])</p></td>
+<td><p>Plot a volcano plot from differential MCC results.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_3d_feature.html#metachat.pl.plot_3d_feature" title="metachat.pl.plot_3d_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_3d_feature</span></code></a>(adata, feature[, ...])</p></td>
+<td><p>Visualize a spatial feature (gene or obs annotation) in 3D using Plotly.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_3d_LRC_with_two_slices.html#metachat.pl.plot_3d_LRC_with_two_slices" title="metachat.pl.plot_3d_LRC_with_two_slices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_3d_LRC_with_two_slices</span></code></a>(adata, mask_key)</p></td>
+<td><p>Visualize 3D long-range channels (LRCs) with two representative z-slice views.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_dis_thr.html#metachat.pl.plot_dis_thr" title="metachat.pl.plot_dis_thr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_dis_thr</span></code></a>(adata, dis_thr, spot_index)</p></td>
+<td><p>Visualize spatial neighborhood within a specified distance threshold around a selected spot.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_LRC_markers.html#metachat.pl.plot_LRC_markers" title="metachat.pl.plot_LRC_markers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_LRC_markers</span></code></a>(adata, LRC_name, ...[, ...])</p></td>
+<td><p>Visualize expression of LRC (Long-Range Channel) marker genes in spatial omics data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_spot_distance.html#metachat.pl.plot_spot_distance" title="metachat.pl.plot_spot_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_spot_distance</span></code></a>(adata, ...[, figsize, ...])</p></td>
+<td><p>Visualize the spatial distance from a selected spot to all other spots.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="metachat.pl.plot_graph_connectivity.html#metachat.pl.plot_graph_connectivity" title="metachat.pl.plot_graph_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_graph_connectivity</span></code></a>(G[, node_size, ...])</p></td>
+<td><p>Plot a 2D visualization of a graph showing connectivity between nodes and edges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metachat.pl.plot_direction_similarity.html#metachat.pl.plot_direction_similarity" title="metachat.pl.plot_direction_similarity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pl.plot_direction_similarity</span></code></a>(df_direction, ...)</p></td>
+<td><p>Plot a block-ordered similarity heatmap for direction-based flow clusters.</p></td>
 </tr>
 </tbody>
 </table>
@@ -399,14 +457,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../tutorials/realistic_data/multi-omics_data_compare.html">
+          <a class="prev-page" href="../tutorials/real_data/4.1_mouse_brain_3D_metachat.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Comparative analysis of metabolic cell communication</div>
+                <div class="title">MetaChat and downstream analysis on 3D transcriptomics from whole mouse brain</div>
                 
               </div>
             </a>
@@ -459,7 +517,7 @@
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=8c5712d9"></script>
+    <script src="../_static/documentation_options.js?v=282f96c0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
