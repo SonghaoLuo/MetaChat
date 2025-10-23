@@ -10,10 +10,10 @@ Real datasets tutorials
    :caption: Spatial multi-omics examples
    :glob:
 
-   Spatial multi-omics data from mouse brain with Parkinson’s disease <mouse_brain_parkinson/index>
-   Spatial multi-omics data from human gastric cancer <human_gastric_cancer/index>
-   Visium HD dataset from mouse small intestine <mouse_small_intestine/index>
-   3D transcriptomics dataset from whole mouse brain <mouse_brain_3D/index>
+   Spatial multi-omics data from mouse brain with Parkinson’s disease <1_mouse_brain_parkinson/index>
+   Spatial multi-omics data from human gastric cancer <2_human_gastric_cancer/index>
+   Visium HD dataset from mouse small intestine <3_mouse_small_intestine/index>
+   3D transcriptomics dataset from whole mouse brain <4_mouse_brain_3D/index>
 
 .. image:: ../../_static/image/analysis_pipeline.png
    :alt: Example of MetaChat multi-omics dataset
