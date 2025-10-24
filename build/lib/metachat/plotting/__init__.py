@@ -12,8 +12,10 @@ from ._plotting import plot_communication_responseGenes_keggEnrich
 
 from ._plotting import plot_DEG_volcano
 from ._plotting import plot_3d_feature
+from ._plotting import plot_3d_LRC_with_two_slices
 
 from ._plotting import plot_dis_thr
 from ._plotting import plot_LRC_markers
 from ._plotting import plot_spot_distance
 from ._plotting import plot_graph_connectivity
+from ._plotting import plot_direction_similarity

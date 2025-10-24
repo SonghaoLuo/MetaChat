@@ -7,3 +7,4 @@ from ._downstream_analysis import summary_pathway
 from ._downstream_analysis import communication_responseGenes
 from ._downstream_analysis import communication_responseGenes_cluster
 from ._downstream_analysis import communication_responseGenes_keggEnrich
+from ._downstream_analysis import compute_direction_histogram_per_pair

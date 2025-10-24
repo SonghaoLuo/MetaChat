@@ -17,7 +17,9 @@ from sklearn.preprocessing import normalize
 from tqdm import tqdm
 from multiprocessing import Pool
 from scipy import sparse
+import matplotlib.pyplot as plt
 
+from ..plotting import plot_communication_flow
 from .._utils import leiden_clustering
 # ============================================================
 
@@ -1139,3 +1141,152 @@ def communication_responseGenes_keggEnrich(
     df_result = enr.results
     
     return df_result
+
+def compute_direction_histogram_per_pair(
+    adata: anndata.AnnData,
+    database_name: str,
+    all_ms_pairs: list,
+    summary: str = "receiver",
+    grid_density: float = 0.5,
+    n_bins: int = 18,
+    eps: float = 1e-3
+):
+    """
+    Compute per-pair directional histograms for MCC vector fields.
+
+    This function computes a 19-dimensional direction histogram for each
+    metabolite–sensor (M–S) pair, based on the angular distribution of
+    local communication flow vectors. Grid points that are zero vectors
+    across all pairs are removed before histogramming.
+
+    The last bin (``dir_bin_zero``) represents the fraction of zero vectors,
+    while the remaining ``n_bins`` bins capture the normalized angular
+    distribution of nonzero vectors.
+
+    Steps
+    -----
+    1. For each M–S pair, retrieve the vector field using 
+       :func:`mc.pl.plot_communication_flow` (grid mode).
+    2. Stack all vector fields and identify grid positions that are zero across all pairs.
+    3. Remove all-zero grids and retain only informative ones.
+    4. For each remaining M–S pair:
+       - Normalize vector magnitudes by their maximum norm.
+       - Set vectors below ``eps`` to zero.
+       - Compute the histogram of angles using ``atan2(Vy, Vx)`` with ``n_bins`` bins.
+       - Compute the zero fraction (ratio of zero vectors to total grid points).
+       - Concatenate ``n_bins`` angular bins and one zero bin (total 19 features).
+    5. Return a DataFrame summarizing per-pair histograms and the filtered grid coordinates.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        Annotated data object containing spatial coordinates and MCC flow results.
+    database_name : str
+        Name of the metabolite–sensor database used in MCC inference.
+    all_ms_pairs : list
+        List of metabolite–sensor pair names to process.
+    summary : str, default="receiver"
+        Whether to summarize the flow field from the "sender" or "receiver" perspective.
+    grid_density : float, default=0.5
+        Density parameter controlling the grid resolution for vector field sampling.
+    n_bins : int, default=18
+        Number of angular bins for histogramming directions.
+    eps : float, default=1e-3
+        Threshold below which vectors are treated as zero.
+
+    Returns
+    -------
+    df_hist : pandas.DataFrame
+        DataFrame of shape (n_pairs × (n_bins + 1)) containing the angular
+        distribution (``dir_bin_0``–``dir_bin_{n_bins-1}``) and zero fraction
+        (``dir_bin_zero``) for each metabolite–sensor pair.
+    coords_filtered : numpy.ndarray
+        Array of filtered grid coordinates (G × 2) retained after removing
+        all-zero grid points.
+
+    Notes
+    -----
+    - This function is designed to produce direction histograms that
+      summarize flow orientation patterns across multiple metabolite–sensor pairs.
+    - The output is suitable for downstream analyses such as clustering or
+      comparing flow directionality patterns between pathways or tissue regions.
+    - The function internally suppresses plotting figures for performance.
+    """
+
+    V_all = []
+    coords_ref = None
+    valid_pairs = []
+
+    for ms_pair_name in all_ms_pairs:
+        fig, ax = plt.subplots(figsize=(4, 4))
+        _, coords_plot, V_plot = plot_communication_flow(
+            adata=adata,
+            database_name=database_name,
+            ms_pair_name=ms_pair_name,
+            summary=summary,
+            plot_method="grid",
+            background="image",
+            grid_density=grid_density,
+            normalize_v_quantile=0.995,
+            ax=ax
+        )
+        plt.close(fig)
+
+        if coords_ref is None:
+            coords_ref = coords_plot.copy()
+
+        V_all.append(V_plot)
+        valid_pairs.append(ms_pair_name)
+
+    if len(V_all) == 0:
+        print("All flows are empty.")
+        return pd.DataFrame(), None
+
+    V_all = np.stack(V_all, axis=0)  # (n_pairs, G, 2)
+
+    all_norms = np.linalg.norm(V_all, axis=2)
+    keep_mask = ~(np.all(all_norms < 1e-12, axis=0))
+    kept_indices = np.where(keep_mask)[0]
+    coords_filtered = coords_ref[kept_indices, :]
+    print(f"Filtered out {np.sum(~keep_mask)} all-zero grids, kept {len(kept_indices)}.")
+
+    df_rows = []
+    for i, ms_pair_name in enumerate(valid_pairs):
+        V = V_all[i, keep_mask, :]
+        norms = np.linalg.norm(V, axis=1)
+        max_norm = np.max(norms)
+        if max_norm > 0:
+            Vn = V / max_norm
+            norms_n = norms / max_norm
+        else:
+            Vn = V.copy()
+            norms_n = norms.copy()
+
+        zero_mask = norms_n < eps
+        n_zero = np.sum(zero_mask)
+        n_nonzero = np.sum(~zero_mask)
+
+        # --- angles of nonzero vectors ---
+        if n_nonzero > 0:
+            angles = np.arctan2(Vn[~zero_mask, 1], Vn[~zero_mask, 0])
+            counts, _ = np.histogram(angles, bins=n_bins, range=(-np.pi, np.pi))
+            # Normalize angular bins to sum = 1 over *nonzero* vectors
+            prob_angular = counts.astype(float) / n_nonzero
+        else:
+            prob_angular = np.zeros(n_bins)
+
+        # --- zero fraction (still out of all grids) ---
+        zero_frac = n_zero / (n_zero + n_nonzero)
+
+        # --- concatenate 18 angular bins + 1 zero bin ---
+        hist19 = np.concatenate([prob_angular, [zero_frac]])
+        df_rows.append(hist19)
+
+    df_hist = pd.DataFrame(
+        df_rows,
+        index=valid_pairs,
+        columns=[f"dir_bin_{i}" for i in range(n_bins)] + ["dir_bin_zero"]
+    )
+
+    print(f"Computed {len(valid_pairs)} flows × {n_bins+1} bins (after filtering).")
+    return df_hist, coords_filtered

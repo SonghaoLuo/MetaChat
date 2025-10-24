@@ -1,0 +1,803 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Spatial Multi-Omics Data from Human Gastric Cancer" href="../2_human_gastric_cancer/index.html"><link rel="prev" title="Comparative analysis on spatial multi-omics data of mouse brain with Parkinson’s disease" href="1.2_mouse_brain_parkinson_comparasion.html">
+        <link rel="prefetch" href="../../_static/logo.png" as="image">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+        <title>Downstream analysis on spatial multi-omics data of mouse brain with Parkinson’s disease - MetaChat 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/override.css?v=46f5334b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  --color-brand-primary: #357473;
+  --color-brand-content: #357473;
+  --admonition-font-size: var(--font-size-normal);
+  --admonition-title-font-size: var(--font-size-normal);
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">MetaChat 0.0.5 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../basic/index.html">Basic tutorials</a><input aria-label="Toggle navigation of Basic tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../basic/identify_anatomical_features/index.html">Identifying Anatomical Features</a><input aria-label="Toggle navigation of Identifying Anatomical Features" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/identify_anatomical_features/identifyLRC.html">Identifying Long-Range Channels (LRCs)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/identify_anatomical_features/identifyBarrier.html">Annotating barrier condition</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../basic/estimate_metabolomics/index.html">Estimating Spatial Metabolomics from Spatial Transcriptomics</a><input aria-label="Toggle navigation of Estimating Spatial Metabolomics from Spatial Transcriptomics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/estimate_metabolomics/scFEA.html">using scFEA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/estimate_metabolomics/compass.html">using COMPASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/estimate_metabolomics/mebocost.html">using MEBOCOST</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../basic/tips.html">Tip for Analyzing Multiple Slides or Biological Replicates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../basic/function_guideline.html">Guideline for Function and Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Real dataset tutorials</a><input aria-label="Toggle navigation of Real dataset tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Spatial Multi-Omics Data from Mouse Brain with Parkinson’s Disease</a><input aria-label="Toggle navigation of Spatial Multi-Omics Data from Mouse Brain with Parkinson’s Disease" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1.1_mouse_brain_parkinson_metachat.html">MetaChat analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="1.2_mouse_brain_parkinson_comparasion.html">Comparative analysis</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Downstream analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../2_human_gastric_cancer/index.html">Spatial Multi-Omics Data from Human Gastric Cancer</a><input aria-label="Toggle navigation of Spatial Multi-Omics Data from Human Gastric Cancer" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../2_human_gastric_cancer/2.1_human_gastric_cancer_metachat.html">MetaChat analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_human_gastric_cancer/2.2_human_gastric_cancer_downstream.html">Downstream analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../3_mouse_small_intestine/index.html">Visium HD Dataset from Mouse Small Intestine</a><input aria-label="Toggle navigation of Visium HD Dataset from Mouse Small Intestine" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../3_mouse_small_intestine/3.1_mouse_small_intestine_metachat.html">MetaChat analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../3_mouse_small_intestine/3.2_mouse_small_intestine_downstream.html">Downstream analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../4_mouse_brain_3D/index.html">3D Transcriptomics Dataset from Whole Mouse Brain</a><input aria-label="Toggle navigation of 3D Transcriptomics Dataset from Whole Mouse Brain" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../4_mouse_brain_3D/4.1_mouse_brain_3D_metachat.html">MetaChat analysis and Downstream analysis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.generate_adata_met_compass.html">metachat.pp.generate_adata_met_compass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.generate_adata_met_scFEA.html">metachat.pp.generate_adata_met_scFEA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.generate_adata_met_mebocost.html">metachat.pp.generate_adata_met_mebocost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.global_intensity_scaling.html">metachat.pp.global_intensity_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.load_barrier_segments.html">metachat.pp.load_barrier_segments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_filtered.html">metachat.pp.LRC_filtered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.compute_costDistance.html">metachat.pp.compute_costDistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.metabolic_communication.html">metachat.tl.metabolic_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.summary_communication.html">metachat.tl.summary_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_flow.html">metachat.tl.communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_group.html">metachat.tl.communication_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_group_spatial.html">metachat.tl.communication_group_spatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.summary_pathway.html">metachat.tl.summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes.html">metachat.tl.communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes_cluster.html">metachat.tl.communication_responseGenes_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes_keggEnrich.html">metachat.tl.communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.compute_direction_histogram_per_pair.html">metachat.tl.compute_direction_histogram_per_pair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_flow.html">metachat.pl.plot_communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_compare_hierarchy_diagram.html">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_metapathway_pair_contribution_bubbleplot.html">metachat.pl.plot_metapathway_pair_contribution_bubbleplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_DEG_volcano.html">metachat.pl.plot_DEG_volcano</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_3d_feature.html">metachat.pl.plot_3d_feature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_3d_LRC_with_two_slices.html">metachat.pl.plot_3d_LRC_with_two_slices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_dis_thr.html">metachat.pl.plot_dis_thr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_LRC_markers.html">metachat.pl.plot_LRC_markers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_spot_distance.html">metachat.pl.plot_spot_distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_graph_connectivity.html">metachat.pl.plot_graph_connectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_direction_similarity.html">metachat.pl.plot_direction_similarity</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="downstream-analysis-on-spatial-multi-omics-data-of-mouse-brain-with-parkinson-s-disease">
+<h1>Downstream analysis on spatial multi-omics data of mouse brain with Parkinson’s disease<a class="headerlink" href="#downstream-analysis-on-spatial-multi-omics-data-of-mouse-brain-with-parkinson-s-disease" title="Link to this heading"></a></h1>
+<p>In this tutorial, we will perform downstream analysis of spatial multi-omics data from the mouse brain with Parkinson’s disease, including identification of MCC flow, group-level MCC, MCC remodelling in receiver cells.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing packages</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">metachat</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
+<span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;pdf.fonttype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setting your work dictionary</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/home/project/metachat_packages/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="import-metachat-results">
+<h2>Import MetaChat results<a class="headerlink" href="#import-metachat-results" title="Link to this heading"></a></h2>
+<p>We manually annotated the MetaChat result using Napari, dividing the left hemisphere as “Intact” and the right hemisphere as “Lesion”. For convenience, we will directly import the annotated h5ad.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;datasets/mouse_brain_parkinson/metachat_result_divided.h5ad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The original output of MetaChat provides MCC signals for each individual metabolite–sensor pair.
+Here, we use <code class="docutils literal notranslate"><span class="pre">mc.tl.summary_communication</span></code> to summarize the overall MCC activity associated with specific metabolites (e.g., dopamine and norepinephrine), aggregating their communication strengths across all corresponding sensors.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sum_metabolites</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HMDB0000216&#39;</span><span class="p">,</span> <span class="s1">&#39;HMDB0000073&#39;</span><span class="p">]</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">summary_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                            <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                            <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="mcc-flow">
+<h2>MCC flow<a class="headerlink" href="#mcc-flow" title="Link to this heading"></a></h2>
+<p>Then, we can compute the vector field of MCC flow using <code class="docutils literal notranslate"><span class="pre">mc.tl.communication_flow</span></code>, which estimates the spatial directionality and magnitude of MCC based on the summarized metabolite signals.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                         <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                         <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
+                         <span class="n">k</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The output vector fields are saved in adata.obsm, e.g., <code class="docutils literal notranslate"><span class="pre">'MetaChat-vf-MetaChatDB-sender-HMDB0000216'</span></code> and <code class="docutils literal notranslate"><span class="pre">'MetaChat-vf-MetaChatDB-receiver-HMDB0000216'</span></code>, corresponding to the sender and receiver flows of each metabolite.</p>
+<section id="hmdb0000073-dopamine">
+<h3>HMDB0000073: Dopamine<a class="headerlink" href="#hmdb0000073-dopamine" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s2">&quot;HMDB0000073&quot;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">pl1</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> 
+                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                    <span class="n">plot_method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span>
+                                    <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span><span class="p">,</span>
+                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                                    <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                                    <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                                    <span class="n">grid_density</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                                    <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;MCC flow of </span><span class="si">{</span><span class="n">metabolite_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>   
+                                    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">pl2</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> 
+                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                    <span class="n">plot_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;summary&#39;</span><span class="p">,</span>
+                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                                    <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;YlOrRd&#39;</span><span class="p">,</span>
+                                    <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                                    <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                                    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;MCC sent signals&#39;</span><span class="p">,</span>   
+                                    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">pl3</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> 
+                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                    <span class="n">plot_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;summary&#39;</span><span class="p">,</span>
+                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;receiver&#39;</span><span class="p">,</span>
+                                    <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;YlGn&#39;</span><span class="p">,</span>
+                                    <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                                    <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                                    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;MCC received signals&#39;</span><span class="p">,</span>   
+                                    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/c145c4c5b50e10b6991486013574908e89a9042c431259ba15a391546bd3f46a.png" src="../../_images/c145c4c5b50e10b6991486013574908e89a9042c431259ba15a391546bd3f46a.png" />
+</div>
+</div>
+<p>We can visualize which metabolite–sensor pairs contribute most to the overall MCC signals of a specific metabolite across tissue types using <code class="docutils literal notranslate"><span class="pre">mc.pl.plot_MSpair_contribute_group</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_MSpair_contribute_group</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> 
+                                   <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                   <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
+                                   <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                   <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                                   <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span>
+                                   <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7bd66b61e472113c884951781b653d99f75c0189fb7d706951641f2cc709145a.png" src="../../_images/7bd66b61e472113c884951781b653d99f75c0189fb7d706951641f2cc709145a.png" />
+</div>
+</div>
+</section>
+<section id="hmdb0000216-norepinephrine">
+<h3>HMDB0000216: Norepinephrine<a class="headerlink" href="#hmdb0000216-norepinephrine" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s2">&quot;HMDB0000216&quot;</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">pl1</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> 
+                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                    <span class="n">plot_method</span> <span class="o">=</span> <span class="s1">&#39;grid&#39;</span><span class="p">,</span>
+                                    <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span><span class="p">,</span>
+                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                                    <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                                    <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                                    <span class="n">grid_density</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                                    <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;MCC flow of </span><span class="si">{</span><span class="n">metabolite_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>   
+                                    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">pl2</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> 
+                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                    <span class="n">plot_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;summary&#39;</span><span class="p">,</span>
+                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                                    <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;YlOrRd&#39;</span><span class="p">,</span>
+                                    <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                                    <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                                    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;MCC sent signals&#39;</span><span class="p">,</span>   
+                                    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">pl3</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> 
+                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                    <span class="n">plot_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;summary&#39;</span><span class="p">,</span>
+                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;receiver&#39;</span><span class="p">,</span>
+                                    <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;YlGn&#39;</span><span class="p">,</span>
+                                    <span class="n">ndsize</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                                    <span class="n">normalize_v_quantile</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span>
+                                    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;MCC received signals&#39;</span><span class="p">,</span>   
+                                    <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/52a10f97af7424fd1c459bd3c65d9f94d0822a5c3f37883e9b459d75ba069ebf.png" src="../../_images/52a10f97af7424fd1c459bd3c65d9f94d0822a5c3f37883e9b459d75ba069ebf.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_MSpair_contribute_group</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span> 
+                                   <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                   <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
+                                   <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                   <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;sender&#39;</span><span class="p">,</span>
+                                   <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+                                   <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/0ff6d8e67744a383515f6cfd27e85270b7104ac3c0c7f7504006b0e31011cf3d.png" src="../../_images/0ff6d8e67744a383515f6cfd27e85270b7104ac3c0c7f7504006b0e31011cf3d.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="mcc-remodelling-in-receiver-cells">
+<h2>MCC remodelling in receiver cells<a class="headerlink" href="#mcc-remodelling-in-receiver-cells" title="Link to this heading"></a></h2>
+<p>In the next step, we aim to identify response genes in receiver cells. To do this, we provide the corresponding raw RNA data (<code class="docutils literal notranslate"><span class="pre">adata_raw</span></code>) as reference, which allows MetaChat to estimate transcriptional changes associated with signaling activity.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_raw</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;datasets/mouse_brain_parkinson/adata_RNA_raw.h5ad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id1">
+<h3>HMDB0000073: Dopamine<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>The function <code class="docutils literal notranslate"><span class="pre">mc.tl.communication_responseGenes</span></code> supports identifying response genes within a defined spatial subset of the tissue, allowing users to focus on specific regions or cell groups where the received signal is most relevant.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000073&#39;</span>
+<span class="n">df_deg</span><span class="p">,</span> <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                                    <span class="n">adata_raw</span> <span class="o">=</span> <span class="n">adata_raw</span><span class="p">,</span>
+                                                    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                                    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+                                                    <span class="n">subgroup</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Striatum dorsal region&#39;</span><span class="p">,</span> <span class="s1">&#39;Striatum ventral region&#39;</span><span class="p">],</span>
+                                                    <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
+                                                    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;receiver&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 100/100 [00:13&lt;00:00,  7.31/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  |                                                  | 0 % ~calculating   |+                                                 | 1 % ~03m 08s       |+                                                 | 2 % ~03m 04s       |++                                                | 3 % ~02m 60s       |++                                                | 4 % ~02m 60s       |+++                                               | 5 % ~02m 59s       |+++                                               | 6 % ~03m 26s       |++++                                              | 7 % ~03m 28s       |++++                                              | 8 % ~03m 46s       |+++++                                             | 9 % ~03m 46s       |+++++                                             | 10% ~03m 39s       |++++++                                            | 11% ~03m 32s       |++++++                                            | 12% ~03m 27s       |+++++++                                           | 13% ~03m 30s       |+++++++                                           | 14% ~03m 29s       |++++++++                                          | 15% ~03m 25s       |++++++++                                          | 16% ~03m 28s       |+++++++++                                         | 17% ~03m 26s       |+++++++++                                         | 18% ~03m 24s       |++++++++++                                        | 19% ~03m 20s       |++++++++++                                        | 20% ~03m 21s       |+++++++++++                                       | 21% ~03m 24s       |+++++++++++                                       | 22% ~03m 19s       |++++++++++++                                      | 23% ~03m 28s       |++++++++++++                                      | 24% ~03m 24s       |+++++++++++++                                     | 25% ~03m 23s       |+++++++++++++                                     | 26% ~03m 19s       |++++++++++++++                                    | 27% ~03m 15s       |++++++++++++++                                    | 28% ~03m 13s       |+++++++++++++++                                   | 29% ~03m 09s       |+++++++++++++++                                   | 30% ~03m 06s       |++++++++++++++++                                  | 31% ~03m 02s       |++++++++++++++++                                  | 32% ~03m 06s       |+++++++++++++++++                                 | 33% ~03m 02s       |+++++++++++++++++                                 | 34% ~02m 58s       |++++++++++++++++++                                | 35% ~02m 57s       |++++++++++++++++++                                | 36% ~02m 54s       |+++++++++++++++++++                               | 37% ~02m 50s       |+++++++++++++++++++                               | 38% ~02m 47s       |++++++++++++++++++++                              | 39% ~02m 44s       |++++++++++++++++++++                              | 40% ~02m 40s       |+++++++++++++++++++++                             | 41% ~02m 38s       |+++++++++++++++++++++                             | 42% ~02m 34s       |++++++++++++++++++++++                            | 43% ~02m 31s       |++++++++++++++++++++++                            | 44% ~02m 30s       |+++++++++++++++++++++++                           | 45% ~02m 28s       |+++++++++++++++++++++++                           | 46% ~02m 26s       |++++++++++++++++++++++++                          | 47% ~02m 23s       |++++++++++++++++++++++++                          | 48% ~02m 20s       |+++++++++++++++++++++++++                         | 49% ~02m 18s       |+++++++++++++++++++++++++                         | 50% ~02m 15s       |++++++++++++++++++++++++++                        | 51% ~02m 13s       |++++++++++++++++++++++++++                        | 52% ~02m 11s       |+++++++++++++++++++++++++++                       | 53% ~02m 08s       |+++++++++++++++++++++++++++                       | 54% ~02m 08s       |++++++++++++++++++++++++++++                      | 55% ~02m 05s       |++++++++++++++++++++++++++++                      | 56% ~02m 02s       |+++++++++++++++++++++++++++++                     | 57% ~02m 01s       |+++++++++++++++++++++++++++++                     | 58% ~02m 00s       |++++++++++++++++++++++++++++++                    | 59% ~01m 57s       |++++++++++++++++++++++++++++++                    | 60% ~01m 59s       |+++++++++++++++++++++++++++++++                   | 61% ~01m 56s       |+++++++++++++++++++++++++++++++                   | 62% ~01m 52s       |++++++++++++++++++++++++++++++++                  | 63% ~01m 50s       |++++++++++++++++++++++++++++++++                  | 64% ~01m 47s       |+++++++++++++++++++++++++++++++++                 | 65% ~01m 44s       |+++++++++++++++++++++++++++++++++                 | 66% ~01m 41s       |++++++++++++++++++++++++++++++++++                | 67% ~01m 37s       |++++++++++++++++++++++++++++++++++                | 68% ~01m 34s       |+++++++++++++++++++++++++++++++++++               | 69% ~01m 31s       |+++++++++++++++++++++++++++++++++++               | 70% ~01m 28s       |++++++++++++++++++++++++++++++++++++              | 71% ~01m 25s       |++++++++++++++++++++++++++++++++++++              | 72% ~01m 22s       |+++++++++++++++++++++++++++++++++++++             | 73% ~01m 19s       |+++++++++++++++++++++++++++++++++++++             | 74% ~01m 16s       |++++++++++++++++++++++++++++++++++++++            | 75% ~01m 12s       |++++++++++++++++++++++++++++++++++++++            | 76% ~01m 09s       |+++++++++++++++++++++++++++++++++++++++           | 77% ~01m 07s       |+++++++++++++++++++++++++++++++++++++++           | 78% ~01m 04s       |++++++++++++++++++++++++++++++++++++++++          | 79% ~01m 02s       |++++++++++++++++++++++++++++++++++++++++          | 80% ~59s           |+++++++++++++++++++++++++++++++++++++++++         | 81% ~56s           |+++++++++++++++++++++++++++++++++++++++++         | 82% ~53s           |++++++++++++++++++++++++++++++++++++++++++        | 83% ~50s           |++++++++++++++++++++++++++++++++++++++++++        | 84% ~47s           |+++++++++++++++++++++++++++++++++++++++++++       | 85% ~44s           |+++++++++++++++++++++++++++++++++++++++++++       | 86% ~42s           |++++++++++++++++++++++++++++++++++++++++++++      | 87% ~38s           |++++++++++++++++++++++++++++++++++++++++++++      | 88% ~35s           |+++++++++++++++++++++++++++++++++++++++++++++     | 89% ~32s           |+++++++++++++++++++++++++++++++++++++++++++++     | 90% ~29s           |++++++++++++++++++++++++++++++++++++++++++++++    | 91% ~26s           |++++++++++++++++++++++++++++++++++++++++++++++    | 92% ~23s           |+++++++++++++++++++++++++++++++++++++++++++++++   | 93% ~21s           |+++++++++++++++++++++++++++++++++++++++++++++++   | 94% ~18s           |++++++++++++++++++++++++++++++++++++++++++++++++  | 95% ~15s           |++++++++++++++++++++++++++++++++++++++++++++++++  | 96% ~12s           |+++++++++++++++++++++++++++++++++++++++++++++++++ | 97% ~09s           |+++++++++++++++++++++++++++++++++++++++++++++++++ | 98% ~06s           |++++++++++++++++++++++++++++++++++++++++++++++++++| 99% ~03s           |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=04m 52s
+2 parameter combinations, 2 use sequential method, 2 use subsampling method
+Running Clustering on Parameter Combinations...
+done.
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we clustered the response genes based on their expression trends along the received signaling strength. This allows us to identify distinct transcriptional programs that are activated or suppressed in response to MCC signal.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_deg_clus</span><span class="p">,</span> <span class="n">df_yhat_clus</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_cluster</span><span class="p">(</span><span class="n">df_deg</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="mi">3</span><span class="p">],</span> <span class="n">df_yhat</span><span class="p">,</span> <span class="n">deg_clustering_res</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes</span><span class="p">(</span>
+    <span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_deg_clus</span><span class="p">,</span>
+    <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">df_yhat_clus</span><span class="p">,</span>
+    <span class="n">top_ngene_per_cluster</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">colormap</span> <span class="o">=</span> <span class="s1">&#39;YlGn&#39;</span><span class="p">,</span>
+    <span class="n">color_range</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">font_scale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+    <span class="n">return_genes</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/320ea35fc2d90b7aabb3dbc4acc03817e21dd4e77765e6510ee7e61bf25d0243.png" src="../../_images/320ea35fc2d90b7aabb3dbc4acc03817e21dd4e77765e6510ee7e61bf25d0243.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">kegg_result</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_keggEnrich</span><span class="p">(</span>
+    <span class="n">gene_list</span> <span class="o">=</span> <span class="n">df_deg</span><span class="p">[</span><span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;pvalue&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[:</span><span class="mi">1000</span><span class="p">],</span>
+    <span class="n">gene_sets</span> <span class="o">=</span> <span class="s2">&quot;KEGG_2019_Mouse&quot;</span><span class="p">,</span>
+    <span class="n">organism</span> <span class="o">=</span> <span class="s2">&quot;Mouse&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes_keggEnrich</span><span class="p">(</span>
+    <span class="n">df_result</span> <span class="o">=</span> <span class="n">kegg_result</span><span class="p">,</span>
+    <span class="n">show_term_order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">25</span><span class="p">],</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span>
+    <span class="n">maxshow_gene</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">organism</span> <span class="o">=</span> <span class="s2">&quot;Mouse&quot;</span><span class="p">,</span>
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">7.5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;-log10(p-value)&#39;, ylabel=&#39;KEGG pathway&#39;&gt;
+</pre></div>
+</div>
+<img alt="../../_images/f8e5701ece6d10d5d0ffefe7d4556535f610893545c1b94e30e94ff78ffd3cb8.png" src="../../_images/f8e5701ece6d10d5d0ffefe7d4556535f610893545c1b94e30e94ff78ffd3cb8.png" />
+</div>
+</div>
+</section>
+<section id="id2">
+<h3>HMDB0000216: Norepinephrine<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_raw</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;datasets/mouse_brain_parkinson/adata_RNA_raw.h5ad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000216&#39;</span>
+<span class="n">df_deg</span><span class="p">,</span> <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes</span><span class="p">(</span>
+    <span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+    <span class="n">adata_raw</span> <span class="o">=</span> <span class="n">adata_raw</span><span class="p">,</span>
+    <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+    <span class="n">metabolite_name</span> <span class="o">=</span> <span class="n">metabolite_name</span><span class="p">,</span>
+    <span class="n">subgroup</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Cerebral cortex (L1)&#39;</span><span class="p">,</span> <span class="s1">&#39;Cerebral cortex (L2/3/4)&#39;</span><span class="p">,</span> <span class="s1">&#39;Cerebral cortex (L5/6)&#39;</span><span class="p">],</span>
+    <span class="n">group_name</span> <span class="o">=</span> <span class="s1">&#39;tissue_type&#39;</span><span class="p">,</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="s1">&#39;receiver&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 100/100 [00:12&lt;00:00,  7.85/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  |                                                  | 0 % ~calculating   |+                                                 | 1 % ~03m 49s       |+                                                 | 2 % ~03m 37s       |++                                                | 3 % ~03m 55s       |++                                                | 4 % ~03m 55s       |+++                                               | 5 % ~04m 04s       |+++                                               | 6 % ~04m 26s       |++++                                              | 7 % ~04m 54s       |++++                                              | 8 % ~04m 45s       |+++++                                             | 9 % ~04m 43s       |+++++                                             | 10% ~04m 32s       |++++++                                            | 11% ~04m 28s       |++++++                                            | 12% ~04m 29s       |+++++++                                           | 13% ~05m 15s       |+++++++                                           | 14% ~05m 23s       |++++++++                                          | 15% ~05m 19s       |++++++++                                          | 16% ~05m 21s       |+++++++++                                         | 17% ~05m 19s       |+++++++++                                         | 18% ~05m 15s       |++++++++++                                        | 19% ~05m 05s       |++++++++++                                        | 20% ~05m 11s       |+++++++++++                                       | 21% ~05m 13s       |+++++++++++                                       | 22% ~05m 04s       |++++++++++++                                      | 23% ~05m 03s       |++++++++++++                                      | 24% ~04m 57s       |+++++++++++++                                     | 25% ~04m 57s       |+++++++++++++                                     | 26% ~04m 51s       |++++++++++++++                                    | 27% ~04m 44s       |++++++++++++++                                    | 28% ~04m 37s       |+++++++++++++++                                   | 29% ~04m 37s       |+++++++++++++++                                   | 30% ~04m 30s       |++++++++++++++++                                  | 31% ~04m 23s       |++++++++++++++++                                  | 32% ~04m 20s       |+++++++++++++++++                                 | 33% ~04m 14s       |+++++++++++++++++                                 | 34% ~04m 10s       |++++++++++++++++++                                | 35% ~04m 05s       |++++++++++++++++++                                | 36% ~04m 03s       |+++++++++++++++++++                               | 37% ~04m 01s       |+++++++++++++++++++                               | 38% ~03m 55s       |++++++++++++++++++++                              | 39% ~03m 49s       |++++++++++++++++++++                              | 40% ~03m 45s       |+++++++++++++++++++++                             | 41% ~03m 42s       |+++++++++++++++++++++                             | 42% ~03m 38s       |++++++++++++++++++++++                            | 43% ~03m 39s       |++++++++++++++++++++++                            | 44% ~03m 37s       |+++++++++++++++++++++++                           | 45% ~03m 33s       |+++++++++++++++++++++++                           | 46% ~03m 29s       |++++++++++++++++++++++++                          | 47% ~03m 26s       |++++++++++++++++++++++++                          | 48% ~03m 22s       |+++++++++++++++++++++++++                         | 49% ~03m 19s       |+++++++++++++++++++++++++                         | 50% ~03m 15s       |++++++++++++++++++++++++++                        | 51% ~03m 10s       |++++++++++++++++++++++++++                        | 52% ~03m 06s       |+++++++++++++++++++++++++++                       | 53% ~03m 03s       |+++++++++++++++++++++++++++                       | 54% ~03m 00s       |++++++++++++++++++++++++++++                      | 55% ~02m 58s       |++++++++++++++++++++++++++++                      | 56% ~02m 53s       |+++++++++++++++++++++++++++++                     | 57% ~02m 50s       |+++++++++++++++++++++++++++++                     | 58% ~02m 47s       |++++++++++++++++++++++++++++++                    | 59% ~02m 44s       |++++++++++++++++++++++++++++++                    | 60% ~02m 41s       |+++++++++++++++++++++++++++++++                   | 61% ~02m 37s       |+++++++++++++++++++++++++++++++                   | 62% ~02m 32s       |++++++++++++++++++++++++++++++++                  | 63% ~02m 27s       |++++++++++++++++++++++++++++++++                  | 64% ~02m 23s       |+++++++++++++++++++++++++++++++++                 | 65% ~02m 19s       |+++++++++++++++++++++++++++++++++                 | 66% ~02m 15s       |++++++++++++++++++++++++++++++++++                | 67% ~02m 10s       |++++++++++++++++++++++++++++++++++                | 68% ~02m 07s       |+++++++++++++++++++++++++++++++++++               | 69% ~02m 02s       |+++++++++++++++++++++++++++++++++++               | 70% ~01m 58s       |++++++++++++++++++++++++++++++++++++              | 71% ~01m 54s       |++++++++++++++++++++++++++++++++++++              | 72% ~01m 50s       |+++++++++++++++++++++++++++++++++++++             | 73% ~01m 46s       |+++++++++++++++++++++++++++++++++++++             | 74% ~01m 43s       |++++++++++++++++++++++++++++++++++++++            | 75% ~01m 39s       |++++++++++++++++++++++++++++++++++++++            | 76% ~01m 35s       |+++++++++++++++++++++++++++++++++++++++           | 77% ~01m 31s       |+++++++++++++++++++++++++++++++++++++++           | 78% ~01m 27s       |++++++++++++++++++++++++++++++++++++++++          | 79% ~01m 23s       |++++++++++++++++++++++++++++++++++++++++          | 80% ~01m 19s       |+++++++++++++++++++++++++++++++++++++++++         | 81% ~01m 15s       |+++++++++++++++++++++++++++++++++++++++++         | 82% ~01m 11s       |++++++++++++++++++++++++++++++++++++++++++        | 83% ~01m 07s       |++++++++++++++++++++++++++++++++++++++++++        | 84% ~01m 03s       |+++++++++++++++++++++++++++++++++++++++++++       | 85% ~60s           |+++++++++++++++++++++++++++++++++++++++++++       | 86% ~56s           |++++++++++++++++++++++++++++++++++++++++++++      | 87% ~52s           |++++++++++++++++++++++++++++++++++++++++++++      | 88% ~48s           |+++++++++++++++++++++++++++++++++++++++++++++     | 89% ~44s           |+++++++++++++++++++++++++++++++++++++++++++++     | 90% ~40s           |++++++++++++++++++++++++++++++++++++++++++++++    | 91% ~36s           |++++++++++++++++++++++++++++++++++++++++++++++    | 92% ~32s           |+++++++++++++++++++++++++++++++++++++++++++++++   | 93% ~28s           |+++++++++++++++++++++++++++++++++++++++++++++++   | 94% ~24s           |++++++++++++++++++++++++++++++++++++++++++++++++  | 95% ~20s           |++++++++++++++++++++++++++++++++++++++++++++++++  | 96% ~16s           |+++++++++++++++++++++++++++++++++++++++++++++++++ | 97% ~12s           |+++++++++++++++++++++++++++++++++++++++++++++++++ | 98% ~08s           |++++++++++++++++++++++++++++++++++++++++++++++++++| 99% ~04s           |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=06m 36s
+2 parameter combinations, 2 use sequential method, 2 use subsampling method
+Running Clustering on Parameter Combinations...
+done.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_deg_clus</span><span class="p">,</span> <span class="n">df_yhat_clus</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_cluster</span><span class="p">(</span><span class="n">df_deg</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="mi">3</span><span class="p">],</span> <span class="n">df_yhat</span><span class="p">,</span> <span class="n">deg_clustering_res</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes</span><span class="p">(</span>
+    <span class="n">df_deg</span> <span class="o">=</span> <span class="n">df_deg_clus</span><span class="p">,</span>
+    <span class="n">df_yhat</span> <span class="o">=</span> <span class="n">df_yhat_clus</span><span class="p">,</span>
+    <span class="n">top_ngene_per_cluster</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">colormap</span> <span class="o">=</span> <span class="s1">&#39;YlGnBu&#39;</span><span class="p">,</span>
+    <span class="n">color_range</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">font_scale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+    <span class="n">return_genes</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d5c9b8f657d98a830c605ea8cd8b59bf643082fcd3d4a00167393f1f3e92a0c5.png" src="../../_images/d5c9b8f657d98a830c605ea8cd8b59bf643082fcd3d4a00167393f1f3e92a0c5.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">kegg_result_subgroup</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_responseGenes_keggEnrich</span><span class="p">(</span>
+    <span class="n">gene_list</span> <span class="o">=</span> <span class="n">df_deg</span><span class="p">[</span><span class="n">df_deg</span><span class="p">[</span><span class="s1">&#39;pvalue&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[:</span><span class="mi">1000</span><span class="p">],</span>
+    <span class="n">gene_sets</span> <span class="o">=</span> <span class="s2">&quot;KEGG_2019_Mouse&quot;</span><span class="p">,</span>
+    <span class="n">organism</span> <span class="o">=</span> <span class="s2">&quot;Mouse&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_communication_responseGenes_keggEnrich</span><span class="p">(</span>
+    <span class="n">df_result</span> <span class="o">=</span> <span class="n">kegg_result_subgroup</span><span class="p">,</span>
+    <span class="n">show_term_order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">14</span><span class="p">],</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+    <span class="n">maxshow_gene</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">organism</span> <span class="o">=</span> <span class="s2">&quot;Mouse&quot;</span><span class="p">,</span>
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">7.5</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;-log10(p-value)&#39;, ylabel=&#39;KEGG pathway&#39;&gt;
+</pre></div>
+</div>
+<img alt="../../_images/5c8ef0d8f4056eb16aed0e461b3784794f8007522b5c071e26390ac75ae924ec.png" src="../../_images/5c8ef0d8f4056eb16aed0e461b3784794f8007522b5c071e26390ac75ae924ec.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../2_human_gastric_cancer/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Spatial Multi-Omics Data from Human Gastric Cancer</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="1.2_mouse_brain_parkinson_comparasion.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Comparative analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Songhao Luo
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fab fa-github" href="https://github.com/SonghaoLuo/metachat" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Downstream analysis on spatial multi-omics data of mouse brain with Parkinson’s disease</a><ul>
+<li><a class="reference internal" href="#import-metachat-results">Import MetaChat results</a></li>
+<li><a class="reference internal" href="#mcc-flow">MCC flow</a><ul>
+<li><a class="reference internal" href="#hmdb0000073-dopamine">HMDB0000073: Dopamine</a></li>
+<li><a class="reference internal" href="#hmdb0000216-norepinephrine">HMDB0000216: Norepinephrine</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mcc-remodelling-in-receiver-cells">MCC remodelling in receiver cells</a><ul>
+<li><a class="reference internal" href="#id1">HMDB0000073: Dopamine</a></li>
+<li><a class="reference internal" href="#id2">HMDB0000216: Norepinephrine</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

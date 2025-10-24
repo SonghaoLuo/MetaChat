@@ -11,6 +11,8 @@ import matplotlib.colors as mcolors
 from matplotlib.cm import ScalarMappable
 from matplotlib.lines import Line2D
 from matplotlib.colors import TwoSlopeNorm
+import matplotlib.patches as patches
+import matplotlib.lines as mlines
 
 import seaborn as sns
 import squidpy as sq
@@ -18,6 +20,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from pycirclize import Circos
 from adjustText import adjust_text
+from plotly.subplots import make_subplots
 
 import networkx as nx
 import anndata
@@ -1125,8 +1128,6 @@ def plot_summary_pathway(
     if plot_savepath:
         fig.write_image(plot_savepath, width=figsize[0] * 100, height=figsize[1] * 100)
 
-    return fig
-
 def plot_metapathway_pair_contribution_bubbleplot(
     pathway_pair_contributions: dict,
     pathway_name: str,
@@ -1892,8 +1893,6 @@ def plot_3d_feature(
     if plot_savepath:
         fig.write_image(plot_savepath, width=figsize[0]*100, height=figsize[1]*100)
 
-    return fig
-
 def plot_dis_thr(
     adata: anndata.AnnData,
     dis_thr: float,
@@ -2003,7 +2002,7 @@ def plot_LRC_markers(
     LRC_name : str
         Name tag for the LRC type (e.g., "CSF", "Blood").
         Used in plot titles and output naming.
-    LRC_marker_genes : list of str
+    LRC_marker_genes : list
         List of LRC marker gene names to visualize.
         Genes not found in ``adata.var_names`` are automatically skipped.
     avg : bool, default=False
@@ -2054,6 +2053,8 @@ def plot_LRC_markers(
             axes = [axes]
         
         for gene, ax in zip(valid_genes, axes):
+            obs_key = f"LRC_{LRC_name}_marker_{gene}"
+            adata.obs[obs_key] = adata[:, gene].X.toarray().ravel()
             sq.pl.spatial_scatter(adata, color=gene, ax=ax)
             ax.set_title(f"{gene}")
             ax.set_box_aspect(1)
@@ -2138,7 +2139,7 @@ def plot_spot_distance(
     ax.set_box_aspect(1)
     ax.set_xlabel("X coordinate")
     ax.set_ylabel("Y coordinate")
-    ax.set_ylim(ax.get_ylim()[1], ax.get_ylim()[0])  # Flip y-axis
+    # ax.set_ylim(ax.get_ylim()[1], ax.get_ylim()[0])  # Flip y-axis
     plt.tight_layout()
     plt.show()
 
@@ -2229,3 +2230,303 @@ def plot_graph_connectivity(
 
     if plot_savepath:
         plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
+
+def plot_direction_similarity(
+    df_direction: pd.DataFrame,
+    cluster_labels: np.ndarray,
+    cmap="mako",
+    figsize=(9, 7),
+    title="Flow pattern similarity (Euclidean-based)",
+    savepath=None
+):
+    """
+    Plot a block-ordered similarity heatmap for direction-based flow clusters.
+
+    This function visualizes the pairwise similarity of MCC flow direction histograms
+    across all metabolite–sensor pairs, ordered by K-means cluster labels.
+    The resulting heatmap highlights within-cluster consistency and
+    between-cluster differences in flow directionality patterns.
+
+    The similarity between two pairs is defined as:
+        ``S = 1 - D / D.max()``,
+    where ``D`` is the pairwise Euclidean distance between direction histograms.
+    Thus, S ranges from 0 (completely dissimilar) to 1 (identical).
+
+    Parameters
+    ----------
+    df_direction : pandas.DataFrame
+        Matrix of direction histogram features (rows = metabolite–sensor pairs,
+        columns = direction bins, typically 18 bins).
+    cluster_labels : numpy.ndarray or array-like
+        Cluster assignments for each M–S pair, usually obtained from K-means or
+        hierarchical clustering.
+    cmap : str or matplotlib Colormap, default="mako"
+        Colormap for the similarity heatmap. Can be any seaborn or matplotlib colormap.
+    figsize : tuple of (float, float), default=(9, 7)
+        Figure size in inches.
+    title : str, default="Flow pattern similarity (Euclidean-based)"
+        Title displayed at the top of the plot.
+    savepath : str or None, optional
+        If provided, saves the figure to the specified file path.
+
+    Returns
+    -------
+    None
+        Displays a block-ordered heatmap showing inter-pair similarity
+        and cluster boundaries.
+
+    Notes
+    -----
+    - The similarity matrix is computed as ``1 - D / D.max()``,
+      where D is the Euclidean distance matrix among all histograms.
+    - The function automatically sorts rows and columns by cluster label
+      to create block-like patterns for visual cluster inspection.
+    - Colored sidebars indicate cluster membership along both axes.
+    - A legend summarizes each flow pattern cluster with its sample size.
+    """
+    
+    # ---------- Compute similarity ----------
+    X = df_direction.values.astype(float)
+    from sklearn.metrics import pairwise_distances
+    D = pairwise_distances(X, metric="euclidean")
+    S = 1 - D / D.max()
+    np.fill_diagonal(S, 1.0)
+
+    # ---------- Order by cluster ----------
+    order = np.argsort(cluster_labels)
+    S_ord = S[order][:, order]
+    labs_ord = cluster_labels[order]
+    uniq = np.unique(labs_ord)
+
+    # ---------- Cluster color mapping ----------
+    palette = list(mcolors.TABLEAU_COLORS.values())
+    cmap_by_cluster = {c: palette[i % len(palette)] for i, c in enumerate(uniq)}
+
+    # ---------- Cluster bounds ----------
+    bounds, sizes = [], {}
+    start = 0
+    for c in uniq:
+        k = int((labs_ord == c).sum())
+        sizes[c] = k
+        bounds.append((c, start, start + k))
+        start += k
+
+    # ---------- Plot ----------
+    fig, ax = plt.subplots(figsize=figsize)
+    sns.heatmap(
+        S_ord,
+        vmin=np.percentile(S, 2),
+        vmax=np.percentile(S, 98),
+        cmap = cmap,
+        square=True,
+        xticklabels=False,
+        yticklabels=False,
+        cbar_kws={"label": "Similarity (1 - normalized Euclidean distance)"}
+    )
+
+    # White grid lines
+    n = S_ord.shape[0]
+    ax.plot(np.arange(n) + 0.5, np.arange(n) + 0.5, color="white", lw=0.5, zorder=5)
+    for _, s, e in bounds:
+        ax.axhline(s, color="white", lw=0.6)
+        ax.axhline(e, color="white", lw=0.6)
+        ax.axvline(s, color="white", lw=0.6)
+        ax.axvline(e, color="white", lw=0.6)
+
+    # Sidebars
+    bar_width = 3.0
+    for c, s, e in bounds:
+        ax.add_patch(patches.Rectangle((-bar_width, s), bar_width, (e - s),
+                        facecolor=cmap_by_cluster[c], edgecolor="none",
+                        transform=ax.transData, clip_on=False, zorder=10))
+        ax.add_patch(patches.Rectangle((s, -bar_width), (e - s), bar_width,
+                        facecolor=cmap_by_cluster[c], edgecolor="none",
+                        transform=ax.transData, clip_on=False, zorder=10))
+
+    # Legend
+    handles = [
+        mlines.Line2D([], [], color=cmap_by_cluster[c], marker="s", linestyle="None",
+                      markersize=8, label=f"Pattern {c} (n={sizes[c]})")
+        for c in uniq
+    ]
+    ax.legend(
+        handles=handles,
+        title="Flow patterns",
+        frameon=False,
+        ncol=1,
+        loc="upper left",
+        bbox_to_anchor=(1.2, 1.0),
+        borderaxespad=0.0
+    )
+
+    ax.set_title(title)
+    plt.tight_layout()
+    if savepath:
+        fig.savefig(savepath, dpi=300, bbox_inches="tight")
+    plt.show()
+
+
+def plot_3d_LRC_with_two_slices(
+    adata,
+    mask_key: str,
+    spatial_key: str = "spatial_3d",
+    z_levels: list = None,      # e.g., [z1, z2]; if None, auto quantiles (0.3, 0.7)
+    slab_ratio: float = 0.02,   # thinner slab so it's cleaner
+    flatten_z: bool = True,     # flatten points in slice to exactly z0
+    bg_color: str = "#b0b0b0",
+    ch_color: str = "#ff7f0e",
+    plane_opacity: float = 0.35,
+):
+    """
+    Visualize 3D long-range channels (LRCs) with two representative z-slice views.
+
+    This function creates a 3D interactive Plotly visualization showing the overall
+    distribution of long-range channels (LRCs) and two sectional slices at selected
+    z-levels. It helps interpret the spatial continuity of LRCs across depth and
+    verify their anatomical localization relative to tissue layers.
+
+    The figure layout consists of:
+      1. **Left panel** — full 3D overview of the tissue with highlighted LRC voxels.
+      2. **Middle and right panels** — top-down slice views at two z-planes,
+         showing LRCs within thin slabs (controlled by `slab_ratio`).
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        Annotated data object containing 3D spatial coordinates in ``.obsm[spatial_key]``
+        and a binary mask column in ``.obs[mask_key]`` indicating LRC membership.
+    mask_key : str
+        Key in ``adata.obs`` corresponding to a boolean array marking LRC points
+        (e.g., ``'LRC_CSF_manual_filtered'`` or ``'LRC_Blood_auto'``).
+    spatial_key : str, default="spatial_3d"
+        Key in ``adata.obsm`` specifying 3D spatial coordinates (shape: N × 3).
+    z_levels : list of float, optional
+        Two z-levels to use for slice visualization.
+        If ``None``, the function automatically selects the 0.3 and 0.7 quantiles
+        of the z-coordinate distribution.
+    slab_ratio : float, default=0.02
+        Fraction of the z-range defining the slab thickness for each slice.
+        Smaller values yield thinner and cleaner cross-sections.
+    flatten_z : bool, default=True
+        If True, all points within a slice are flattened to the central z-plane
+        (for a 2D-like appearance). If False, preserves their original depth variation.
+    bg_color : str, default="#b0b0b0"
+        Color for non-LRC (background) points.
+    ch_color : str, default="#ff7f0e"
+        Color for highlighted LRC points (channels).
+    plane_opacity : float, default=0.35
+        Opacity of the grey slicing planes shown in the main 3D view.
+
+    Returns
+    -------
+    fig : plotly.graph_objects.Figure
+        A Plotly figure object containing three synchronized 3D scenes:
+        the main tissue view and two z-slice panels.
+
+    Notes
+    -----
+    - The function uses Plotly's ``make_subplots`` with three 3D scenes arranged
+      horizontally for combined visualization.
+    - The selected z-levels are marked by semi-transparent planes in the main panel.
+    - Each slice subplot is rendered with an orthographic top-down projection
+      to emphasize spatial distribution patterns rather than depth.
+    - This function is useful for verifying whether manually or automatically
+      identified LRC regions form continuous 3D paths through the tissue volume.
+    """
+    
+    # --- prepare data ---
+    coords = np.asarray(adata.obsm[spatial_key])
+    obs = adata.obs
+    x, y, z = coords[:,0], coords[:,1], coords[:,2]
+    m = obs[mask_key].astype(bool).to_numpy()
+
+    zmin, zmax = float(z.min()), float(z.max())
+    if z_levels is None:
+        z_levels = list(np.quantile(z, [0.3, 0.7]))
+    thick = (zmax - zmin) * slab_ratio
+
+    # --- layout: 1 row (main + two slices) ---
+    fig = make_subplots(
+        rows=1, cols=3,
+        specs=[[{"type":"scene"},{"type":"scene"},{"type":"scene"}]],
+        column_widths=[0.5, 0.25, 0.25],
+        subplot_titles=("LRC overview",
+                        f"Slice z≈{z_levels[0]:.2f}",
+                        f"Slice z≈{z_levels[1]:.2f}")
+    )
+
+    # ===== Main plot =====
+    # background
+    fig.add_trace(go.Scatter3d(
+        x=x[~m], y=y[~m], z=z[~m],
+        mode="markers",
+        marker=dict(size=1, color=bg_color, opacity=0.1),
+        name="background"
+    ), row=1, col=1)
+    # channel
+    fig.add_trace(go.Scatter3d(
+        x=x[m], y=y[m], z=z[m],
+        mode="markers",
+        marker=dict(size=3, color=ch_color, opacity=0.7),
+        name="channel"
+    ), row=1, col=1)
+    # planes
+    xx = np.linspace(x.min(), x.max(), 2)
+    yy = np.linspace(y.min(), y.max(), 2)
+    X, Y = np.meshgrid(xx, yy)
+    for z0 in z_levels:
+        Z = np.full_like(X, z0)
+        fig.add_trace(go.Surface(
+            x=X, y=Y, z=Z,
+            showscale=False, opacity=plane_opacity,
+            surfacecolor=np.zeros_like(X),
+            colorscale=[[0,"grey"],[1,"grey"]],
+            hoverinfo="skip"
+        ), row=1, col=1)
+
+    # ===== helper: add one slice subplot =====
+    def add_slice(col, z0):
+        sel = (z >= z0 - thick/2) & (z <= z0 + thick/2)
+        xb, yb, zb = x[sel & ~m], y[sel & ~m], z[sel & ~m]
+        xc, yc, zc = x[sel &  m], y[sel &  m], z[sel &  m]
+        if flatten_z:
+            zb = np.full_like(zb, z0)  # flatten to one layer
+            zc = np.full_like(zc, z0)
+
+        # background (faint)
+        fig.add_trace(go.Scatter3d(
+            x=xb, y=yb, z=zb,
+            mode="markers",
+            marker=dict(size=2.5, color=bg_color, opacity=0.1),
+            showlegend=False
+        ), row=1, col=col)
+        # channel (highlight)
+        fig.add_trace(go.Scatter3d(
+            x=xc, y=yc, z=zc,
+            mode="markers",
+            marker=dict(size=3, color=ch_color, opacity=0.9),
+            showlegend=False
+        ), row=1, col=col)
+
+        # top-down orthographic view to avoid multi-layer look
+        fig.update_layout(**{
+            f"scene{col}": dict(
+                camera=dict(projection=dict(type="orthographic"),
+                            eye=dict(x=0., y=0., z=2.0), up=dict(x=0, y=1, z=0)),
+                xaxis=dict(visible=False), yaxis=dict(visible=False), zaxis=dict(visible=False)
+            )
+        })
+
+    add_slice(2, z_levels[0])
+    add_slice(3, z_levels[1])
+
+    # main scene style
+    fig.update_layout(
+        scene=dict(
+            camera=dict(projection=dict(type="orthographic")),
+            xaxis=dict(visible=False), yaxis=dict(visible=False), zaxis=dict(visible=False)
+        ),
+        margin=dict(l=0,r=0,t=40,b=0),
+        paper_bgcolor="white"
+    )
+    return fig

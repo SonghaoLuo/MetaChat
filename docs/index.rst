@@ -55,7 +55,7 @@ build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt
 New
 ===
 
-- Oct 20, 2025: We released MetaChat version 0.0.5. This version updated lots of functions in MetaChat.
+- Oct 24, 2025: We released MetaChat version 0.0.6. This version updated lots of functions in MetaChat.
 - Jun 26, 2024: We released MetaChat version 0.0.2. This version standardizes function names and fixes some bugs.
 
 MetaChat's features

@@ -1,0 +1,1055 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="API" href="../../api/index.html"><link rel="prev" title="3D Transcriptomics Dataset from Whole Mouse Brain" href="index.html">
+        <link rel="prefetch" href="../../_static/logo.png" as="image">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+        <title>MetaChat and downstream analysis on 3D transcriptomics from whole mouse brain - MetaChat 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/sphinx_rtd_size.css?v=8f58cd29" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/override.css?v=46f5334b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  --color-brand-primary: #357473;
+  --color-brand-content: #357473;
+  --admonition-font-size: var(--font-size-normal);
+  --admonition-title-font-size: var(--font-size-normal);
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">MetaChat 0.0.5 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/logo.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../basic/index.html">Basic tutorials</a><input aria-label="Toggle navigation of Basic tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../basic/identify_anatomical_features/index.html">Identifying Anatomical Features</a><input aria-label="Toggle navigation of Identifying Anatomical Features" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/identify_anatomical_features/identifyLRC.html">Identifying Long-Range Channels (LRCs)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/identify_anatomical_features/identifyBarrier.html">Annotating barrier condition</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../basic/estimate_metabolomics/index.html">Estimating Spatial Metabolomics from Spatial Transcriptomics</a><input aria-label="Toggle navigation of Estimating Spatial Metabolomics from Spatial Transcriptomics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/estimate_metabolomics/scFEA.html">using scFEA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/estimate_metabolomics/compass.html">using COMPASS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../basic/estimate_metabolomics/mebocost.html">using MEBOCOST</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../basic/tips.html">Tip for Analyzing Multiple Slides or Biological Replicates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../basic/function_guideline.html">Guideline for Function and Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Real dataset tutorials</a><input aria-label="Toggle navigation of Real dataset tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../1_mouse_brain_parkinson/index.html">Spatial Multi-Omics Data from Mouse Brain with Parkinson’s Disease</a><input aria-label="Toggle navigation of Spatial Multi-Omics Data from Mouse Brain with Parkinson’s Disease" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../1_mouse_brain_parkinson/1.1_mouse_brain_parkinson_metachat.html">MetaChat analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../1_mouse_brain_parkinson/1.2_mouse_brain_parkinson_comparasion.html">Comparative analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../1_mouse_brain_parkinson/1.3_mouse_brain_parkinson_downstream.html">Downstream analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../2_human_gastric_cancer/index.html">Spatial Multi-Omics Data from Human Gastric Cancer</a><input aria-label="Toggle navigation of Spatial Multi-Omics Data from Human Gastric Cancer" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../2_human_gastric_cancer/2.1_human_gastric_cancer_metachat.html">MetaChat analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_human_gastric_cancer/2.2_human_gastric_cancer_downstream.html">Downstream analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../3_mouse_small_intestine/index.html">Visium HD Dataset from Mouse Small Intestine</a><input aria-label="Toggle navigation of Visium HD Dataset from Mouse Small Intestine" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../3_mouse_small_intestine/3.1_mouse_small_intestine_metachat.html">MetaChat analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../3_mouse_small_intestine/3.2_mouse_small_intestine_downstream.html">Downstream analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">3D Transcriptomics Dataset from Whole Mouse Brain</a><input aria-label="Toggle navigation of 3D Transcriptomics Dataset from Whole Mouse Brain" checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">MetaChat analysis and Downstream analysis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API</a><input aria-label="Toggle navigation of API" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.MetaChatDB.html">metachat.pp.MetaChatDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.generate_adata_met_compass.html">metachat.pp.generate_adata_met_compass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.generate_adata_met_scFEA.html">metachat.pp.generate_adata_met_scFEA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.generate_adata_met_mebocost.html">metachat.pp.generate_adata_met_mebocost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.global_intensity_scaling.html">metachat.pp.global_intensity_scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.load_barrier_segments.html">metachat.pp.load_barrier_segments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_unfiltered.html">metachat.pp.LRC_unfiltered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_cluster.html">metachat.pp.LRC_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.LRC_filtered.html">metachat.pp.LRC_filtered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pp.compute_costDistance.html">metachat.pp.compute_costDistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.metabolic_communication.html">metachat.tl.metabolic_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.summary_communication.html">metachat.tl.summary_communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_flow.html">metachat.tl.communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_group.html">metachat.tl.communication_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_group_spatial.html">metachat.tl.communication_group_spatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.summary_pathway.html">metachat.tl.summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes.html">metachat.tl.communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes_cluster.html">metachat.tl.communication_responseGenes_cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.communication_responseGenes_keggEnrich.html">metachat.tl.communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.tl.compute_direction_histogram_per_pair.html">metachat.tl.compute_direction_histogram_per_pair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_flow.html">metachat.pl.plot_communication_flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_chord.html">metachat.pl.plot_group_communication_chord</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_heatmap.html">metachat.pl.plot_group_communication_heatmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_group_communication_compare_hierarchy_diagram.html">metachat.pl.plot_group_communication_compare_hierarchy_diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_MSpair_contribute_group.html">metachat.pl.plot_MSpair_contribute_group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_summary_pathway.html">metachat.pl.plot_summary_pathway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_metapathway_pair_contribution_bubbleplot.html">metachat.pl.plot_metapathway_pair_contribution_bubbleplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_responseGenes.html">metachat.pl.plot_communication_responseGenes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_communication_responseGenes_keggEnrich.html">metachat.pl.plot_communication_responseGenes_keggEnrich</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_DEG_volcano.html">metachat.pl.plot_DEG_volcano</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_3d_feature.html">metachat.pl.plot_3d_feature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_3d_LRC_with_two_slices.html">metachat.pl.plot_3d_LRC_with_two_slices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_dis_thr.html">metachat.pl.plot_dis_thr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_LRC_markers.html">metachat.pl.plot_LRC_markers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_spot_distance.html">metachat.pl.plot_spot_distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_graph_connectivity.html">metachat.pl.plot_graph_connectivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/metachat.pl.plot_direction_similarity.html">metachat.pl.plot_direction_similarity</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="metachat-and-downstream-analysis-on-3d-transcriptomics-from-whole-mouse-brain">
+<h1>MetaChat and downstream analysis on 3D transcriptomics from whole mouse brain<a class="headerlink" href="#metachat-and-downstream-analysis-on-3d-transcriptomics-from-whole-mouse-brain" title="Link to this heading"></a></h1>
+<p>In this tutorial, we use whole mouse brain as an example to show the basic application of MetaChat to 3D transcriptomics [<a class="reference external" href="https://www.science.org/doi/10.1126/sciadv.abb3446">Ortiz et.al., 2020</a>].</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing packages</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">metachat</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">trimesh</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">napari</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
+<span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;pdf.fonttype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setting your work dictionary</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/home/project/metachat_packages/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="import-dataset">
+<h2>Import dataset<a class="headerlink" href="#import-dataset" title="Link to this heading"></a></h2>
+<p>Here, we directly provide the combined transcriptomics and metabolomics dataset that has been preprocessed for MetaChat.
+For detailed instructions on how to infer metabolomic profiles from transcriptomic data using scFEA, please refer to the <a class="reference external" href="https://metachat.readthedocs.io/en/latest/tutorials/basic/estimate_metabolomics/scFEA.html">tutorial</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;datasets/mouse_brain_3D/adata_combined.h5ad&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The cluster information is previously saved in the <code class="docutils literal notranslate"><span class="pre">adata.obs['ABA_parents']</span></code>. We can use mc.pl.plot_3d_feature</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;ABA_parent_colors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#1f77b4&quot;</span><span class="p">,</span> <span class="s2">&quot;#ff7f0e&quot;</span><span class="p">,</span> <span class="s2">&quot;#2ca02c&quot;</span><span class="p">,</span> <span class="s2">&quot;#d62728&quot;</span><span class="p">,</span> <span class="s2">&quot;#9467bd&quot;</span><span class="p">,</span> <span class="s2">&quot;#17becf&quot;</span><span class="p">,</span> <span class="s2">&quot;#bcbd22&quot;</span><span class="p">,</span> <span class="s2">&quot;#e377c2&quot;</span><span class="p">,</span> <span class="s2">&quot;#8c564b&quot;</span><span class="p">,</span> <span class="s2">&quot;#7f7f7f&quot;</span><span class="p">,</span> <span class="s2">&quot;#393b79&quot;</span><span class="p">,</span> <span class="s2">&quot;#e6550d&quot;</span><span class="p">,</span> <span class="s2">&quot;#637939&quot;</span><span class="p">,</span> <span class="s2">&quot;#a55194&quot;</span><span class="p">,</span> <span class="s2">&quot;#8c6d31&quot;</span><span class="p">]</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_3d_feature</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> 
+                <span class="n">feature</span> <span class="o">=</span> <span class="s1">&#39;ABA_parent&#39;</span><span class="p">,</span>
+                <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+                <span class="n">point_size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="n">show_axes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<img src="../../_static/image/3D/plot_1.png" alt="plot_1" width="1000"/></section>
+<section id="mcc-inference">
+<h2>MCC Inference<a class="headerlink" href="#mcc-inference" title="Link to this heading"></a></h2>
+<section id="import-metachatdb">
+<h3>Import MetaChatDB<a class="headerlink" href="#import-metachatdb" title="Link to this heading"></a></h3>
+<p>Load the curated MetaChat database containing metabolite–sensor interaction pairs for mouse (or human).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_metasen</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">MetaChatDB</span><span class="p">(</span><span class="n">species</span><span class="o">=</span><span class="s1">&#39;mouse&#39;</span><span class="p">)</span> <span class="c1"># If human, please input species=&#39;human&#39;.</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="identify-long-range-channels-lrcs">
+<h3>Identify long-range channels (LRCs)<a class="headerlink" href="#identify-long-range-channels-lrcs" title="Link to this heading"></a></h3>
+<p>In this example, we aim to identify cerebrospinal fluid (CSF) as potential LRC pathways.
+To achieve this, we use a gene-marker–based approach to locate candidate points, leveraging the expression of known vascular markers to guide the identification of regions likely involved in long-range metabolite transport.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_name</span> <span class="o">=</span> <span class="s2">&quot;CSF&quot;</span>
+<span class="n">LRC_marker_gene</span> <span class="o">=</span> <span class="s2">&quot;Gfap&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pl</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_3d_feature</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> 
+                <span class="n">feature</span> <span class="o">=</span> <span class="s1">&#39;Gfap&#39;</span><span class="p">,</span>
+                <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+                <span class="n">point_size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="n">show_axes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<img src="../../_static/image/3D/plot_2.png" alt="plot_2" width="1000"/><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;CSF_marker&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[:,</span> <span class="n">LRC_marker_gene</span><span class="p">]</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_unfiltered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                     <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
+                     <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;marker&quot;</span><span class="p">,</span>
+                     <span class="n">obs_name</span> <span class="o">=</span> <span class="s1">&#39;CSF_marker&#39;</span><span class="p">,</span>
+                     <span class="n">quantile</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cells above the 90% have been selected as candidates and stored in &#39;adata.obs[&#39;LRC_CSF_marker_unfiltered&#39;]&#39;.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_marker_unfiltered_colors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#d3d3d3&quot;</span><span class="p">,</span> <span class="s2">&quot;#ff7f0e&quot;</span><span class="p">]</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_3d_feature</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> 
+                      <span class="n">feature</span> <span class="o">=</span> <span class="s1">&#39;LRC_CSF_marker_unfiltered&#39;</span><span class="p">,</span>
+                      <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+                      <span class="n">point_size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                      <span class="n">opacity</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.8</span><span class="p">],</span>
+                      <span class="n">show_axes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<img src="../../_static/image/3D/plot_3.png" alt="plot_3" width="1000"/><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LRC_cluster_CSF</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_cluster</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                    <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
+                                    <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;marker&quot;</span><span class="p">,</span>
+                                    <span class="n">spatial_index</span> <span class="o">=</span> <span class="s2">&quot;spatial_3d&quot;</span><span class="p">,</span>
+                                    <span class="n">density_cutoff</span> <span class="o">=</span> <span class="mi">160</span><span class="p">,</span>
+                                    <span class="n">delta_cutoff</span> <span class="o">=</span> <span class="mf">1.75</span><span class="p">,</span>
+                                    <span class="n">outlier_cutoff</span> <span class="o">=</span> <span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/07ec42c2e30f732227ad40da1afd9939ab291f6883939dbc6fc8c33031f79666.png" src="../../_images/07ec42c2e30f732227ad40da1afd9939ab291f6883939dbc6fc8c33031f79666.png" />
+</div>
+</div>
+<p>Then, the <code class="docutils literal notranslate"><span class="pre">mc.pp.LRC_filtered()</span></code> function was executed to remove outlier points from the clustered CSF LRC candidates, and the filtered LRCs were stored in adata.obs[‘LRC_CSF_marker_filtered’].</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">LRC_filtered</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                   <span class="n">LRC_name</span> <span class="o">=</span> <span class="n">LRC_name</span><span class="p">,</span>
+                   <span class="n">LRC_cluster</span> <span class="o">=</span> <span class="n">LRC_cluster_CSF</span><span class="p">,</span>
+                   <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;marker&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Candidate points for CSF LRC are clustered and outliers are removed. LRC points are stored in &#39;adata.obs[&#39;LRC_CSF_marker_filtered&#39;]&#39;.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/project/metachat_packages/MetaChat-main/metachat_new/preprocessing/_identifyLRC.py:245: SettingWithCopyWarning:
+
+
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 33022 × 16211
+    obs: &#39;section_index&#39;, &#39;stereo_ML&#39;, &#39;stereo_DV&#39;, &#39;stereo_AP&#39;, &#39;HE_X&#39;, &#39;HE_Y&#39;, &#39;ABA_acronym&#39;, &#39;ABA_name&#39;, &#39;ABA_parent&#39;, &#39;nuclei_segmented&#39;, &#39;spot_radius&#39;, &#39;passed_QC&#39;, &#39;cluster_id&#39;, &#39;cluster_name&#39;, &#39;animal&#39;, &#39;ABA_id&#39;, &#39;ABA_name_level2&#39;, &#39;ABA_name_level1&#39;, &#39;ABA_color_level2&#39;, &#39;ABA_color_level1&#39;, &#39;n_genes_by_counts&#39;, &#39;log1p_n_genes_by_counts&#39;, &#39;total_counts&#39;, &#39;log1p_total_counts&#39;, &#39;pct_counts_in_top_50_genes&#39;, &#39;pct_counts_in_top_100_genes&#39;, &#39;pct_counts_in_top_200_genes&#39;, &#39;pct_counts_in_top_500_genes&#39;, &#39;CSF_marker&#39;, &#39;LRC_CSF_marker_unfiltered&#39;, &#39;LRC_CSF_marker_filtered&#39;
+    uns: &#39;log1p&#39;, &#39;ABA_parent_colors&#39;, &#39;LRC_CSF_marker_unfiltered_colors&#39;
+    obsm: &#39;spatial&#39;, &#39;spatial_3d&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set color for LRCs</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;LRC_CSF_marker_filtered_colors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#d3d3d3&quot;</span><span class="p">,</span> <span class="s2">&quot;#ff7f0e&quot;</span><span class="p">]</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_3d_feature</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> 
+                      <span class="n">feature</span> <span class="o">=</span> <span class="s1">&#39;LRC_CSF_marker_filtered&#39;</span><span class="p">,</span>
+                      <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+                      <span class="n">point_size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                      <span class="n">opacity</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.8</span><span class="p">],</span>
+                      <span class="n">show_axes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<img src="../../_static/image/3D/plot_4.png" alt="plot_4" width="1000"/><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_3d_LRC_with_two_slices</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">,</span>
+    <span class="n">mask_key</span> <span class="o">=</span> <span class="s2">&quot;LRC_CSF_marker_filtered&quot;</span><span class="p">,</span>
+    <span class="n">z_levels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.88</span><span class="p">],</span>
+    <span class="n">slab_ratio</span> <span class="o">=</span> <span class="mf">0.04</span><span class="p">,</span>
+    <span class="n">bg_color</span> <span class="o">=</span> <span class="s2">&quot;#7f7f7f&quot;</span><span class="p">,</span>
+    <span class="n">flatten_z</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<img src="../../_static/image/3D/plot_8.png" alt="plot_8" width="2000"/></section>
+<section id="compute-cost-distance">
+<h3>Compute cost distance<a class="headerlink" href="#compute-cost-distance" title="Link to this heading"></a></h3>
+<p>Determined dis_thr</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance_matrix</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial_3d&quot;</span><span class="p">],</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial_3d&quot;</span><span class="p">])</span>
+<span class="n">spot_index</span> <span class="o">=</span> <span class="mi">11150</span>
+<span class="n">dis_thr</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">adata_vis</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">dis_mat</span> <span class="o">=</span> <span class="n">adata_vis</span><span class="o">.</span><span class="n">obsp</span><span class="p">[</span><span class="s1">&#39;spatial_distance&#39;</span><span class="p">]</span>
+<span class="n">adata_vis</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;inside&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dis_mat</span><span class="p">[</span><span class="n">spot_index</span><span class="p">,:]</span> <span class="o">&lt;</span> <span class="n">dis_thr</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_3d_feature</span><span class="p">(</span><span class="n">adata_vis</span><span class="p">,</span> 
+                      <span class="n">feature</span> <span class="o">=</span> <span class="s1">&#39;inside&#39;</span><span class="p">,</span>
+                      <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+                      <span class="n">point_size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                      <span class="n">opacity</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.8</span><span class="p">],</span>
+                      <span class="n">show_axes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<img src="../../_static/image/3D/plot_5.png" alt="plot_5" width="1000"/><p>The function mc.pp.compute_costDistance() calculates the spatial cost distance matrix between all spots, integrating both Euclidean proximity and long-range channel (LRC) effects. Specifically, it adjusts the pairwise distances according to the defined <code class="docutils literal notranslate"><span class="pre">LRC_type</span></code> and their corresponding <code class="docutils literal notranslate"><span class="pre">LRC_strength</span></code>, allowing metabolite diffusion or communication along designated LRC paths to be modeled more realistically.</p>
+<p>The parameters <code class="docutils literal notranslate"><span class="pre">LRC_type</span></code> and <code class="docutils literal notranslate"><span class="pre">LRC_source</span></code> should correspond to the names used in adata.obs[‘LRC_&lt;LRC_type&gt;_&lt;LRC_source&gt;_filtered’].
+A higher value of <code class="docutils literal notranslate"><span class="pre">LRC_strength</span></code> indicates a stronger influence of long-range communication, effectively expanding the propagation range through LRCs. The parameter <code class="docutils literal notranslate"><span class="pre">dis_thr</span></code> should match the distance threshold defined in the previous step.
+We support and recommend setting <code class="docutils literal notranslate"><span class="pre">use_parallel</span> <span class="pre">=</span> <span class="pre">True</span></code> and increasing <code class="docutils literal notranslate"><span class="pre">n_jobs</span></code> within the limits of your system performance, as this can significantly accelerate the computation of the cost distance matrix. The resulting distance matrix is stored in adata.obsp (e.g., adata.obsp[‘spatial_distance_LRC_CSF’]) and can be used in downstream analyses of metabolic cell communication.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">compute_costDistance</span><span class="p">(</span>
+    <span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+    <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CSF&#39;</span><span class="p">],</span>
+    <span class="n">LRC_strength</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+    <span class="n">LRC_source</span> <span class="o">=</span> <span class="s2">&quot;marker&quot;</span><span class="p">,</span>
+    <span class="n">dis_thr</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">spatial_3d</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">k_neighb</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">use_parallel</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computing baseline spatial distance without LRC.
+  Barrier condition is not considered
+Computing spatial distance with LRCs.
+  Processing LRC type: CSF
+    Constructing graph for each LRC subcluster.
+    Computing shortest path between two points in CSF.
+      For the cluster 1 in CSF.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 2683/2683 [04:29&lt;00:00,  9.94it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Incorporating LRC strength of &#39;CSF&#39; into cost distance matrix (strength = 3).
+adata.obsp[&#39;spatial_distance_LRC_CSF&#39;] has been saved.
+Finished!
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 33022 × 16211
+    obs: &#39;section_index&#39;, &#39;stereo_ML&#39;, &#39;stereo_DV&#39;, &#39;stereo_AP&#39;, &#39;HE_X&#39;, &#39;HE_Y&#39;, &#39;ABA_acronym&#39;, &#39;ABA_name&#39;, &#39;ABA_parent&#39;, &#39;nuclei_segmented&#39;, &#39;spot_radius&#39;, &#39;passed_QC&#39;, &#39;cluster_id&#39;, &#39;cluster_name&#39;, &#39;animal&#39;, &#39;ABA_id&#39;, &#39;ABA_name_level2&#39;, &#39;ABA_name_level1&#39;, &#39;ABA_color_level2&#39;, &#39;ABA_color_level1&#39;, &#39;n_genes_by_counts&#39;, &#39;log1p_n_genes_by_counts&#39;, &#39;total_counts&#39;, &#39;log1p_total_counts&#39;, &#39;pct_counts_in_top_50_genes&#39;, &#39;pct_counts_in_top_100_genes&#39;, &#39;pct_counts_in_top_200_genes&#39;, &#39;pct_counts_in_top_500_genes&#39;, &#39;CSF_marker&#39;, &#39;LRC_CSF_marker_unfiltered&#39;, &#39;LRC_CSF_marker_filtered&#39;, &#39;LRC_CSF_closepoint_cluster1&#39;
+    uns: &#39;log1p&#39;, &#39;ABA_parent_colors&#39;, &#39;LRC_CSF_marker_unfiltered_colors&#39;, &#39;LRC_CSF_marker_filtered_colors&#39;
+    obsm: &#39;spatial&#39;, &#39;spatial_3d&#39;
+    obsp: &#39;spatial_distance&#39;, &#39;spatial_distance_LRC_base&#39;, &#39;LRC_shortest_CSF_dist0.8_cluster1&#39;, &#39;spatial_distance_LRC_CSF&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">metabolic_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                              <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                              <span class="n">df_metasen</span> <span class="o">=</span> <span class="n">df_metasen</span><span class="p">,</span>
+                              <span class="n">LRC_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CSF&quot;</span><span class="p">],</span>
+                              <span class="n">dis_thr</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>There are 217 pairs were found from the spatial data.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;datasets/mouse_brain_3D/metachat_result.h5ad&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="downstream-analysis-on-glutamate-and-glutamine">
+<h2>Downstream analysis on glutamate and glutamine<a class="headerlink" href="#downstream-analysis-on-glutamate-and-glutamine" title="Link to this heading"></a></h2>
+<p>First, we can visualize the 3D spatial distribution of glutamate (HMDB0000148) and glutamine (HMDB0000641).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_3d_feature</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> 
+                      <span class="n">feature</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000148&#39;</span><span class="p">,</span>
+                      <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+                      <span class="n">point_size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                      <span class="n">show_axes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<img src="../../_static/image/3D/plot_6.png" alt="plot_6" width="1000"/><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_3d_feature</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> 
+                      <span class="n">feature</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000641&#39;</span><span class="p">,</span>
+                      <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+                      <span class="n">point_size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                      <span class="n">show_axes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<img src="../../_static/image/3D/plot_7.png" alt="plot_7" width="1000"/><section id="compute-group-level-mcc">
+<h3>Compute group-level MCC<a class="headerlink" href="#compute-group-level-mcc" title="Link to this heading"></a></h3>
+<p>First, we need to summarize MCC of these two metabolites .</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sum_metabolites</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HMDB0000148&#39;</span><span class="p">,</span><span class="s1">&#39;HMDB0000641&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">summary_communication</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                            <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                            <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_group</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                          <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                          <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;ABA_parent&quot;</span><span class="p">,</span>
+                          <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
+                          <span class="n">n_permutations</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+                          <span class="n">use_parallel</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                          <span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Computing group-level MCC: 100%|██████████| 3/3 [02:35&lt;00:00, 51.82s/it]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span> <span class="s1">&#39;polar&#39;</span><span class="p">})</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_chord</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                     <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                     <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;ABA_parent&quot;</span><span class="p">,</span>
+                                     <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000148&#39;</span><span class="p">,</span>
+                                     <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">p_value_cutoff</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+                                     <span class="n">space</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                     <span class="n">self_communication_off</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;With Self Communication&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;With Self Communication&#39;)
+</pre></div>
+</div>
+<img alt="../../_images/29f48347e25bc4298d04271d85f950d1ebc3d80d4b1df723530b05b298eecdf8.png" src="../../_images/29f48347e25bc4298d04271d85f950d1ebc3d80d4b1df723530b05b298eecdf8.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span> <span class="s1">&#39;polar&#39;</span><span class="p">})</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">plot_group_communication_chord</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                                     <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                                     <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;ABA_parent&quot;</span><span class="p">,</span>
+                                     <span class="n">metabolite_name</span> <span class="o">=</span> <span class="s1">&#39;HMDB0000641&#39;</span><span class="p">,</span>
+                                     <span class="n">permutation_spatial</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">p_value_cutoff</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+                                     <span class="n">space</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                     <span class="n">self_communication_off</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;With Self Communication&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;With Self Communication&#39;)
+</pre></div>
+</div>
+<img alt="../../_images/1d9f904ee1a898f027b3b3a002d5eb297997201bd32d204ab764b66d560b3e5d.png" src="../../_images/1d9f904ee1a898f027b3b3a002d5eb297997201bd32d204ab764b66d560b3e5d.png" />
+</div>
+</div>
+</section>
+<section id="compute-mcc-flow">
+<h3>Compute MCC flow<a class="headerlink" href="#compute-mcc-flow" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">communication_flow</span><span class="p">(</span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">,</span>
+                         <span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;MetaChatDB&#39;</span><span class="p">,</span>
+                         <span class="n">sum_metabolites</span> <span class="o">=</span> <span class="n">sum_metabolites</span><span class="p">,</span>
+                         <span class="n">spatial_key</span> <span class="o">=</span> <span class="s1">&#39;spatial_3d&#39;</span><span class="p">,</span>
+                         <span class="n">k</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then we can visualize 3D MCC flow through Napari. First, we load the 3D brain surface mesh from an .obj file using trimesh. This mesh provides the anatomical geometry that will be used as a spatial reference for visualizing. trimesh can be installed by <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">trimesh</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">brain_mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;datasets/mouse_brain_3D/brain-outline.obj&quot;</span><span class="p">)</span>
+<span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">brain_mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+<span class="n">faces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">brain_mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For ease of comparison, we selected half of the tissue region to visualize both the metabolite distribution and the corresponding 3D flow vector field. This allows clearer visualization of spatial patterns and directional features without occlusion from the full-volume data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># extract metabolite distribution</span>
+<span class="n">metabolite</span> <span class="o">=</span> <span class="s2">&quot;HMDB0000148&quot;</span>
+<span class="n">expression</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[:,</span> <span class="n">metabolite</span><span class="p">]</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="c1"># extract spatial coordinates</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;spatial_3d&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># launch napari and import brain model</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">napari</span><span class="o">.</span><span class="n">Viewer</span><span class="p">(</span><span class="n">ndisplay</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">theme</span> <span class="o">=</span> <span class="s1">&#39;light&#39;</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_surface</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">),</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Brain Model&quot;</span><span class="p">,</span>
+    <span class="n">blending</span> <span class="o">=</span> <span class="s1">&#39;translucent_no_depth&#39;</span><span class="p">,</span>
+    <span class="n">opacity</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;flat&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import points with cell type annotation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_rgba</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_categorical_dtype</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;ABA_parent&#39;</span><span class="p">]):</span>
+    <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;ABA_parent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;ABA_parent&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+<span class="n">cats</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;ABA_parent&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
+
+<span class="n">type_colors_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;ABA_parent_colors&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_colors_array</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">cats</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of colors &lt; number of cell types; please provide enough colors.&quot;</span><span class="p">)</span>
+<span class="n">color_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">ct</span><span class="p">:</span> <span class="n">type_colors_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ct</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cats</span><span class="p">)}</span>
+
+<span class="n">cell_types</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s1">&#39;ABA_parent&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+<span class="n">hex_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">color_map</span><span class="p">[</span><span class="n">ct</span><span class="p">]</span> <span class="k">for</span> <span class="n">ct</span> <span class="ow">in</span> <span class="n">cell_types</span><span class="p">]</span>
+<span class="n">rgba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hex_list</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+<span class="n">layer_cells</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span>
+    <span class="n">coords</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cells_byType&quot;</span><span class="p">,</span>
+    <span class="n">size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">blending</span><span class="o">=</span><span class="s1">&#39;translucent_no_depth&#39;</span><span class="p">,</span>
+    <span class="n">face_color</span><span class="o">=</span><span class="n">rgba</span><span class="p">,</span>         <span class="c1"># 直接传 RGBA 数组</span>
+    <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;spherical&#39;</span><span class="p">,</span>
+    <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ABA_parent&#39;</span><span class="p">:</span> <span class="n">cell_types</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="n">layer_cells</span><span class="o">.</span><span class="n">rendering</span> <span class="o">=</span> <span class="s1">&#39;iso&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this step, we visualize all cells in the 3D tissue volume while highlighting those with high expression levels of a selected gene. We first compute the 95th percentile of the expression values as a threshold, and then mark cells above this threshold as high-expression regions. All cells are rendered as semi-transparent white points for context, whereas high-expression cells are displayed in red to emphasize their spatial localization within the tissue.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="mi">95</span><span class="p">)</span>
+<span class="n">high_idx</span> <span class="o">=</span> <span class="n">expression</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+
+<span class="c1"># ---------------------------</span>
+<span class="n">features_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;expression&#39;</span><span class="p">:</span> <span class="n">expression</span><span class="p">})</span>
+<span class="n">layer_all</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span>
+    <span class="n">coords</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cells_All&quot;</span><span class="p">,</span>
+    <span class="n">blending</span> <span class="o">=</span> <span class="s1">&#39;translucent_no_depth&#39;</span><span class="p">,</span>
+    <span class="n">size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">features</span><span class="o">=</span><span class="n">features_all</span><span class="p">,</span>
+    <span class="n">face_color</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
+    <span class="n">opacity</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;spherical&#39;</span>
+<span class="p">)</span>
+<span class="n">layer_all</span><span class="o">.</span><span class="n">rendering</span> <span class="o">=</span> <span class="s1">&#39;iso&#39;</span>
+
+<span class="c1"># ---------------------------</span>
+<span class="n">coords_high</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="n">high_idx</span><span class="p">]</span>
+
+<span class="n">features_high</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;expression&#39;</span><span class="p">:</span> <span class="n">expression</span><span class="p">[</span><span class="n">high_idx</span><span class="p">]})</span>
+<span class="n">layer_high</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span>
+    <span class="n">coords_high</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cells_High&quot;</span><span class="p">,</span>
+    <span class="n">size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">features</span><span class="o">=</span><span class="n">features_high</span><span class="p">,</span>
+    <span class="n">face_color</span><span class="o">=</span><span class="s1">&#39;expression&#39;</span><span class="p">,</span>
+    <span class="n">face_colormap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">,</span>
+    <span class="n">opacity</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;spherical&#39;</span>
+<span class="p">)</span>
+<span class="n">layer_high</span><span class="o">.</span><span class="n">rendering</span> <span class="o">=</span> <span class="s1">&#39;iso&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;spatial_3d&quot;</span><span class="p">]</span>
+<span class="n">direction</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;MetaChat-vf-MetaChatDB-sender-HMDB0000148&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Prepare and preprocess 3D vector field. We summarize the raw 3D vector field onto a regular spatial grid, which facilitates quantifying and visualizing local flow directions and magnitudes in a structured manner.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start_flipped</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">direction_flipped</span> <span class="o">=</span> <span class="n">direction</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">start_flipped</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">direction_flipped</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">start_flipped</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">direction_flipped</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">V_cell</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.neighbors</span><span class="w"> </span><span class="kn">import</span> <span class="n">NearestNeighbors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+<span class="n">grid_density</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">grid_knn</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">grid_scale</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">grid_thresh</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">xl</span><span class="p">,</span> <span class="n">xr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.02</span><span class="o">*</span><span class="p">(</span><span class="n">xr</span><span class="o">-</span><span class="n">xl</span><span class="p">);</span> <span class="n">xl</span> <span class="o">-=</span> <span class="n">epsilon</span><span class="p">;</span> <span class="n">xr</span> <span class="o">+=</span> <span class="n">epsilon</span>
+<span class="n">yl</span><span class="p">,</span> <span class="n">yr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.02</span><span class="o">*</span><span class="p">(</span><span class="n">yr</span><span class="o">-</span><span class="n">yl</span><span class="p">);</span> <span class="n">yl</span> <span class="o">-=</span> <span class="n">epsilon</span><span class="p">;</span> <span class="n">yr</span> <span class="o">+=</span> <span class="n">epsilon</span>
+<span class="n">zl</span><span class="p">,</span> <span class="n">zr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.02</span><span class="o">*</span><span class="p">(</span><span class="n">zr</span><span class="o">-</span><span class="n">zl</span><span class="p">);</span> <span class="n">zl</span> <span class="o">-=</span> <span class="n">epsilon</span><span class="p">;</span> <span class="n">zr</span> <span class="o">+=</span> <span class="n">epsilon</span>
+
+<span class="n">ngrid_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">grid_density</span><span class="p">)</span>
+<span class="n">gridsize</span> <span class="o">=</span> <span class="p">(</span><span class="n">xr</span><span class="o">-</span><span class="n">xl</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">ngrid_x</span><span class="p">)</span>
+<span class="n">ngrid_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">yr</span><span class="o">-</span><span class="n">yl</span><span class="p">)</span><span class="o">/</span><span class="n">gridsize</span><span class="p">)</span>
+<span class="n">ngrid_z</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">zr</span><span class="o">-</span><span class="n">zl</span><span class="p">)</span><span class="o">/</span><span class="n">gridsize</span><span class="p">)</span>
+<span class="n">meshgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xl</span><span class="p">,</span><span class="n">xr</span><span class="p">,</span><span class="n">ngrid_x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">yl</span><span class="p">,</span><span class="n">yr</span><span class="p">,</span><span class="n">ngrid_y</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">zl</span><span class="p">,</span><span class="n">zr</span><span class="p">,</span><span class="n">ngrid_z</span><span class="p">))</span>
+<span class="n">grid_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">meshgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">meshgrid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">meshgrid</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">grid_knn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">grid_knn</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">nn_mdl</span> <span class="o">=</span> <span class="n">NearestNeighbors</span><span class="p">()</span>
+<span class="n">nn_mdl</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">dis</span><span class="p">,</span> <span class="n">nbs</span> <span class="o">=</span> <span class="n">nn_mdl</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span><span class="n">grid_pts</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="n">grid_knn</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">dis</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">gridsize</span> <span class="o">*</span> <span class="n">grid_scale</span><span class="p">)</span>
+<span class="n">w_sum</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">V_grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">nbs</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[:,:,</span><span class="kc">None</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">V_grid</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">w_sum</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+
+<span class="n">grid_thresh</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">w_sum</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
+<span class="n">grid_pts</span><span class="p">,</span> <span class="n">V_grid</span> <span class="o">=</span> <span class="n">grid_pts</span><span class="p">[</span><span class="n">w_sum</span> <span class="o">&gt;</span> <span class="n">grid_thresh</span><span class="p">],</span> <span class="n">V_grid</span><span class="p">[</span><span class="n">w_sum</span> <span class="o">&gt;</span> <span class="n">grid_thresh</span><span class="p">]</span>
+
+<span class="n">magnitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">V_grid</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">percentile_thresh</span> <span class="o">=</span> <span class="mi">70</span>
+<span class="n">mag_thresh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">percentile_thresh</span><span class="p">)</span>
+<span class="n">valid_mask</span> <span class="o">=</span> <span class="n">magnitude</span> <span class="o">&gt;=</span> <span class="n">mag_thresh</span>
+<span class="n">grid_pts_filtered</span> <span class="o">=</span> <span class="n">grid_pts</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+<span class="n">V_grid_filtered</span> <span class="o">=</span> <span class="n">V_grid</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+<span class="n">magnitude_filtered</span> <span class="o">=</span> <span class="n">magnitude</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vectors_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">grid_pts_filtered</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="n">V_grid_filtered</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;magnitude&#39;</span><span class="p">:</span> <span class="n">magnitude_filtered</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vect</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">add_vectors</span><span class="p">(</span><span class="n">vectors_grid</span><span class="p">,</span> <span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="p">,</span> <span class="n">edge_width</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">edge_color</span> <span class="o">=</span> <span class="s1">&#39;magnitude&#39;</span><span class="p">,</span> <span class="n">edge_colormap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">,</span> <span class="n">vector_style</span> <span class="o">=</span> <span class="s1">&#39;arrow&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The final result is shown below.</p>
+<p>3D MCC flow of glutamate.</p>
+<video width="720" height="405" controls>
+  <source src="../../_static/video/MCC_flow_HMDB0000148.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video><p>3D MCC flow of glutamine.</p>
+<video width="720" height="405" controls>
+  <source src="../../_static/video/MCC_flow_HMDB0000641.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video></section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../../api/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">API</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">3D Transcriptomics Dataset from Whole Mouse Brain</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Songhao Luo
+            </div>
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fab fa-github" href="https://github.com/SonghaoLuo/metachat" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">MetaChat and downstream analysis on 3D transcriptomics from whole mouse brain</a><ul>
+<li><a class="reference internal" href="#import-dataset">Import dataset</a></li>
+<li><a class="reference internal" href="#mcc-inference">MCC Inference</a><ul>
+<li><a class="reference internal" href="#import-metachatdb">Import MetaChatDB</a></li>
+<li><a class="reference internal" href="#identify-long-range-channels-lrcs">Identify long-range channels (LRCs)</a></li>
+<li><a class="reference internal" href="#compute-cost-distance">Compute cost distance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#downstream-analysis-on-glutamate-and-glutamine">Downstream analysis on glutamate and glutamine</a><ul>
+<li><a class="reference internal" href="#compute-group-level-mcc">Compute group-level MCC</a></li>
+<li><a class="reference internal" href="#compute-mcc-flow">Compute MCC flow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

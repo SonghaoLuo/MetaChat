@@ -1,4 +1,7 @@
-from ._MetaChatDB import MetaChatDB
+from ._importData import MetaChatDB
+from ._importData import generate_adata_met_compass
+from ._importData import generate_adata_met_scFEA
+from ._importData import generate_adata_met_mebocost
 
 from ._preprocess import global_intensity_scaling
 from ._preprocess import load_barrier_segments
