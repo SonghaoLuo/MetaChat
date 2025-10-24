@@ -17,6 +17,7 @@ This section provides tutorials for applying MetaChat to real datasets.
    Visium HD Dataset from Mouse Small Intestine <3_mouse_small_intestine/index>
    3D Transcriptomics Dataset from Whole Mouse Brain <4_mouse_brain_3D/index>
 
+
 .. image:: ../../_static/image/analysis_pipeline.png
    :alt: Example of MetaChat multi-omics dataset
    :align: center

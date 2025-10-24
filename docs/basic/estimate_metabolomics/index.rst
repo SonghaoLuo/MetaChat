@@ -9,6 +9,6 @@ Estimating Spatial Metabolomics from Spatial Transcriptomics
 .. toctree::
    :maxdepth: 1
 
-   using_scFEA <scFEA>
-   using_COMPASS <compass>
-   using_MEBOCOST <mebocost>
+   using scFEA <scFEA>
+   using COMPASS <compass>
+   using MEBOCOST <mebocost>
