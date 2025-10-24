@@ -14,3 +14,4 @@ This section introduces the basic functionalities of MetaChat.
 
    Identifying Anatomical Features <identify_anatomical_features/index>
    Estimating Spatial Metabolomics from Spatial Transcriptomics <estimate_metabolomics/index>
+   Tip for Analyzing Multiple Slides or Biological Replicates <tips>
