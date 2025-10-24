@@ -83,9 +83,12 @@ Reference
 =========
 Luo S., Almet A.A., Zhao W., He C., Tsai Y.-C., Ozaki H., Sugita B.K., Du K., Shen X., Cao Y., Yang Q., Watanabe M., Nie Q.* Spatial metabolic communication flow of cells.
 
-
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
+   
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    installation

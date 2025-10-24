@@ -6,19 +6,11 @@
 Basic Tutorials
 ===============
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
-   :caption: Identifying anatomical features
-
-   Identifying Long-Range Channels (LRCs) <identifyLRC>
-   Annotating barrier condition <identifyBarrier>
+This section introduces the basic functionalities of MetaChat.
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Estimating spatial metabolomics from spatial transcriptomics
-   :glob:
+   :maxdepth: 2
+   :caption: Basic tutorials
 
-   Using scFEA <estimate_metabolomics/scFEA>
-   Using Compass <estimate_metabolomics/compass>
-   Using MEBOCOST <estimate_metabolomics/mebocost>
+   Identifying Anatomical Features <identify_anatomical_features/index>
+   Estimating Spatial Metabolomics from Spatial Transcriptomics <estimate_metabolomics/index>

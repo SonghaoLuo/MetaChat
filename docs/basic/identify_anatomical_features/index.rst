@@ -3,10 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-3D Transcriptomics Dataset from Whole Mouse Brain
-=================================================
+Identifying Anatomical Features
+===============================
 
 .. toctree::
    :maxdepth: 1
 
-   MetaChat analysis and Downstream analysis <4.1_mouse_brain_3D_metachat>
+   Identifying Long-Range Channels (LRCs) <identifyLRC>
+   Annotating barrier condition <identifyBarrier>

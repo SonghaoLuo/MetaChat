@@ -3,10 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-3D Transcriptomics Dataset from Whole Mouse Brain
-=================================================
+Estimating Spatial Metabolomics from Spatial Transcriptomics
+============================================================
 
 .. toctree::
    :maxdepth: 1
 
-   MetaChat analysis and Downstream analysis <4.1_mouse_brain_3D_metachat>
+   using_scFEA <scFEA>
+   using_COMPASS <compass>
+   using_MEBOCOST <mebocost>
