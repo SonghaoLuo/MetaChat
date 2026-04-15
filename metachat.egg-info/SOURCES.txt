@@ -23,6 +23,10 @@ metachat/preprocessing/_computeCost.py
 metachat/preprocessing/_identifyLRC.py
 metachat/preprocessing/_importData.py
 metachat/preprocessing/_preprocess.py
+metachat/preprocessing/_data/met_md_new.csv
+metachat/preprocessing/_data/metabo2module.csv
+metachat/preprocessing/_data/MetaChatDB/MetaChatDB_human.tsv
+metachat/preprocessing/_data/MetaChatDB/MetaChatDB_mouse.tsv
 metachat/tools/__init__.py
 metachat/tools/_downstream_analysis.py
 metachat/tools/_spatial_communication.py

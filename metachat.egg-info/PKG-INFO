@@ -1,8 +1,8 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.2
 Name: metachat
-Version: 0.0.6
+Version: 0.0.7
 Summary: Spatial metabolic communication flow of cells.
-Home-page: https://https://github.com/SonghaoLuo/metachat
+Home-page: https://github.com/SonghaoLuo/metachat
 Author: Songhao Luo
 Author-email: songhal2@@uci.edu
 License: MIT License

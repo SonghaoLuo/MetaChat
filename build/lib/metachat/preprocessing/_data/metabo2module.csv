@@ -1,0 +1,71 @@
+﻿Metabolite.Name,Compound.ID,HMDB.ID,Super.Module
+AMP,C00020,HMDB0000045,Purine Synthesis
+Pyruvate,C00022,HMDB0000243,Glycolysis + TCA cycle
+Acetyl-CoA,C00024,HMDB0001206,Glycolysis + TCA cycle
+Glutamate,C00025,HMDB0000148,Serine Metabolism; Glutamate Metabolism
+2OG,C00026,HMDB0000208,Glycolysis + TCA cycle
+Oxaloacetate,C00036,HMDB0000223,Glycolysis + TCA cycle
+Glycine,C00037,HMDB0000123,Serine Metabolism
+Succinate,C00042,HMDB0000254,Glycolysis + TCA cycle
+UDP-N-acetylglucosamine,C00043,HMDB0000290,Hyaluronic Acid Synthesis
+lysine,C00047,HMDB0000182,Leucine+Valine+Isoleucine
+Aspartate,C00049,HMDB0000191,Aspartate Metabolism
+Glutathione,C00051,HMDB0000125,Serine Metabolism
+Arginine,C00062,HMDB0000517,Urea Cycle
+Glutamine,C00064,HMDB0000641,Glutamate Metabolism
+Serine,C00065,HMDB0000187,Serine Metabolism
+Methionine,C00073,HMDB0000696,Serine Metabolism
+Ornithine,C00077,HMDB0000214,Urea Cycle
+Phenylalanine,C00079,HMDB0000159,Leucine + Valine + Isoleucine
+Tyrosine,C00082,HMDB0000158,Leucine + Valine + Isoleucine
+Succinyl-CoA,C00091,HMDB0001022,Glycolysis + TCA cycle
+Cysteine,C00097,HMDB0000574,Serine Metabolism
+B-Alanine,C00099,HMDB0000056,Beta-Alanie Metabolism
+Propanoyl-CoA,C00100,HMDB0001275,Propanoyl-Coa Metabolism
+Glucose-1-phosphate,C00103,HMDB0001586,Hyaluronic Acid Synthesis
+UMP,C00105,HMDB0000288,Pyrimidine Synthesis
+Dolichyl phosphate,C00110,HMDB0006353,N-linked Glycan Synthesis
+CDP,C00112,HMDB0001546,Pyrimidine Synthesis
+Choline,C00114,HMDB0000097,Serine Metabolism
+G3P,C00118,HMDB0001112,Glycolysis + TCA cycle
+PRPP,C00119,HMDB0000280,Pentose Phosphate
+Fumarate,C00122,HMDB0000134,Glycolysis + TCA cycle
+Leucine,C00123,HMDB0000687,Leucine + Valine + Isoleucine
+IMP,C00130,HMDB0000175,Purine Synthesis
+Putrescine,C00134,HMDB0001414,Urea Cycle
+Histidine,C00135,HMDB0000177,Beta-Alanie Metabolism
+GMP,C00144,HMDB0001397,Purine Synthesis
+Proline,C00148,HMDB0000162,Urea Cycle
+Malate,C00149,HMDB0000156,Glycolysis + TCA cycle
+Citrate,C00158,HMDB0000094,Glycolysis + TCA cycle
+UDP-glucuronic acid,C00167,HMDB0000935,Hyaluronic Acid Synthesis
+Valine,C00183,HMDB0000883,Leucine + Valine + Isoleucine; Pyrimidine Synthesis
+Cholesterol,C00187,HMDB0000067,Steroid Hornome Synthesis
+Threonine,C00188,HMDB0000167,Serine Metabolism
+3PD,C00197,HMDB0060180,Glycolysis + TCA cycle
+dCMP,C00239,HMDB0001202,Pyrimidine Synthesis
+Lactate,C00256,HMDB0001311,Glycolysis + TCA cycle
+Hypoxanthine,C00262,HMDB0000157,Purine Synthesis
+Glucose,C00267,HMDB0003345,Glycolysis + TCA cycle
+Citrulline,C00327,HMDB0000904,Urea Cycle
+GABA,C00334,HMDB0000112,Glutamate Metabolism
+dTMP,C00364,HMDB0001227,Pyrimidine Synthesis
+dUMP,C00365,HMDB0001409,Pyrimidine Synthesis
+Xanthine,C00385,HMDB0000292,Purine Synthesis
+Chondroitin,C00401,HMDB0000629,Chondroitin Sulface/Dermatan Sulf
+Isoleucine,C00407,HMDB0000172,Leucine + Valine + Isoleucine
+"(E,E)-Farnesyl-PP",C00448,HMDB0000961,Steroid Hornome Synthesis
+Deoxyadenosine,C00559,HMDB0000101,Purine Synthesis
+XMP,C00655,HMDB0001554,Purine Synthesis
+G6P,C00668,HMDB0001401,Glycolysis + TCA cycle
+dCDP,C00705,HMDB0001245,Pyrimidine Synthesis
+Spermine,C00750,HMDB0001256,Spermine Metabolism
+Argininosuccinate,C03406,HMDB0000052,Urea Cycle
+Dolichyl phosphate D-mannose,C03862,HMDB0000994,N-linked Glycan Synthesis
+AICAR,C04677,HMDB0001517,Purine Synthesis
+Fatty Acid,CC0001,Fatty Acid,Fatty Acids Metabolism/Synthesis
+Pyrimidine,CC0002,HMDB0003361,Pyrimidine Synthesis
+(Glc)3 (GlcNAc)2 (Man)9 (Asn)1,G00009,(Glc)3_(GlcNAc)2_(Man)9_(Asn)1,N-linked Glycan Synthesis
+(GlcNAc)4 (Man)3 (Asn)1,G00015,(GlcNAc)4_(Man)3_(Asn)1,N-linked Glycan Synthesis
+(Gal)2 (GlcA)1 (Xyl)1 (Ser)1,G00157,(Gal)2_(GlcA)1_(Xyl)1_(Ser)1,Chondroitin Sulface/Dermatan Sulf
+(Gal)1 (GlcNAc)1 (Man)1 (Ser/Thr)1,G13084,(Gal)1_(GlcNAc)1_(Man)1_(Ser_Thr)1,O-linked Glycan Synthesis
