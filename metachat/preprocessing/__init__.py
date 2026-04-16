@@ -1,5 +1,6 @@
 from ._importData import MetaChatDB
 from ._importData import generate_adata_met_compass
+from ._importData import generate_adata_met_compass_condition
 from ._importData import generate_adata_met_scFEA
 from ._importData import generate_adata_met_mebocost
 
