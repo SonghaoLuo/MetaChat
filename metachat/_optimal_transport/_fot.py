@@ -1,7 +1,29 @@
 import numpy as np
 from scipy import sparse
 
-from ._unot import unot 
+from ._unot import unot
+from .._utils import sparse_min_merge
+
+
+def _min_across_LRC(M, possible_LRC, max_cutoff):
+    """Elementwise min of M[key] across `possible_LRC`, filtered to entries <= max_cutoff,
+    returned as a sparse.coo_matrix (matching the pre-existing dense np.stack+np.min+np.where
+    behavior). Handles both dense ndarray and scipy.sparse entries in M.
+    """
+    if sparse.issparse(M[possible_LRC[0]]):
+        rows, cols, vals = [], [], []
+        for key in possible_LRC:
+            c = M[key].tocoo()
+            rows.append(c.row); cols.append(c.col); vals.append(c.data)
+        merged = sparse_min_merge(np.concatenate(rows), np.concatenate(cols), np.concatenate(vals),
+                                   M[possible_LRC[0]].shape).tocoo()
+        keep = merged.data <= max_cutoff
+        return sparse.coo_matrix((merged.data[keep], (merged.row[keep], merged.col[keep])), shape=merged.shape)
+    else:
+        stacked_LRC = np.stack([M[key] for key in possible_LRC])
+        M_LRC_min = np.min(stacked_LRC, axis=0)
+        M_row, M_col = np.where(M_LRC_min <= max_cutoff)
+        return sparse.coo_matrix((M_LRC_min[M_row, M_col], (M_row, M_col)), shape=M_LRC_min.shape)
 
 
 def fot_combine_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff,
@@ -142,12 +164,8 @@ def fot_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
             possible_LRC = ['base'] + [element for element in LRC_type if element in LRC_name]       
         else:
             possible_LRC = ['base']       
-        stacked_LRC = np.stack([M[key] for key in possible_LRC])
-        M_LRC_min = np.min(stacked_LRC, axis=0)
-
         # reserve the distance between spots that are lower than the cutoff value.
-        M_row, M_col = np.where(M_LRC_min <= max_cutoff)
-        M_max_sp = sparse.coo_matrix((M_LRC_min[M_row,M_col], (M_row, M_col)), shape = M_LRC_min.shape)
+        M_max_sp = _min_across_LRC(M, possible_LRC, max_cutoff)
 
         for j in range(ns_d):
             if not np.isinf(A[i,j]):
@@ -234,12 +252,8 @@ def fot_row_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
             possible_LRC = ['base'] + [element for element in LRC_type if element in LRC_name]       
         else:
             possible_LRC = ['base']
-        stacked_LRC = np.stack([M[key] for key in possible_LRC])
-        M_LRC_min = np.min(stacked_LRC, axis=0)
-
         # reserve the distance between spots that are lower than the cutoff value.
-        M_row, M_col = np.where(M_LRC_min <= max_cutoff)
-        M_max_sp = sparse.coo_matrix((M_LRC_min[M_row,M_col], (M_row, M_col)), shape = M_LRC_min.shape)
+        M_max_sp = _min_across_LRC(M, possible_LRC, max_cutoff)
 
         a = S[:,i].copy()
         D_ind = np.where(~np.isinf(A[i,:]))[0]
@@ -355,12 +369,8 @@ def fot_col_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
                 possible_LRC = ['base'] + [element for element in LRC_type if element in LRC_name]       
             else:
                 possible_LRC = ['base']       
-            stacked_LRC = np.stack([M[key] for key in possible_LRC])
-            M_LRC_min = np.min(stacked_LRC, axis=0)
-
             # reserve the distance between spots that are lower than the cutoff value.
-            M_row, M_col = np.where(M_LRC_min <= max_cutoff)
-            M_max_sp = sparse.coo_matrix((M_LRC_min[M_row,M_col], (M_row, M_col)), shape = M_LRC_min.shape)
+            M_max_sp = _min_across_LRC(M, possible_LRC, max_cutoff)
 
             tmp_nzind_s = np.where(S[:,S_i] > 0)[0]
             tmp_nzind_d = np.where(D[:,j] > 0)[0]
@@ -435,12 +445,8 @@ def fot_blk_sparse(S, met_order, D, A, M, LRC, LRC_type, cutoff, \
             possible_LRC = ['base'] + [element for element in LRC_type if element in LRC_name]       
         else:
             possible_LRC = ['base']       
-        stacked_LRC = np.stack([M[key] for key in possible_LRC])
-        M_LRC_min = np.min(stacked_LRC, axis=0)
-
         # reserve the distance between spots that are lower than the cutoff value.
-        M_row, M_col = np.where(M_LRC_min <= max_cutoff)
-        M_max_sp = sparse.coo_matrix((M_LRC_min[M_row,M_col], (M_row, M_col)), shape = M_LRC_min.shape)
+        M_max_sp = _min_across_LRC(M, possible_LRC, max_cutoff)
 
         for j in range(ns_d):
             if not np.isinf(A[i,j]):

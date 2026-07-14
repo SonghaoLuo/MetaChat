@@ -6,10 +6,12 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
-from scipy.spatial import distance_matrix
+from scipy.spatial import distance_matrix, cKDTree
 
 import networkx as nx
 import anndata
+
+from .._utils import sparse_min_merge
 # ============================================================
 
 def _orient(a, b, c):
@@ -434,9 +436,10 @@ def compute_costDistance(
     k_neighb: int = 5,
     barrier: bool = False,
     barrier_segments: list = None,
-    spatial_3d: bool = False,                        
+    spatial_3d: bool = False,
     use_parallel: bool = True,
     n_jobs: int = -1,
+    sparse_mode: bool = False,
     copy: bool = False
 ):
     """
@@ -467,6 +470,15 @@ def compute_costDistance(
         Whether to parallelize shortest-path computation (default: True).
     n_jobs
         Number of parallel jobs; -1 uses all CPUs (default: -1).
+    sparse_mode
+        If True, store distance matrices as scipy.sparse CSR matrices truncated at
+        `dis_thr`, instead of dense n_obs x n_obs arrays (default: False, i.e. the
+        original dense behavior). Recommended for large datasets (e.g. >20k cells),
+        where the dense matrices can require tens of GB of memory. Not supported
+        together with `barrier=True` yet, which will always fall back to dense.
+        The same (or a smaller) `dis_thr`/cutoff must be used downstream in
+        `metabolic_communication`, otherwise entries beyond `dis_thr` were never
+        stored and results would silently be incomplete.
     copy
         Return a copy instead of modifying in place (default: False).
 
@@ -496,19 +508,36 @@ def compute_costDistance(
     spatial_key = 'spatial_3d' if spatial_3d else 'spatial'
     spatial_coords = adata.obsm[spatial_key]
 
+    if sparse_mode and barrier:
+        print("  Note: sparse_mode is not yet supported together with barrier=True; falling back to dense for the base distance matrix.")
+
     # ============ Baseline spatial distance without LRC ============
     if 'spatial_distance_LRC_base' not in adata.obsp:
-        print("Computing baseline spatial distance without LRC.")        
+        print("Computing baseline spatial distance without LRC.")
         if barrier:
             print("  Barrier condition is considered")
             _build_visible_graph(adata=adata, barrier_segments=barrier_segments, use_parallel=use_parallel, n_jobs=n_jobs)
             _build_visible_graph_knn(adata=adata, k_neighb=k_neighb)
             _build_distance_matrix(adata=adata, k_neighb=k_neighb, use_parallel=use_parallel, n_jobs=n_jobs)
+        elif sparse_mode:
+            print("  Barrier condition is not considered (sparse_mode=True: only distances <= dis_thr are stored)")
+            tree = cKDTree(spatial_coords)
+            dis_coo = tree.sparse_distance_matrix(tree, max_distance=dis_thr, output_type='coo_matrix')
+            n = dis_coo.shape[0]
+            diag_idx = np.arange(n)
+            # merge in explicit 0-distance diagonal entries, guaranteeing self-distance is
+            # always stored (matches dense semantics) regardless of cKDTree's own behavior
+            adata.obsp['spatial_distance_LRC_base'] = sparse_min_merge(
+                np.concatenate([dis_coo.row, diag_idx]),
+                np.concatenate([dis_coo.col, diag_idx]),
+                np.concatenate([dis_coo.data, np.zeros(n)]),
+                dis_coo.shape)
+            adata.uns['metachat_sparse_dis_thr'] = float(dis_thr)
         else:
             print("  Barrier condition is not considered")
-            adata.obsp['spatial_distance_LRC_base'] = np.array(distance_matrix(spatial_coords, spatial_coords), dtype=np.float32)         
+            adata.obsp['spatial_distance_LRC_base'] = np.array(distance_matrix(spatial_coords, spatial_coords), dtype=np.float32)
     dis_mat = adata.obsp['spatial_distance_LRC_base'].copy()
-    
+
     if LRC_type is None:
         print("No LRC_type provided — skipping LRC embedding computation, 'adata.obsp['spatial_distance_LRC_base']' has been saved.")
         return adata if copy else None
@@ -535,15 +564,33 @@ def compute_costDistance(
         record_closepoint = np.zeros((len(adata.obs), len(LRC_subcluster)))
         spot_close_LRC, spot_close_LRC_type = [], []
 
-        for ispot in range(dis_mat.shape[0]):
-            spot_close_ind = dis_mat[ispot] < dis_thr
-            temp = adata.obs[key_LRC][spot_close_ind]
-            if np.any(temp != 0):
-                spot_close_LRC.append(ispot)
-                ispot_LRC_type = sorted(set(temp[temp != 0]))
-                for t in ispot_LRC_type:
-                    record_closepoint[ispot, int(t) - 1] = 1
-                spot_close_LRC_type.append(ispot_LRC_type)
+        key_LRC_values = adata.obs[key_LRC].values
+        if sp.issparse(dis_mat):
+            # dis_mat only stores entries < dis_thr, so its stored column indices per
+            # row already ARE the "close" set -- no comparison against dis_thr needed
+            # (unlike dense: `dis_mat[ispot] < dis_thr` would be wrong here, since
+            # implicit/unstored entries would spuriously read as 0 < dis_thr).
+            dis_mat_csr = dis_mat.tocsr()
+            for ispot in range(dis_mat_csr.shape[0]):
+                start, end = dis_mat_csr.indptr[ispot], dis_mat_csr.indptr[ispot + 1]
+                neighbor_idx = dis_mat_csr.indices[start:end]
+                temp = key_LRC_values[neighbor_idx]
+                if np.any(temp != 0):
+                    spot_close_LRC.append(ispot)
+                    ispot_LRC_type = sorted(set(temp[temp != 0]))
+                    for t in ispot_LRC_type:
+                        record_closepoint[ispot, int(t) - 1] = 1
+                    spot_close_LRC_type.append(ispot_LRC_type)
+        else:
+            for ispot in range(dis_mat.shape[0]):
+                spot_close_ind = dis_mat[ispot] < dis_thr
+                temp = adata.obs[key_LRC][spot_close_ind]
+                if np.any(temp != 0):
+                    spot_close_LRC.append(ispot)
+                    ispot_LRC_type = sorted(set(temp[temp != 0]))
+                    for t in ispot_LRC_type:
+                        record_closepoint[ispot, int(t) - 1] = 1
+                    spot_close_LRC_type.append(ispot_LRC_type)
         spot_close_LRC = np.array(spot_close_LRC)
 
         for icluster in LRC_subcluster:
@@ -562,7 +609,13 @@ def compute_costDistance(
                 LRC_coords_icluster = spatial_coords[adata.obs[key_LRC] == icluster]
                 for pos in map(tuple, LRC_coords_icluster):
                     G.add_node(pos)
-                dis_mat_local = dis_mat[adata.obs[key_LRC] == icluster,adata.obs[key_LRC] == icluster]
+                if sp.issparse(dis_mat):
+                    # Members of one LRC subcluster (e.g. points along a vessel) can be
+                    # farther apart than dis_thr, so we can't reuse the dis_thr-truncated
+                    # dis_mat here -- recompute directly on this (small) subset instead.
+                    dis_mat_local = distance_matrix(LRC_coords_icluster, LRC_coords_icluster)
+                else:
+                    dis_mat_local = dis_mat[adata.obs[key_LRC] == icluster,adata.obs[key_LRC] == icluster]
                 for i, pos in enumerate(map(tuple, LRC_coords_icluster)):
                     for j in np.argsort(dis_mat_local[i])[1:k_neighb+1]:
                         G.add_edge(pos, tuple(LRC_coords_icluster[j]), weight=dis_mat_local[i][j])
@@ -589,61 +642,145 @@ def compute_costDistance(
                     (m, tuple(LRC_coords_icluster[m])) for m in range(len(LRC_coords_icluster))
                 ]
 
-                dis_LRC_shortest = np.zeros((adata.n_obs, adata.n_obs))
-                if use_parallel:
-                    with Pool(n_jobs, initializer=_init_graph, initargs=(G_LRC_subcluster,)) as pool:
-                        with tqdm(total=len(task_list)) as pbar:
-                            for m, p1, lengths in pool.imap_unordered(_compute_shortest_path_single_source, task_list):
-                                i_global = LRC_index_icluster[m]
-                                for n in range(m+1, len(LRC_coords_icluster)):
-                                    p2 = tuple(LRC_coords_icluster[n])
-                                    j_global = LRC_index_icluster[n]
-                                    d = lengths.get(p2, np.inf)
-                                    dis_LRC_shortest[i_global, j_global] = d
-                                    dis_LRC_shortest[j_global, i_global] = d
-                                pbar.update(1)
+                if sparse_mode:
+                    # Only pairs within this (typically small) LRC subcluster are ever
+                    # filled in below, so keep the scratch buffer local-sized instead of
+                    # a full (n_obs, n_obs) dense array, then map back to global indices.
+                    n_local = len(LRC_coords_icluster)
+                    dis_LRC_shortest_local = np.full((n_local, n_local), np.inf)
+                    if use_parallel:
+                        with Pool(n_jobs, initializer=_init_graph, initargs=(G_LRC_subcluster,)) as pool:
+                            with tqdm(total=len(task_list)) as pbar:
+                                for m, p1, lengths in pool.imap_unordered(_compute_shortest_path_single_source, task_list):
+                                    for n in range(m+1, len(LRC_coords_icluster)):
+                                        p2 = tuple(LRC_coords_icluster[n])
+                                        d = lengths.get(p2, np.inf)
+                                        dis_LRC_shortest_local[m, n] = d
+                                        dis_LRC_shortest_local[n, m] = d
+                                    pbar.update(1)
+                    else:
+                        _init_graph(G_LRC_subcluster)
+                        for m, p1 in tqdm(task_list):
+                            _, _, lengths = _compute_shortest_path_single_source((m, p1))
+                            for n in range(m+1, len(LRC_coords_icluster)):
+                                p2 = tuple(LRC_coords_icluster[n])
+                                d = lengths.get(p2, np.inf)
+                                dis_LRC_shortest_local[m, n] = d
+                                dis_LRC_shortest_local[n, m] = d
+                    local_rows, local_cols = np.nonzero(np.isfinite(dis_LRC_shortest_local))
+                    global_rows = LRC_index_icluster[local_rows]
+                    global_cols = LRC_index_icluster[local_cols]
+                    vals = dis_LRC_shortest_local[local_rows, local_cols].astype(np.float32)
+                    adata.obsp[f'LRC_shortest_{LRC_element}_dist{dis_thr}_cluster{icluster}'] = sp.csr_matrix(
+                        (vals, (global_rows, global_cols)), shape=(adata.n_obs, adata.n_obs))
                 else:
-                    _init_graph(G_LRC_subcluster)
-                    for m, p1 in tqdm(task_list):
-                        _, _, lengths = _compute_shortest_path_single_source((m, p1))
-                        i_global = LRC_index_icluster[m]
-                        for n in range(m+1, len(LRC_coords_icluster)):
-                            p2 = tuple(LRC_coords_icluster[n])
-                            j_global = LRC_index_icluster[n]
-                            d = lengths.get(p2, np.inf)
-                            dis_LRC_shortest[i_global, j_global] = d
-                            dis_LRC_shortest[j_global, i_global] = d
-                adata.obsp[f'LRC_shortest_{LRC_element}_dist{dis_thr}_cluster{icluster}'] = sp.csr_matrix(dis_LRC_shortest.astype(np.float32))
+                    dis_LRC_shortest = np.zeros((adata.n_obs, adata.n_obs))
+                    if use_parallel:
+                        with Pool(n_jobs, initializer=_init_graph, initargs=(G_LRC_subcluster,)) as pool:
+                            with tqdm(total=len(task_list)) as pbar:
+                                for m, p1, lengths in pool.imap_unordered(_compute_shortest_path_single_source, task_list):
+                                    i_global = LRC_index_icluster[m]
+                                    for n in range(m+1, len(LRC_coords_icluster)):
+                                        p2 = tuple(LRC_coords_icluster[n])
+                                        j_global = LRC_index_icluster[n]
+                                        d = lengths.get(p2, np.inf)
+                                        dis_LRC_shortest[i_global, j_global] = d
+                                        dis_LRC_shortest[j_global, i_global] = d
+                                    pbar.update(1)
+                    else:
+                        _init_graph(G_LRC_subcluster)
+                        for m, p1 in tqdm(task_list):
+                            _, _, lengths = _compute_shortest_path_single_source((m, p1))
+                            i_global = LRC_index_icluster[m]
+                            for n in range(m+1, len(LRC_coords_icluster)):
+                                p2 = tuple(LRC_coords_icluster[n])
+                                j_global = LRC_index_icluster[n]
+                                d = lengths.get(p2, np.inf)
+                                dis_LRC_shortest[i_global, j_global] = d
+                                dis_LRC_shortest[j_global, i_global] = d
+                    adata.obsp[f'LRC_shortest_{LRC_element}_dist{dis_thr}_cluster{icluster}'] = sp.csr_matrix(dis_LRC_shortest.astype(np.float32))
 
         ## ============ Rearranging distance matrix ============
         print(f"    Incorporating LRC strength of '{LRC_element}' into cost distance matrix (strength = {strength}).")
-        dis_mat_LRC = np.zeros((len(LRC_subcluster)+1, *dis_mat.shape))
-        dis_mat_LRC[0] = dis_mat
+        if sparse_mode:
+            # Only entries within idx_mask x idx_mask ever change, and only entries
+            # <= dis_thr are ever consulted downstream (see metabolic_communication's
+            # consistency guard), so we merge small per-cluster COO overlays into the
+            # sparse base matrix instead of stacking (k+1) dense (n_obs, n_obs) arrays.
+            base_coo = dis_mat.tocoo()
+            merge_rows = [base_coo.row]
+            merge_cols = [base_coo.col]
+            merge_vals = [base_coo.data.astype(np.float32)]
+            dis_mat_csr = dis_mat.tocsr()
+            LRC_col_values = adata.obs[key_LRC].values
 
-        for idx, icluster in enumerate(LRC_subcluster):
-            dis_LRC_shortest = adata.obsp[f'LRC_shortest_{LRC_element}_dist{dis_thr}_cluster{icluster}']
-            if sp.issparse(dis_LRC_shortest):
-                dis_LRC_shortest = dis_LRC_shortest.toarray()
-            idx_mask = np.array([i for i, types in zip(spot_close_LRC, spot_close_LRC_type) if icluster in types])
-            dis2LRC = []
-            closest_spot_idx = []
-            LRC_filter = adata.obs[key_LRC] == icluster
-            for ispot in idx_mask:
-                spot_close_ind = dis_mat[ispot] < dis_thr
-                spot_ids = np.where(spot_close_ind & LRC_filter)[0]
-                if not len(spot_ids): continue
-                min_id = spot_ids[np.argmin(dis_mat[ispot, spot_ids])]
-                closest_spot_idx.append(min_id)
-                dis2LRC.append(dis_mat[ispot, min_id])
-            dis2LRC = np.array(dis2LRC)
-            dis_LRC = np.add.outer(dis2LRC, dis2LRC)
-            dis_mat_LRC_path = dis_LRC_shortest[np.ix_(closest_spot_idx, closest_spot_idx)]
-            reweighted = dis_mat.copy()
-            reweighted[np.ix_(idx_mask, idx_mask)] = dis_LRC + dis_mat_LRC_path / strength
-            dis_mat_LRC[idx+1] = reweighted
+            for idx, icluster in enumerate(LRC_subcluster):
+                dis_LRC_shortest = adata.obsp[f'LRC_shortest_{LRC_element}_dist{dis_thr}_cluster{icluster}']
+                idx_mask = np.array([i for i, types in zip(spot_close_LRC, spot_close_LRC_type) if icluster in types])
+                if len(idx_mask) == 0:
+                    continue
+                dis2LRC, closest_spot_idx, kept_spots = [], [], []
+                for ispot in idx_mask:
+                    start, end = dis_mat_csr.indptr[ispot], dis_mat_csr.indptr[ispot + 1]
+                    neighbor_idx = dis_mat_csr.indices[start:end]
+                    neighbor_dist = dis_mat_csr.data[start:end]
+                    sel = LRC_col_values[neighbor_idx] == icluster
+                    if not np.any(sel):
+                        continue
+                    cand_idx = neighbor_idx[sel]
+                    cand_dist = neighbor_dist[sel]
+                    p = np.argmin(cand_dist)
+                    closest_spot_idx.append(cand_idx[p])
+                    dis2LRC.append(cand_dist[p])
+                    kept_spots.append(ispot)
+                if not dis2LRC:
+                    continue
+                dis2LRC = np.array(dis2LRC)
+                closest_spot_idx = np.array(closest_spot_idx)
+                kept_spots = np.array(kept_spots)
+                dis_LRC = np.add.outer(dis2LRC, dis2LRC)
+                dis_mat_LRC_path = dis_LRC_shortest[np.ix_(closest_spot_idx, closest_spot_idx)].toarray()
+                reweighted_block = dis_LRC + dis_mat_LRC_path / strength
 
-        print(f"adata.obsp['spatial_distance_LRC_{LRC_element}'] has been saved.")
-        adata.obsp[f'spatial_distance_LRC_{LRC_element}'] = np.array(np.min(dis_mat_LRC, axis=0), dtype=np.float32)
+                block_rows, block_cols = np.meshgrid(kept_spots, kept_spots, indexing='ij')
+                block_rows = block_rows.ravel(); block_cols = block_cols.ravel()
+                block_vals = reweighted_block.ravel()
+                keep = block_vals <= dis_thr  # values beyond dis_thr are never consulted downstream, see docstring
+                merge_rows.append(block_rows[keep])
+                merge_cols.append(block_cols[keep])
+                merge_vals.append(block_vals[keep].astype(np.float32))
+
+            print(f"adata.obsp['spatial_distance_LRC_{LRC_element}'] has been saved.")
+            adata.obsp[f'spatial_distance_LRC_{LRC_element}'] = sparse_min_merge(
+                np.concatenate(merge_rows), np.concatenate(merge_cols), np.concatenate(merge_vals), dis_mat.shape)
+        else:
+            dis_mat_LRC = np.zeros((len(LRC_subcluster)+1, *dis_mat.shape))
+            dis_mat_LRC[0] = dis_mat
+
+            for idx, icluster in enumerate(LRC_subcluster):
+                dis_LRC_shortest = adata.obsp[f'LRC_shortest_{LRC_element}_dist{dis_thr}_cluster{icluster}']
+                if sp.issparse(dis_LRC_shortest):
+                    dis_LRC_shortest = dis_LRC_shortest.toarray()
+                idx_mask = np.array([i for i, types in zip(spot_close_LRC, spot_close_LRC_type) if icluster in types])
+                dis2LRC = []
+                closest_spot_idx = []
+                LRC_filter = adata.obs[key_LRC] == icluster
+                for ispot in idx_mask:
+                    spot_close_ind = dis_mat[ispot] < dis_thr
+                    spot_ids = np.where(spot_close_ind & LRC_filter)[0]
+                    if not len(spot_ids): continue
+                    min_id = spot_ids[np.argmin(dis_mat[ispot, spot_ids])]
+                    closest_spot_idx.append(min_id)
+                    dis2LRC.append(dis_mat[ispot, min_id])
+                dis2LRC = np.array(dis2LRC)
+                dis_LRC = np.add.outer(dis2LRC, dis2LRC)
+                dis_mat_LRC_path = dis_LRC_shortest[np.ix_(closest_spot_idx, closest_spot_idx)]
+                reweighted = dis_mat.copy()
+                reweighted[np.ix_(idx_mask, idx_mask)] = dis_LRC + dis_mat_LRC_path / strength
+                dis_mat_LRC[idx+1] = reweighted
+
+            print(f"adata.obsp['spatial_distance_LRC_{LRC_element}'] has been saved.")
+            adata.obsp[f'spatial_distance_LRC_{LRC_element}'] = np.array(np.min(dis_mat_LRC, axis=0), dtype=np.float32)
 
     print("Finished!")
     return adata if copy else None

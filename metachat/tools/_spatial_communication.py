@@ -77,6 +77,20 @@ class CellCommunication(object):
                             self.cutoff[i,j] = dis_thr[(self.mets[i], self.sens[j])] ** 2
                         else:
                             self.cutoff[i,j] = dis_thr[(self.mets[i], self.sens[j])]
+
+        # If compute_costDistance was run with sparse_mode=True, entries beyond the
+        # dis_thr used there were never stored, so a larger cutoff here would silently
+        # return incomplete results instead of an error.
+        built_thr = adata.uns.get('metachat_sparse_dis_thr', None)
+        requested = self.cutoff.max() ** 0.5 if cost_type == 'euc_square' else self.cutoff.max()
+        if built_thr is not None and requested > built_thr:
+            raise ValueError(
+                f"Requested dis_thr/cutoff ({requested}) exceeds the dis_thr used when building the "
+                f"sparse distance matrices in compute_costDistance ({built_thr}). Distances beyond "
+                f"{built_thr} were never stored, so results would silently be incomplete. Re-run "
+                f"compute_costDistance with a larger dis_thr and sparse_mode=True, or lower dis_thr here."
+            )
+
         self.nmet = self.S.shape[1]; self.nsen = self.D.shape[1]
         self.npts = adata.shape[0]
 
