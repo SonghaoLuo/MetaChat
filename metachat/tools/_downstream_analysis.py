@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 
 from ..plotting import plot_communication_flow
 from .._utils import leiden_clustering
+from .._utils import filter_sensor_type, _resolve_sensor_type, _sensor_type_suffix
 # ============================================================
 
 # ================ MCC communication summary =================
@@ -30,6 +31,7 @@ def summary_communication(
     sum_metabolites: list = None,
     sum_metapathways: list = None,
     sum_customerlists: dict = None,
+    sensor_type: str = 'all',
     copy: bool = False
 ):
 
@@ -51,8 +53,22 @@ def summary_communication(
     sum_customerlists : dict, optional
         Custom metabolite–sensor groups.  
         Each key represents a custom name, and the value is a list of (metabolite, sensor) tuples.  
-        Example: ``{'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')], 
+        Example: ``{'CustomerA': [('HMDB0000148', 'Grm5'), ('HMDB0000148', 'Grm8')],
                     'CustomerB': [('HMDB0000674', 'Trpc4'), ('HMDB0000674', 'Trpc5')]}``.
+    sensor_type : str, default='all'
+        Restrict the summary to sensors acting through a given mechanism. One of
+        ``'all'``, ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``,
+        ``'nuclear_receptor'`` (alias ``'NR'``) or ``'transporter'``;
+        see :func:`filter_sensor_type` for the exact definitions.
+        The metabolite-sensor pair level results in ``.obsp`` are not affected by this
+        option (a pair is computed once, independently of the sensor mechanism); only the
+        aggregation into metabolites, pathways and custom lists is restricted. When
+        ``sensor_type`` is not ``'all'``, ``'-'+sensor_type`` is appended to every key
+        written to ``.obsp``/``.obsm`` so that several selections can coexist in one
+        AnnData object, and a matching ``'total-total'`` summary over the selected pairs
+        is created as well. Downstream, pass the same ``sensor_type`` to
+        :func:`communication_group`, :func:`communication_group_spatial` and
+        :func:`summary_pathway`.
     copy : bool, default=False
         Whether to return a modified copy of the :class:`AnnData` object.
 
@@ -69,13 +85,19 @@ def summary_communication(
 
     # ==== Input checks ====
     assert database_name is not None, "Please specify database_name."
-    assert any([sum_metabolites, sum_metapathways, sum_customerlists]), (
+    assert any(x is not None for x in (sum_metabolites, sum_metapathways, sum_customerlists)), (
         "Please provide at least one of sum_metabolites, sum_metapathways, or sum_customerlists."
     )
 
+    sensor_type = _resolve_sensor_type(sensor_type)
+    suffix = _sensor_type_suffix(sensor_type)
+
     ncell = adata.shape[0]
-    df_metasen = adata.uns["df_metasen_filtered"]
-    
+    # Keep a contiguous index: the loops below address rows positionally.
+    df_metasen = filter_sensor_type(adata.uns["df_metasen_filtered"], sensor_type)
+    if sensor_type != 'all':
+        print(f"Summarizing over {df_metasen.shape[0]} metabolite-sensor pairs with sensor_type='{sensor_type}'.")
+
     # ==== Summarize by metabolites ====
     if sum_metabolites is not None:
 
@@ -104,8 +126,8 @@ def summary_communication(
                     X_sender_list[idx_metabolite] = X_sender_list[idx_metabolite] + np.array(P_sender.sum(axis=1))
                     X_receiver_list[idx_metabolite] = X_receiver_list[idx_metabolite] + np.array(P_receiver.sum(axis=0).T)
 
-                adata.obsp['MetaChat-' + database_name + '-sender-' + metabolite_name] = P_sender_list[idx_metabolite]
-                adata.obsp['MetaChat-' + database_name + '-receiver-' + metabolite_name] = P_receiver_list[idx_metabolite]
+                adata.obsp['MetaChat-' + database_name + '-sender-' + metabolite_name + suffix] = P_sender_list[idx_metabolite]
+                adata.obsp['MetaChat-' + database_name + '-receiver-' + metabolite_name + suffix] = P_receiver_list[idx_metabolite]
                 X_sender_all = np.concatenate((X_sender_all, X_sender_list[idx_metabolite]), axis=1)
                 X_receiver_all = np.concatenate((X_receiver_all, X_receiver_list[idx_metabolite]), axis=1)
 
@@ -117,8 +139,8 @@ def summary_communication(
         df_sender_all = pd.DataFrame(data=X_sender_all, columns=col_names_sender_all, index=adata.obs_names)
         df_receiver_all = pd.DataFrame(data=X_receiver_all, columns=col_names_receiver_all, index=adata.obs_names)
 
-        adata.obsm['MetaChat-' + database_name + '-sum-sender-metabolite'] = df_sender_all
-        adata.obsm['MetaChat-' + database_name + '-sum-receiver-metabolite'] = df_receiver_all
+        adata.obsm['MetaChat-' + database_name + '-sum-sender-metabolite' + suffix] = df_sender_all
+        adata.obsm['MetaChat-' + database_name + '-sum-receiver-metabolite' + suffix] = df_receiver_all
 
     # ==== Summarize by metabolic pathways ====
     if sum_metapathways is not None:
@@ -148,8 +170,8 @@ def summary_communication(
                     X_sender_list[idx_pathway] = X_sender_list[idx_pathway] + np.array(P_sender.sum(axis=1))
                     X_receiver_list[idx_pathway] = X_receiver_list[idx_pathway] + np.array(P_receiver.sum(axis=0).T)
                     
-                adata.obsp['MetaChat-' + database_name + '-sender-' + pathway_name] = P_sender_list[idx_pathway]
-                adata.obsp['MetaChat-' + database_name + '-receiver-' + pathway_name] = P_receiver_list[idx_pathway]
+                adata.obsp['MetaChat-' + database_name + '-sender-' + pathway_name + suffix] = P_sender_list[idx_pathway]
+                adata.obsp['MetaChat-' + database_name + '-receiver-' + pathway_name + suffix] = P_receiver_list[idx_pathway]
 
                 X_sender_all = np.concatenate((X_sender_all, X_sender_list[idx_pathway]), axis=1)
                 X_receiver_all = np.concatenate((X_receiver_all, X_receiver_list[idx_pathway]), axis=1)
@@ -162,8 +184,8 @@ def summary_communication(
         df_sender_all = pd.DataFrame(data=X_sender_all, columns=col_names_sender_all, index=adata.obs_names)
         df_receiver_all = pd.DataFrame(data=X_receiver_all, columns=col_names_receiver_all, index=adata.obs_names)
 
-        adata.obsm['MetaChat-' + database_name + '-sum-sender-pathway'] = df_sender_all
-        adata.obsm['MetaChat-' + database_name + '-sum-receiver-pathway'] = df_receiver_all
+        adata.obsm['MetaChat-' + database_name + '-sum-sender-pathway' + suffix] = df_sender_all
+        adata.obsm['MetaChat-' + database_name + '-sum-receiver-pathway' + suffix] = df_receiver_all
     
     # ==== Summarize by customer-defined lists ====
     if sum_customerlists is not None:
@@ -191,8 +213,8 @@ def summary_communication(
                 X_sender_list[idx_customerlist] = X_sender_list[idx_customerlist] + np.array(P_sender.sum(axis=1))
                 X_receiver_list[idx_customerlist] = X_receiver_list[idx_customerlist] + np.array(P_receiver.sum(axis=0).T)     
 
-            adata.obsp['MetaChat-' + database_name + '-sender-' + customerlist_name] = P_sender_list[idx_customerlist]
-            adata.obsp['MetaChat-' + database_name + '-receiver-' + customerlist_name] = P_receiver_list[idx_customerlist]
+            adata.obsp['MetaChat-' + database_name + '-sender-' + customerlist_name + suffix] = P_sender_list[idx_customerlist]
+            adata.obsp['MetaChat-' + database_name + '-receiver-' + customerlist_name + suffix] = P_receiver_list[idx_customerlist]
 
             X_sender_all = np.concatenate((X_sender_all, X_sender_list[idx_customerlist]), axis=1)
             X_receiver_all = np.concatenate((X_receiver_all, X_receiver_list[idx_customerlist]), axis=1)
@@ -203,8 +225,22 @@ def summary_communication(
         df_sender_all = pd.DataFrame(data=X_sender_all, columns=col_names_sender_all, index=adata.obs_names)
         df_receiver_all = pd.DataFrame(data=X_receiver_all, columns=col_names_receiver_all, index=adata.obs_names)
 
-        adata.obsm['MetaChat-' + database_name + '-sum-sender-customer'] = df_sender_all
-        adata.obsm['MetaChat-' + database_name + '-sum-receiver-customer'] = df_receiver_all
+        adata.obsm['MetaChat-' + database_name + '-sum-sender-customer' + suffix] = df_sender_all
+        adata.obsm['MetaChat-' + database_name + '-sum-receiver-customer' + suffix] = df_receiver_all
+
+    # ==== Total signal over the selected sensors ====
+    # 'total-total' is written by mc.tl.metabolic_communication over all pairs, so a
+    # matching total restricted to the selected sensors has to be built here for the
+    # group-level functions to have a consistent reference.
+    if suffix != '' and 'MetaChat-' + database_name + '-sender-total-total' + suffix not in adata.obsp.keys():
+        P_sender_total = sparse.csr_matrix((ncell, ncell), dtype=float)
+        P_receiver_total = sparse.csr_matrix((ncell, ncell), dtype=float)
+        for i in range(df_metasen.shape[0]):
+            pair_name = df_metasen.loc[i,'HMDB.ID'] + '-' + df_metasen.loc[i,'Sensor.Gene']
+            P_sender_total = P_sender_total + adata.obsp['MetaChat-' + database_name + '-sender-' + pair_name]
+            P_receiver_total = P_receiver_total + adata.obsp['MetaChat-' + database_name + '-receiver-' + pair_name]
+        adata.obsp['MetaChat-' + database_name + '-sender-total-total' + suffix] = P_sender_total
+        adata.obsp['MetaChat-' + database_name + '-receiver-total-total' + suffix] = P_receiver_total
 
     return adata if copy else None
 
@@ -219,6 +255,7 @@ def communication_flow(
     spatial_key: str = 'spatial',
     k: int = 5,
     pos_idx: Optional[np.ndarray] = None,
+    sensor_type: str = 'all',
     copy: bool = False
 ):
     """
@@ -247,6 +284,11 @@ def communication_flow(
         Key in `.obsm` that contains spatial coordinates.
     k : int, default=5
         Top-k senders/receivers used for computing the flow direction.
+    sensor_type : str, default='all'
+        Restrict the flow to sensors acting through a given mechanism. One of ``'all'``,
+        ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``, ``'nuclear_receptor'``
+        (alias ``'NR'``) or ``'transporter'``; see :func:`filter_sensor_type`.
+        Must match the ``sensor_type`` used in :func:`summary_communication`.
     pos_idx : np.ndarray, optional
         Column indices of `.obsm[spatial_key]` to use for flow computation.
         Example: ``np.array([0, 2])`` uses x–z coordinates.
@@ -265,30 +307,33 @@ def communication_flow(
     # ---- Input checks ----
     assert database_name is not None, "Please specify database_name."
 
+    sensor_type = _resolve_sensor_type(sensor_type)
+    suffix = _sensor_type_suffix(sensor_type)
+
     obsp_names_sender = []
     obsp_names_receiver = []
     if sum_metabolites is not None:
         for metabolite_name in sum_metabolites:
-            obsp_names_sender.append(database_name + '-sender-' + metabolite_name)
-            obsp_names_receiver.append(database_name + '-receiver-' + metabolite_name)
+            obsp_names_sender.append(database_name + '-sender-' + metabolite_name + suffix)
+            obsp_names_receiver.append(database_name + '-receiver-' + metabolite_name + suffix)
     
     if sum_metapathways is not None:
         for pathway_name in sum_metapathways:
-            obsp_names_sender.append(database_name + '-sender-' + pathway_name)
-            obsp_names_receiver.append(database_name + '-receiver-' + pathway_name)
+            obsp_names_sender.append(database_name + '-sender-' + pathway_name + suffix)
+            obsp_names_receiver.append(database_name + '-receiver-' + pathway_name + suffix)
 
     if sum_customerlists is not None:
         for customerlist_name in sum_customerlists.keys():
-            obsp_names_sender.append(database_name + '-sender-' + customerlist_name)
-            obsp_names_receiver.append(database_name + '-receiver-' + customerlist_name)
+            obsp_names_sender.append(database_name + '-sender-' + customerlist_name + suffix)
+            obsp_names_receiver.append(database_name + '-receiver-' + customerlist_name + suffix)
     
     if sum_ms_pairs is not None:
         for ms_pair in sum_ms_pairs:
             obsp_names_sender.append(database_name + '-sender-' + ms_pair)
             obsp_names_receiver.append(database_name + '-receiver-' + ms_pair)
 
-    obsp_names_sender.append(f"{database_name}-sender-total-total")
-    obsp_names_receiver.append(f"{database_name}-receiver-total-total")
+    obsp_names_sender.append(f"{database_name}-sender-total-total" + suffix)
+    obsp_names_receiver.append(f"{database_name}-receiver-total-total" + suffix)
 
     if all(x is None for x in [sum_metabolites, sum_metapathways, sum_customerlists, sum_ms_pairs]):
         print("No subset specified — computing MCC for all signals.")
@@ -401,6 +446,27 @@ def _compute_group_result(args):
     uns_key = 'MetaChat_group-' + group_name + '-' + obsp_name
     return (uns_key, {'communication_matrix': tmp_df, 'communication_pvalue': tmp_p_value})
 
+def _check_summarized_keys(adata, obsp_names, sensor_type):
+    """Validate that summary_communication has produced the requested .obsp entries.
+
+    Restricting to a sensor type can legitimately leave a pathway without any sensor,
+    in which case summary_communication does not create an entry for it. Such entries
+    are skipped with a warning so that the same pathway list can be reused across
+    sensor types, while a missing entry under sensor_type='all' still raises.
+    """
+    kept = []
+    for name in obsp_names:
+        key = 'MetaChat-' + name
+        if key in adata.obsp.keys():
+            kept.append(name)
+        elif sensor_type == 'all':
+            raise KeyError(f"Please check whether the mc.tl.summary_communication function run or whether {key} are in adata.obsp.keys().")
+        else:
+            print(f"Warning: {key} is not in the results (no sensor of type '{sensor_type}'); skipped.")
+    if len(kept) == 0:
+        raise ValueError(f"None of the requested signals has a summarized result for sensor_type='{sensor_type}'.")
+    return kept
+
 def communication_group(
     adata: anndata.AnnData,
     database_name: str = None,
@@ -413,6 +479,7 @@ def communication_group(
     n_permutations: int = 100,
     use_parallel: bool = True,
     n_jobs: int = 16,
+    sensor_type: str = 'all',
     copy: bool = False
 ):
     """
@@ -445,6 +512,16 @@ def communication_group(
         Whether to use multiprocessing.
     n_jobs : int, default=16
         Number of parallel worker processes.
+    sensor_type : str, default='all'
+        Restrict the group-level results to sensors acting through a given mechanism.
+        One of ``'all'``, ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``,
+        ``'nuclear_receptor'`` (alias ``'NR'``) or ``'transporter'``;
+        see :func:`filter_sensor_type` for the exact definitions.
+        Must match the ``sensor_type`` used in :func:`summary_communication`, whose
+        summarized ``.obsp`` entries this function reads. ``sum_ms_pairs`` is not
+        affected, since an individual metabolite-sensor pair is by definition of a
+        single type. Results are stored under keys carrying the same
+        ``'-'+sensor_type`` suffix, so selections do not overwrite each other.
     copy : bool, default=False
         If True, return a copy of the AnnData object; otherwise modify in place.
     
@@ -469,33 +546,33 @@ def communication_group(
         celltypes[i] = str(celltypes[i])
     clusterid = np.array(adata.obs[group_name], str)
 
+    sensor_type = _resolve_sensor_type(sensor_type)
+    suffix = _sensor_type_suffix(sensor_type)
+
     obsp_names = []
     if sum_metabolites is not None:
         for metabolite_name in sum_metabolites:
-            obsp_names.append(database_name + '-' + summary + '-' + metabolite_name)
+            obsp_names.append(database_name + '-' + summary + '-' + metabolite_name + suffix)
     
     if sum_metapathways is not None:
         for pathway_name in sum_metapathways:
-            obsp_names.append(database_name + '-' + summary + '-' + pathway_name)
+            obsp_names.append(database_name + '-' + summary + '-' + pathway_name + suffix)
 
     if sum_customerlists is not None:
         for customerlist_name in sum_customerlists.keys():
-            obsp_names.append(database_name + '-' + summary + '-' + customerlist_name)
+            obsp_names.append(database_name + '-' + summary + '-' + customerlist_name + suffix)
 
     if sum_ms_pairs is not None:
         for ms_pairs_name in sum_ms_pairs:
             obsp_names.append(database_name + '-' + summary + '-' + ms_pairs_name)        
 
-    obsp_names.append(database_name + '-' + summary + '-total-total')
+    obsp_names.append(database_name + '-' + summary + '-total-total' + suffix)
     
     if all(x is None for x in [sum_metabolites, sum_metapathways, sum_customerlists, sum_ms_pairs]):
         print("No specific summary provided — computing group-level MCC for all signals.")
     
     # Check keys
-    for i in range(len(obsp_names)):
-        key = 'MetaChat-'+obsp_names[i]
-        if not key in adata.obsp.keys():
-            raise KeyError(f"Please check whether the mc.tl.summary_communication function run or whether {key} are in adata.obsp.keys().")
+    obsp_names = _check_summarized_keys(adata, obsp_names, sensor_type)
 
     task_list = [(group_name, clusterid, celltypes, summary, name, n_permutations) for name in obsp_names]
     results = []
@@ -507,8 +584,11 @@ def communication_group(
                     results.append(result)
                     pbar.update(1)
     else:
-        for key in tqdm(obsp_names, desc="  Computing group-level MCC", dynamic_ncols=True):
-            results.append(_compute_group_result(key))
+        # _compute_group_result reads the AnnData from a module-level global, which is
+        # normally set by the pool initializer; set it here for the serial path.
+        _init_communication_group(adata)
+        for task in tqdm(task_list, desc="  Computing group-level MCC", dynamic_ncols=True):
+            results.append(_compute_group_result(task))
 
     # Save results into adata.uns
     for uns_key, result_dict in results:
@@ -568,6 +648,7 @@ def communication_group_spatial(
     bins_num: int = 30,
     use_parallel: bool = True,
     n_jobs: int = 16,
+    sensor_type: str = 'all',
     copy: bool = False
 ):    
     """
@@ -606,6 +687,16 @@ def communication_group_spatial(
         Whether to run the computation in parallel using multiprocessing (default: True).
     n_jobs : int, optional
         Number of worker processes for parallelization (default: 16).
+    sensor_type : str, default='all'
+        Restrict the group-level results to sensors acting through a given mechanism.
+        One of ``'all'``, ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``,
+        ``'nuclear_receptor'`` (alias ``'NR'``) or ``'transporter'``;
+        see :func:`filter_sensor_type` for the exact definitions.
+        Must match the ``sensor_type`` used in :func:`summary_communication`, whose
+        summarized ``.obsp`` entries this function reads. ``sum_ms_pairs`` is not
+        affected, since an individual metabolite-sensor pair is by definition of a
+        single type. Results are stored under keys carrying the same
+        ``'-'+sensor_type`` suffix, so selections do not overwrite each other.
     copy : bool, optional
         Whether to return a modified copy of the :class:`anndata.AnnData` object.
     
@@ -627,33 +718,33 @@ def communication_group_spatial(
     celltypes = sorted(map(str, adata.obs[group_name].unique()))
     clusterid = np.array(adata.obs[group_name], str)
 
+    sensor_type = _resolve_sensor_type(sensor_type)
+    suffix = _sensor_type_suffix(sensor_type)
+
     obsp_names = []
     if sum_metabolites is not None:
         for metabolite_name in sum_metabolites:
-            obsp_names.append(database_name + '-' + summary + '-' + metabolite_name)
+            obsp_names.append(database_name + '-' + summary + '-' + metabolite_name + suffix)
 
     if sum_metapathways is not None:
         for pathway_name in sum_metapathways:
-            obsp_names.append(database_name + '-' + summary + '-' + pathway_name)
+            obsp_names.append(database_name + '-' + summary + '-' + pathway_name + suffix)
 
     if sum_customerlists is not None:
         for customerlist_name in sum_customerlists.keys():
-            obsp_names.append(database_name + '-' + summary + '-' + customerlist_name)
+            obsp_names.append(database_name + '-' + summary + '-' + customerlist_name + suffix)
     
     if sum_ms_pairs is not None:
         for ms_pairs_name in sum_ms_pairs:
             obsp_names.append(database_name + '-' + summary + '-' + ms_pairs_name)     
 
-    obsp_names.append(database_name + '-' + summary + '-total-total')
+    obsp_names.append(database_name + '-' + summary + '-total-total' + suffix)
 
     if all(x is None for x in [sum_metabolites, sum_metapathways, sum_customerlists, sum_ms_pairs]):
         print("No specific summary provided — computing group-level MCC for all signals.")
 
     # Check keys
-    for i in range(len(obsp_names)):
-        key = 'MetaChat-'+obsp_names[i]
-        if not key in adata.obsp.keys():
-            raise KeyError(f"Please check whether the mc.tl.summary_communication function run or whether {key} are in adata.obsp.keys().")
+    obsp_names = _check_summarized_keys(adata, obsp_names, sensor_type)
 
     dist_matrix = adata.obsp['spatial_distance_LRC_base']
     hist, bin_edges = np.histogram(dist_matrix, bins=bins_num)
@@ -705,7 +796,11 @@ def communication_group_spatial(
                     results.append(result)
                     pbar.update(1)
     else:
-        results = [_compute_spatial_group_result(task) for task in perm_tasks]
+        # As above, the worker reads module-level globals normally set by the pool
+        # initializer; set them here for the serial path.
+        _init_spatial_permutation(S_list, bin_positions, index_obsp_list, bin_counts_ij, bin_total_counts_ij)
+        results = [_compute_spatial_group_result(task) for task in
+                   tqdm(perm_tasks, desc="  Computing group-level MCC", dynamic_ncols=True)]
 
     # Aggregate results into null distributions
     null_dict = {(i, j): {idx: [] for idx in index_obsp_list} for i in range(n) for j in range(n)}
@@ -732,6 +827,90 @@ def communication_group_spatial(
     return adata if copy else None
 
 # ================ MCC pathway summary ================
+def split_ms_result_by_sensor_type(
+    adata: anndata.AnnData,
+    database_name: str = None,
+    group_name: str = None,
+    sender_group: str = None,
+    receiver_group: str = None,
+    summary: str = 'sender',
+    sensor_types: tuple = ('receptor', 'transporter')
+):
+    """
+    Decompose the metabolite-pathway x sensor-pathway matrix by sensor mechanism.
+
+    The metabolite-sensor pair level results this reads are computed once and do not
+    depend on the sensor mechanism, so no group-level computation has to be repeated:
+    only the aggregation differs. Each pair is assigned to exactly one bucket, using the
+    first selection in ``sensor_types`` that contains it, so the returned matrices form a
+    partition and sum back to the undivided ``ms_result``.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The data matrix, after :func:`communication_group` has been run over all
+        metabolite-sensor pairs (as :func:`summary_pathway` also requires).
+    database_name : str
+        Name of the Metabolite-Sensor interaction database.
+    group_name : str
+        Group name of the cell annotation previously saved in ``adata.obs``.
+    sender_group, receiver_group : str
+        Names of the sender and receiver group.
+    summary : {'sender', 'receiver'}, default='sender'
+        The communication summary type.
+    sensor_types : tuple of str, default=('receptor', 'transporter')
+        Selections to split by, in priority order; see :func:`filter_sensor_type`.
+        With the default, sensors annotated as ``receptor,transporter`` fall into
+        ``'receptor'``, and ``'transporter'`` holds the remaining, transporter-only ones.
+
+    Returns
+    -------
+    dict[str, pandas.DataFrame]
+        One metabolite-pathway x sensor-pathway matrix per entry of ``sensor_types``,
+        all sharing the same index and columns.
+    """
+
+    assert database_name is not None, "Please at least specify database_name."
+    assert group_name is not None, "Please at least specify group_name."
+    assert sender_group is not None, "Please at least specify sender_group."
+    assert receiver_group is not None, "Please at least specify receiver_group."
+
+    sensor_types = tuple(_resolve_sensor_type(t) for t in sensor_types)
+
+    df_metasen = adata.uns['df_metasen_filtered'].copy().reset_index(drop=True)
+    # First selection that contains a pair wins, so the buckets stay disjoint.
+    bucket = pd.Series([None] * df_metasen.shape[0], index=df_metasen.index, dtype=object)
+    for stype in sensor_types:
+        keys = set(zip(*[filter_sensor_type(df_metasen, stype)[c] for c in ['HMDB.ID', 'Sensor.Gene']]))
+        hit = [k in keys for k in zip(df_metasen['HMDB.ID'], df_metasen['Sensor.Gene'])]
+        bucket[[h and b is None for h, b in zip(hit, bucket)]] = stype
+    df_metasen['sensor_bucket'] = bucket
+
+    scores = []
+    for _, ele in df_metasen.iterrows():
+        key = ("MetaChat_group-" + group_name + "-" + database_name + "-" + summary + "-"
+               + ele['HMDB.ID'] + "-" + ele['Sensor.Gene'])
+        if key not in adata.uns.keys():
+            raise KeyError(f"Please check whether the mc.tl.communication_group function are run and whether {key} are in adata.uns.keys()." \
+                           "Note that this function needs to compute the group-level for all m-s pairs")
+        scores.append(adata.uns[key]["communication_matrix"].loc[sender_group, receiver_group])
+    df_metasen['communication_score'] = scores
+
+    df = df_metasen[df_metasen['Metabolite.Pathway'].notna() & df_metasen['Sensor.Pathway'].notna()].copy()
+    df['Metabolite.Pathway'] = df['Metabolite.Pathway'].str.split('; ')
+    df = df.explode('Metabolite.Pathway')
+    df['Sensor.Pathway'] = df['Sensor.Pathway'].str.split('; ')
+    df = df.explode('Sensor.Pathway')
+
+    index = sorted(df['Metabolite.Pathway'].unique())
+    columns = sorted(df['Sensor.Pathway'].unique())
+    out = {}
+    for stype in sensor_types:
+        d = df[df['sensor_bucket'] == stype]
+        mat = d.groupby(['Metabolite.Pathway', 'Sensor.Pathway'])['communication_score'].sum().unstack()
+        out[stype] = mat.reindex(index=index, columns=columns).fillna(0.0)
+    return out
+
 def summary_pathway(
     adata: anndata.AnnData,
     database_name: str = None,
@@ -739,7 +918,8 @@ def summary_pathway(
     summary: str = 'sender',
     sender_group: str = None,
     receiver_group: str = None,
-    permutation_spatial: bool = False
+    permutation_spatial: bool = False,
+    sensor_type: str = 'all'
 ):
     """
     Summarize MCC (Metabolite–Sensor Communication) patterns between specific sender
@@ -761,6 +941,17 @@ def summary_pathway(
         Name of the receiver group
     permutation_spatial : bool, default=False
         Whether to use results from ``mc.tl.communication_group_spatial``.
+    sensor_type : str, default='all'
+        Restrict the pathway summary to sensors acting through a given mechanism.
+        One of ``'all'``, ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``,
+        ``'nuclear_receptor'`` (alias ``'NR'``) or ``'transporter'``;
+        see :func:`filter_sensor_type` for the exact definitions.
+        Both sides of the summary are restricted consistently: ``metapathway_rank`` is
+        read from the group-level results carrying the matching ``'-'+sensor_type``
+        suffix (so :func:`summary_communication` and
+        :func:`communication_group`/:func:`communication_group_spatial` must have been
+        run with the same ``sensor_type``), while ``senspathway_rank``, ``ms_result``
+        and the pair contributions are computed from the selected pairs only.
     
     Returns
     -------
@@ -780,7 +971,12 @@ def summary_pathway(
     assert sender_group is not None, "Please at least specify sender_group."
     assert receiver_group is not None, "Please at least specify receiver_group."
 
-    df_metasen = adata.uns["df_metasen_filtered"].copy()
+    sensor_type = _resolve_sensor_type(sensor_type)
+    suffix = _sensor_type_suffix(sensor_type)
+
+    df_metasen = filter_sensor_type(adata.uns["df_metasen_filtered"], sensor_type)
+    if sensor_type != 'all':
+        print(f"Summarizing over {df_metasen.shape[0]} metabolite-sensor pairs with sensor_type='{sensor_type}'.")
     Metapathway_data = df_metasen["Metabolite.Pathway"].copy()
     Metapathway_list = []
     for item in Metapathway_data:
@@ -793,14 +989,14 @@ def summary_pathway(
     MCC_metapathway = pd.DataFrame(np.zeros((len(sum_metapathway),2)), index=sum_metapathway, columns=['communication_score','p_value'])
     for pathway_name in MCC_metapathway.index:
         if permutation_spatial == True:
-            key = "MetaChat_group_spatial-" + group_name + "-" + database_name + "-" + summary + "-" + pathway_name
+            key = "MetaChat_group_spatial-" + group_name + "-" + database_name + "-" + summary + "-" + pathway_name + suffix
             if not key in adata.uns.keys():
                 raise KeyError(f"Please check whether the mc.tl.communication_group_spatial function are run and whether {key} are in adata.uns.keys()." \
                                "Note that this function needs to compute the group-level for all pathways")
             MCC_metapathway.loc[pathway_name,"communication_score"] = adata.uns[key]["communication_matrix"].loc[sender_group,receiver_group]
             MCC_metapathway.loc[pathway_name,"p_value"] = adata.uns[key]["communication_pvalue"].loc[sender_group,receiver_group]
         else:
-            key = "MetaChat_group-" + group_name + "-" + database_name + "-" + summary + "-" + pathway_name
+            key = "MetaChat_group-" + group_name + "-" + database_name + "-" + summary + "-" + pathway_name + suffix
             if not key in adata.uns.keys():
                 raise KeyError(f"Please check whether the mc.tl.communication_group function are run and whether {key} are in adata.uns.keys()." \
                                "Note that this function needs to compute the group-level for all pathways")
@@ -811,7 +1007,7 @@ def summary_pathway(
     metapathway_rank = metapathway_rank.reset_index().rename(columns={'index': 'Metabolite.Pathway'})
 
     # Compute the each m-s pairs communication_score
-    MCC_group_pair = adata.uns['df_metasen_filtered'].copy()
+    MCC_group_pair = df_metasen.copy()
     for irow, ele in MCC_group_pair.iterrows():
         Metaname = ele['HMDB.ID']
         Sensname = ele['Sensor.Gene']
@@ -834,6 +1030,11 @@ def summary_pathway(
 
     # Filter the necessary columns from the original df
     pair_info_cols = ["HMDB.ID", "Metabolite.Name", "Sensor.Gene", "Metabolite.Pathway", "Sensor.Pathway", "communication_score"]
+    # Carried through so that pair contributions can be grouped by signaling mechanism.
+    keep_cols = ['HMDB.ID', 'Metabolite.Name', 'Sensor.Gene', 'communication_score']
+    if "Sensor.Type" in MCC_group_pair.columns:
+        pair_info_cols = pair_info_cols + ["Sensor.Type"]
+        keep_cols = keep_cols + ['Sensor.Type']
     MCC_Meta2pathway_pairs = MCC_group_pair[pair_info_cols].copy()
 
     # Clean & explode pathways
@@ -850,9 +1051,8 @@ def summary_pathway(
     for pathname in MCC_Meta2pathway_group['Metabolite.Pathway'].unique():
         pathway_df = MCC_Meta2pathway_pairs[MCC_Meta2pathway_pairs['Metabolite.Pathway'] == pathname].copy()
         if not pathway_df.empty:
-            metapathway_pair_contributions[pathname] = pathway_df[[
-                'HMDB.ID', 'Metabolite.Name', 'Sensor.Gene', 'communication_score'
-            ]].drop_duplicates().sort_values(by='communication_score', ascending=False).reset_index(drop=True)
+            metapathway_pair_contributions[pathname] = pathway_df[keep_cols].drop_duplicates(
+                ).sort_values(by='communication_score', ascending=False).reset_index(drop=True)
 
     # construct graph network to measure importance
     G = nx.DiGraph()

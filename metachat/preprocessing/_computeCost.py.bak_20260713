@@ -735,30 +735,20 @@ def compute_costDistance(
                     kept_spots.append(ispot)
                 if not dis2LRC:
                     continue
-                dis2LRC = np.asarray(dis2LRC, dtype=np.float32)
-                closest_spot_idx = np.asarray(closest_spot_idx)
-                kept_spots = np.asarray(kept_spots)
-                # Row-chunked assembly of the (M x M) LRC-reweighted block:
-                #     reweighted[i, j] = dis2LRC[i] + dis2LRC[j]
-                #                        + LRC_shortest(closest_i, closest_j) / strength
-                # Materializing the full M x M block is not viable when many spots are close
-                # to a large LRC (e.g. Blood over a whole HD section): the sparse fancy-index
-                # dis_LRC_shortest[np.ix_(...)] overflows scipy's int32 indexing once M*M > 2**31,
-                # and the dense M x M array needs O(M^2) RAM. Only entries <= dis_thr survive
-                # downstream, so build the block in row slices and threshold each slice; the
-                # merged result is identical to the full-matrix version.
-                dis_LRC_shortest_csr = dis_LRC_shortest.tocsr()
-                M = kept_spots.shape[0]
-                ROW_CHUNK = 2000
-                for r0 in range(0, M, ROW_CHUNK):
-                    r1 = min(r0 + ROW_CHUNK, M)
-                    path_block = dis_LRC_shortest_csr[closest_spot_idx[r0:r1]][:, closest_spot_idx].toarray()
-                    reweighted = dis2LRC[r0:r1, None] + dis2LRC[None, :] + path_block / strength
-                    keep = reweighted <= dis_thr  # entries beyond dis_thr are never consulted downstream
-                    bi, bj = np.nonzero(keep)
-                    merge_rows.append(kept_spots[r0:r1][bi])
-                    merge_cols.append(kept_spots[bj])
-                    merge_vals.append(reweighted[bi, bj].astype(np.float32))
+                dis2LRC = np.array(dis2LRC)
+                closest_spot_idx = np.array(closest_spot_idx)
+                kept_spots = np.array(kept_spots)
+                dis_LRC = np.add.outer(dis2LRC, dis2LRC)
+                dis_mat_LRC_path = dis_LRC_shortest[np.ix_(closest_spot_idx, closest_spot_idx)].toarray()
+                reweighted_block = dis_LRC + dis_mat_LRC_path / strength
+
+                block_rows, block_cols = np.meshgrid(kept_spots, kept_spots, indexing='ij')
+                block_rows = block_rows.ravel(); block_cols = block_cols.ravel()
+                block_vals = reweighted_block.ravel()
+                keep = block_vals <= dis_thr  # values beyond dis_thr are never consulted downstream, see docstring
+                merge_rows.append(block_rows[keep])
+                merge_cols.append(block_cols[keep])
+                merge_vals.append(block_vals[keep].astype(np.float32))
 
             print(f"adata.obsp['spatial_distance_LRC_{LRC_element}'] has been saved.")
             adata.obsp[f'spatial_distance_LRC_{LRC_element}'] = sparse_min_merge(

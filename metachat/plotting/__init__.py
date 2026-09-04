@@ -3,6 +3,7 @@ from ._plotting import plot_group_communication_chord
 from ._plotting import plot_group_communication_heatmap
 from ._plotting import plot_group_communication_compare_hierarchy_diagram
 from ._plotting import plot_MSpair_contribute_group
+from ._plotting import plot_rank_MCC_dotplot
 
 from ._plotting import plot_summary_pathway
 from ._plotting import plot_metapathway_pair_contribution_bubbleplot

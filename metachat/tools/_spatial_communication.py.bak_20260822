@@ -94,57 +94,6 @@ class CellCommunication(object):
         self.nmet = self.S.shape[1]; self.nsen = self.D.shape[1]
         self.npts = adata.shape[0]
 
-    def gate_posthoc(self, adata, df_metasen):
-        """Transporter gating for intracellular sensors (nuclear receptors).
-
-        A nuclear receptor sits inside the cell, so its ligand must first be imported. For every
-        metabolite-sensor pair carrying transporter annotations, the mass received by cell b is
-        therefore capped by the transport capacity of that cell:
-
-            Phi_i(b) = max_{t in T_i} x_t(b)                  (any one transporter suffices)
-            g_ij(b)  = min(Phi_i(b), x_j^R(b)) / x_j^R(b)     in [0,1]
-
-        and the transport plan of the pair is rescaled column-wise (columns = receiver cells) by
-        ``g``. Pairs whose ligand has no annotated transporter (freely diffusible lipophilic
-        ligands) and all cell-surface receptors are left untouched.
-
-        The gate is applied after the OT solve, so it is exact per (metabolite, sensor) pair and
-        the gated run shares its transport plan and absolute scale with the ungated one. The plan
-        is filtered, not re-optimized: mass removed from an uptake-incompetent receiver is
-        discarded rather than redistributed to its neighbours.
-
-        Gated pairs are recorded in ``self.gated_pairs``, keyed by ``'<HMDB.ID>|<Sensor.Gene>'``
-        with the transporters used, ``';'``-joined.
-        """
-        data_var = set(adata.var_names)
-        trans = {}
-        for i in range(len(df_metasen)):
-            tmp_tr = df_metasen.loc[i,"Metabolite.transporter"]
-            if not isinstance(tmp_tr, str) or tmp_tr in ('','nan','NA'):
-                continue
-            genes = sorted({g for g in (x.strip() for x in tmp_tr.split(';')) if g in data_var})
-            if genes:
-                trans[(df_metasen.loc[i,"HMDB.ID"], df_metasen.loc[i,"Sensor.Gene"])] = genes
-
-        self.gated_pairs = {}
-        for (i,j) in list(self.comm_network_receiver.keys()):
-            genes = trans.get((self.mets[i], self.sens[j]))
-            if genes is None:
-                continue
-            X_tr = adata[:,genes].X
-            X_tr = X_tr.toarray() if sparse.issparse(X_tr) else np.asarray(X_tr)
-            Phi = X_tr.max(axis=1)
-            x_R = self.D[:,j]
-            g = np.zeros_like(x_R)
-            nz = x_R > 0
-            g[nz] = np.minimum(Phi[nz], x_R[nz]) / x_R[nz]
-            # scale sender and receiver views by the same factor so the two stay consistent
-            self.comm_network_receiver[(i,j)] = self.comm_network_receiver[(i,j)].multiply(g[None,:]).tocoo()
-            self.comm_network_sender[(i,j)]   = self.comm_network_sender[(i,j)].multiply(g[None,:]).tocoo()
-            self.gated_pairs['%s|%s' % (self.mets[i], self.sens[j])] = ';'.join(genes)
-        print("Transporter gating applied to %d of %d metabolite-sensor pairs."
-              % (len(self.gated_pairs), len(self.comm_network_receiver)))
-
     def run_fot_signaling(self,
         fot_eps_p=1e-1, 
         fot_eps_mu=None, 
@@ -170,7 +119,6 @@ def metabolic_communication(
     fot_rho: float = 1e-1, 
     fot_nitermax: int = 10000, 
     fot_weights: tuple = (1.0,0.0,0.0,0.0),
-    NR_gate_trans: bool = False,
     copy: bool = False
 ):
     """
@@ -208,14 +156,6 @@ def metabolic_communication(
     fot_weights : tuple of float, default=(1.0, 0.0, 0.0, 0.0)
         A tuple of four weights that add up to one. The weights corresponds to four setups of flow optimal transport: 
         1) all metabolite-all sensors, 2) each metabolite-all sensors, 3) all metabolite-each sensor, 4) each metabolite-each sensor.
-    NR_gate_trans : bool, default=False
-        Whether to gate intracellular sensors (nuclear receptors) by the expression of the
-        plasma-membrane transporters that import their ligand. When True, the signal received by
-        a cell is capped at ``min(max_t x_t, x_sensor)``, so a cell that expresses the receptor
-        but no importer cannot receive the signal. Metabolite-sensor pairs whose ligand has no
-        annotated transporter (freely diffusible lipophilic ligands) and all cell-surface
-        receptors are unaffected, as is the default ``False`` behavior.
-        Requires a ``'Metabolite.transporter'`` column in `df_metasen`.
     copy : bool, default=False
         Whether to return a new AnnData object or modify in place.
 
@@ -269,19 +209,10 @@ def metabolic_communication(
         fot_nitermax = fot_nitermax, 
         fot_weights = fot_weights
     )
-    model.gated_pairs = {}
-    if NR_gate_trans:
-        if 'Metabolite.transporter' not in df_metasen_filtered.columns:
-            raise KeyError(
-                "NR_gate_trans=True requires a 'Metabolite.transporter' column in df_metasen. "
-                "Please use a version of MetaChatDB that provides transporter annotations.")
-        model.gate_posthoc(adata, df_metasen_filtered)
     
     # ==== Store metadata ====
     adata.uns[f"MetaChat-{database_name}-info"] = {}
     adata.uns[f"MetaChat-{database_name}-info"]['distance_threshold'] = dis_thr
-    adata.uns[f"MetaChat-{database_name}-info"]['NR_gate_trans'] = NR_gate_trans
-    adata.uns[f"MetaChat-{database_name}-info"]['gated_pairs'] = model.gated_pairs
     
     # ==== Aggregate sender and receiver matrices ====
     ncell = adata.shape[0]

@@ -24,9 +24,18 @@ from plotly.subplots import make_subplots
 
 import networkx as nx
 import anndata
+import scanpy as sc
+import copy as _copy
 
 from .._utils import plot_cell_signaling
 from .._utils import get_cmap_qualitative
+from .._utils import _sensor_type_suffix
+from .._utils import _sensor_type_label
+from .._utils import build_hmdb_name_map
+from .._utils import is_hmdb_id
+from .._utils import prettify_label
+from .._utils import prettify_labels
+from .._utils import resolve_metabolite_name
 
 def plot_communication_flow(
     adata: anndata.AnnData,
@@ -55,11 +64,14 @@ def plot_communication_flow(
     arrow_color: str = "#000000",
     arrow_width: float = 0.005,
     largest_arrow: float = 0.05,
+    quiver_scale: float = None,
     normalize_v: bool = False,
     normalize_v_quantile: float = 0.95,
     title: str = None,
+    label: str = None,
     plot_savepath: str = None,
-    ax: Optional[mpl.axes.Axes] = None
+    ax: Optional[mpl.axes.Axes] = None,
+    sensor_type: str = 'all'
 ):
     """
     Visualize inferred metabolic communication vector fields on tissue images or annotated backgrounds.
@@ -84,6 +96,12 @@ def plot_communication_flow(
         Name of a metabolite–sensor pair to visualize.
     summary : {"sender", "receiver"}, default="receiver"
         Type of summary statistic used for background coloring.
+    sensor_type : str, default='all'
+        Restrict the flow to sensors acting through a given mechanism. One of ``'all'``,
+        ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``, ``'nuclear_receptor'``
+        (alias ``'NR'``) or ``'transporter'``; see :func:`mc.tl.filter_sensor_type`.
+        Must match the ``sensor_type`` used in :func:`mc.tl.summary_communication`
+        and :func:`mc.tl.communication_flow`.
     plot_method : {"cell", "grid", "stream"}, default="grid"
         Rendering mode for vector visualization.
     background : {"summary", "image", "group"}, default="image"
@@ -119,13 +137,29 @@ def plot_communication_flow(
     arrow_width : float, default=0.005
         Width of quiver arrows.
     largest_arrow : float, default=0.05
-        Maximum arrow length after normalization.
+        Target length of the longest arrows, as a fraction of the plot span.
+        Because the scale it implies is derived from *this* panel's own vector
+        magnitudes, arrow lengths are not comparable between separate calls;
+        use `quiver_scale` for that.
+    quiver_scale : float, optional
+        Explicit quiver scale, overriding `largest_arrow`. Pass the same value
+        to several panels to draw them on one common arrow scale, so that a
+        longer arrow really means stronger communication. The scale a panel
+        ended up using is stored on the returned axis as
+        ``ax.metachat_quiver_scale_``. Note that scales are only comparable
+        between panels drawn with the same `background` (the ``'image'``
+        background rescales coordinates by the tissue scale factor).
     normalize_v : bool, default=False
         Whether to normalize vector magnitudes for visualization.
     normalize_v_quantile : float, default=0.95
         Quantile for magnitude clipping before normalization.
     title : str, optional
-        Title of the plot.
+        Title of the plot. If ``None``, a title is derived from whichever of
+        ``metabolite_name`` / ``metapathway_name`` / ``customerlist_name`` /
+        ``ms_pair_name`` was given, with HMDB IDs rendered per `label`.
+    label : str, {"name", "hmdb", "both"}, optional
+        How HMDB IDs are rendered in the auto-generated title. Defaults to
+        ``mc.settings.metabolite_labels``. Has no effect when `title` is given.
     plot_savepath : str, optional
         File path to save the plot; no saving if ``None``.
     ax : matplotlib.axes.Axes, optional
@@ -145,6 +179,11 @@ def plot_communication_flow(
     assert database_name is not None, "Please at least specify database_name."
     not_none_count = sum(x is not None for x in [metabolite_name, metapathway_name, customerlist_name, ms_pair_name])
     assert not_none_count <= 1, "Please specify at most one of metabolite_name, metapathway_name, customerlist_name, or ms_pair_name."
+
+    # Accept a metabolite name on input, but key every obsm lookup by HMDB ID.
+    name_map = build_hmdb_name_map(adata=adata)
+    if metabolite_name is not None:
+        metabolite_name = resolve_metabolite_name(metabolite_name, name_map=name_map)
 
     if summary == 'sender':
         summary_abbr = 's'
@@ -174,8 +213,18 @@ def plot_communication_flow(
         sum_name = ms_pair_name
         obsm_name = ''
 
-    V = adata.obsm['MetaChat-vf-' + database_name + '-' + summary + '-' + vf_name][:,pos_idx].copy()
-    signal_sum = adata.obsm['MetaChat-' + database_name + "-sum-" + summary + obsm_name][summary_abbr + '-' + sum_name].copy()
+    # An explicit `title` is used verbatim; auto-generated ones name the sensor selection.
+    if title is None:
+        if vf_name != 'total-total':
+            title = f"{summary}: " + prettify_label(vf_name, name_map=name_map, style=label)
+        elif _sensor_type_label(sensor_type):
+            title = f"{summary}: total"
+        if title is not None and _sensor_type_label(sensor_type):
+            title = f"{title} ({_sensor_type_label(sensor_type)})"
+
+    suffix = _sensor_type_suffix(sensor_type)
+    V = adata.obsm['MetaChat-vf-' + database_name + '-' + summary + '-' + vf_name + suffix][:,pos_idx].copy()
+    signal_sum = adata.obsm['MetaChat-' + database_name + "-sum-" + summary + obsm_name + suffix][summary_abbr + '-' + sum_name].copy()
 
     if background=='group':
         if group_cmap is None:
@@ -211,7 +260,8 @@ def plot_communication_flow(
         grid_thresh = grid_thresh,
         arrow_color = arrow_color,
         arrow_width = arrow_width,
-        largest_arrow = largest_arrow,      
+        largest_arrow = largest_arrow,
+        quiver_scale = quiver_scale,      
         title = title,
         plot_savepath = plot_savepath,
         ax = ax
@@ -229,6 +279,7 @@ def plot_group_communication_chord(
     customerlist_name: str = None,
     ms_pair_name: str = None,
     permutation_spatial: bool = False,
+    sensor_type: str = 'all',
     p_value_cutoff: float = 0.05,
     self_communication_off: bool = False,
     highlight_group_sender: str = None,
@@ -236,6 +287,7 @@ def plot_group_communication_chord(
     space: int = 5,
     group_cmap: str = None,
     figsize: tuple = (5, 5),
+    label: str = None,
     ax: Optional[mpl.axes.Axes] = None,
     plot_savepath: str = None,
 ):
@@ -272,6 +324,12 @@ def plot_group_communication_chord(
     permutation_spatial : bool, default=False
         Whether to use results from spatially permuted communication tests
         (``mc.tl.communication_group_spatial``).
+    sensor_type : str, default='all'
+        Restrict the plot to sensors acting through a given mechanism. One of ``'all'``,
+        ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``, ``'nuclear_receptor'``
+        (alias ``'NR'``) or ``'transporter'``; see :func:`mc.tl.filter_sensor_type`.
+        Must match the ``sensor_type`` used upstream, otherwise the corresponding
+        result will not be found.
     p_value_cutoff : float, default=0.05
         P-value threshold for filtering significant group-level communications.
     self_communication_off : bool, default=False
@@ -287,6 +345,10 @@ def plot_group_communication_chord(
         (e.g., ``'Plotly'``, ``'Alphabet'``).
     figsize : tuple of float, default=(5, 5)
         Figure size (width, height).
+    label : str, {"name", "hmdb", "both"}, optional
+        How HMDB IDs are rendered in messages printed by this function. Defaults
+        to ``mc.settings.metabolite_labels``. The ``uns`` keys looked up are
+        always the HMDB-based ones.
     ax : matplotlib.axes.Axes, optional
         Existing axis to draw the chord diagram. If ``None``, a new one is created.
     plot_savepath : str, optional
@@ -318,6 +380,13 @@ def plot_group_communication_chord(
     not_none_count = sum(x is not None for x in [metabolite_name, metapathway_name, customerlist_name, ms_pair_name])
     assert not_none_count <= 1, ("Please specify at most one of metabolite_name, metapathway_name, customerlist_name, or ms_pair_name.")
 
+    suffix = _sensor_type_suffix(sensor_type)
+
+    # Accept a metabolite name on input, but key every uns lookup by HMDB ID.
+    name_map = build_hmdb_name_map(adata=adata)
+    if metabolite_name:
+        metabolite_name = resolve_metabolite_name(metabolite_name, name_map=name_map)
+
     if metabolite_name:
         uns_names = metabolite_name
     elif metapathway_name:
@@ -330,11 +399,11 @@ def plot_group_communication_chord(
         uns_names = "total-total"
 
     if permutation_spatial == True:
-        df_communMatrix = adata.uns["MetaChat_group_spatial-"  + group_name + "-" + database_name + '-' + summary + '-' + uns_names]['communication_matrix'].copy()
-        df_pvalue = adata.uns["MetaChat_group_spatial-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names]['communication_pvalue'].copy()
+        df_communMatrix = adata.uns["MetaChat_group_spatial-"  + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix]['communication_matrix'].copy()
+        df_pvalue = adata.uns["MetaChat_group_spatial-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix]['communication_pvalue'].copy()
     else:
-        df_communMatrix = adata.uns["MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names]['communication_matrix'].copy()
-        df_pvalue = adata.uns["MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names]['communication_pvalue'].copy()
+        df_communMatrix = adata.uns["MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix]['communication_matrix'].copy()
+        df_pvalue = adata.uns["MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix]['communication_pvalue'].copy()
 
     df_communMatrix[df_pvalue > p_value_cutoff] = 0
     if self_communication_off:
@@ -379,8 +448,9 @@ def plot_group_communication_chord(
         else:
             circos.plotfig(figsize=figsize, ax=ax)
     else:
-        print("There is no significant group communication in " + uns_names)
-    
+        print("There is no significant group communication in "
+              + prettify_label(uns_names, name_map=name_map, style=label))
+
     return ax
 
 def plot_group_communication_heatmap(
@@ -393,6 +463,7 @@ def plot_group_communication_heatmap(
     ms_pair_name: str = None,
     summary: str = "sender",
     permutation_spatial: bool = False,
+    sensor_type: str = 'all',
     p_value_plot: bool = True,
     p_value_cutoff: float = 0.05,
     size_scale: float = 300,
@@ -402,6 +473,8 @@ def plot_group_communication_heatmap(
     x_order: Optional[list] = None,
     y_order: Optional[list] = None,
     figsize: tuple = (10, 10),
+    title: Optional[str] = None,
+    label: str = None,
     ax: Optional[mpl.axes.Axes] = None,
     plot_savepath: Optional[str] = None
 ):
@@ -436,6 +509,12 @@ def plot_group_communication_heatmap(
         Direction of communication summary to visualize.
     permutation_spatial : bool, default=False
         Whether to use results from ``mc.tl.communication_group_spatial``.
+    sensor_type : str, default='all'
+        Restrict the plot to sensors acting through a given mechanism. One of ``'all'``,
+        ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``, ``'nuclear_receptor'``
+        (alias ``'NR'``) or ``'transporter'``; see :func:`mc.tl.filter_sensor_type`.
+        Must match the ``sensor_type`` used upstream, otherwise the corresponding
+        result will not be found.
     p_value_plot : bool, default=True
         Whether to mark significant interactions with an asterisk ``*``.
     p_value_cutoff : float, default=0.05
@@ -454,6 +533,13 @@ def plot_group_communication_heatmap(
         Order of receiver groups along the y-axis.
     figsize : tuple of float, default=(10, 10)
         Size of the output figure (width, height).
+    title : str, optional
+        Axis title. If ``None``, it is derived from whichever of
+        ``metabolite_name`` / ``metapathway_name`` / ``customerlist_name`` /
+        ``ms_pair_name`` was given, with HMDB IDs rendered per `label`.
+    label : str, {"name", "hmdb", "both"}, optional
+        How HMDB IDs are rendered in the auto-generated title. Defaults to
+        ``mc.settings.metabolite_labels``. Has no effect when `title` is given.
     plot_savepath : str, optional
         File path to save the figure. The format is inferred from the extension.
     ax : matplotlib.axes.Axes, optional
@@ -488,7 +574,14 @@ def plot_group_communication_heatmap(
         "Please specify at most one of metabolite_name, metapathway_name, "
         "customerlist_name, or ms_pair_name."
     )
-    
+
+    suffix = _sensor_type_suffix(sensor_type)
+
+    # Accept a metabolite name on input, but key every uns lookup by HMDB ID.
+    name_map = build_hmdb_name_map(adata=adata)
+    if metabolite_name:
+        metabolite_name = resolve_metabolite_name(metabolite_name, name_map=name_map)
+
     if metabolite_name:
         uns_names = metabolite_name
     elif metapathway_name:
@@ -502,11 +595,11 @@ def plot_group_communication_heatmap(
     
     # ==== Load communication results ====
     if permutation_spatial == True:
-        df_communMatrix = adata.uns["MetaChat_group_spatial-"  + group_name + "-" + database_name + '-' + summary + '-' + uns_names]['communication_matrix'].copy()
-        df_pvalue = adata.uns["MetaChat_group_spatial-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names]['communication_pvalue'].copy()
+        df_communMatrix = adata.uns["MetaChat_group_spatial-"  + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix]['communication_matrix'].copy()
+        df_pvalue = adata.uns["MetaChat_group_spatial-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix]['communication_pvalue'].copy()
     else:
-        df_communMatrix = adata.uns["MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names]['communication_matrix'].copy()
-        df_pvalue = adata.uns["MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names]['communication_pvalue'].copy()
+        df_communMatrix = adata.uns["MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix]['communication_matrix'].copy()
+        df_pvalue = adata.uns["MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix]['communication_pvalue'].copy()
 
     # ==== Prepare plot settings ====
     df_communMatrix = df_communMatrix.reset_index()
@@ -620,6 +713,17 @@ def plot_group_communication_heatmap(
     ax.set_xlabel('Sender')
     ax.set_ylabel('Receiver')
 
+    # An explicit `title` is used verbatim; auto-generated ones name the sensor selection.
+    if title is None:
+        if uns_names != "total-total":
+            title = prettify_label(uns_names, name_map=name_map, style=label)
+        elif _sensor_type_label(sensor_type):
+            title = "total"
+        if title is not None and _sensor_type_label(sensor_type):
+            title = f"{title} ({_sensor_type_label(sensor_type)})"
+    if title is not None:
+        ax.set_title(title)
+
     if figsize[0] == figsize[1]:
         ax.set_box_aspect(1)
 
@@ -641,12 +745,15 @@ def plot_group_communication_compare_hierarchy_diagram(
     customerlist_name: str = None,
     ms_pair_name: str = None,
     permutation_spatial: bool = False,
+    sensor_type: str = 'all',
     p_value_cutoff: float = 0.05,
     node_sizes_limit: tuple = (50, 300),
     edge_sizes_limit: tuple = (0.5,10),
     group_cmap: dict = None,
     alpha: float = 0.5,
     figsize: tuple = (10, 3),
+    title: str = None,
+    label: str = None,
     ax: Optional[mpl.axes.Axes] = None,
     plot_savepath: str = None,
 ):
@@ -684,6 +791,12 @@ def plot_group_communication_compare_hierarchy_diagram(
         Name of a specific metabolite–sensor pair to visualize.
     permutation_spatial : bool, default=False
         Whether to use spatially permuted results from :func:`mc.tl.communication_group_spatial`.
+    sensor_type : str, default='all'
+        Restrict the plot to sensors acting through a given mechanism. One of ``'all'``,
+        ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``, ``'nuclear_receptor'``
+        (alias ``'NR'``) or ``'transporter'``; see :func:`mc.tl.filter_sensor_type`.
+        Must match the ``sensor_type`` used upstream, otherwise the corresponding
+        result will not be found.
     p_value_cutoff : float, default=0.05
         Threshold for significance in group-level communication.
     node_sizes_limit : tuple of float, default=(50, 300)
@@ -697,8 +810,15 @@ def plot_group_communication_compare_hierarchy_diagram(
         Transparency for non-significant edges.
     figsize : tuple of float, default=(10, 3)
         Figure size (width, height).
+    title : str, optional
+        Axis title. If ``None``, it is derived from whichever of
+        ``metabolite_name`` / ``metapathway_name`` / ``customerlist_name`` /
+        ``ms_pair_name`` was given, with HMDB IDs rendered per `label`.
+    label : str, {"name", "hmdb", "both"}, optional
+        How HMDB IDs are rendered in the auto-generated title. Defaults to
+        ``mc.settings.metabolite_labels``. Has no effect when `title` is given.
     ax : matplotlib.axes.Axes, optional
-        Existing Matplotlib axis to draw the hierarchy diagram on.  
+        Existing Matplotlib axis to draw the hierarchy diagram on.
         If ``None``, a new figure and axis are created.
     plot_savepath : str, optional
         File path to save the figure (e.g., ``"results/group_compare_hierarchy.pdf"``).  
@@ -723,10 +843,16 @@ def plot_group_communication_compare_hierarchy_diagram(
     # ==== Check inputs ====
     assert database_name is not None, "Please specify `database_name`."
     assert group_name is not None, "Please specify `group_name`."
+    suffix = _sensor_type_suffix(sensor_type)
     not_none_count = sum(x is not None for x in [metabolite_name, metapathway_name, customerlist_name, ms_pair_name])
     assert not_none_count <= 1, (
         "Please specify at most one of metabolite_name, metapathway_name, customerlist_name or ms_pair_name."
     )
+
+    # Accept a metabolite name on input, but key every uns lookup by HMDB ID.
+    name_map = build_hmdb_name_map(adata=adata_A)
+    if metabolite_name:
+        metabolite_name = resolve_metabolite_name(metabolite_name, name_map=name_map)
 
     if metabolite_name:
         uns_names = metabolite_name
@@ -740,9 +866,9 @@ def plot_group_communication_compare_hierarchy_diagram(
         uns_names = "total-total"
 
     if permutation_spatial == True:
-        culster_name = "MetaChat_group_spatial-"  + group_name + "-" + database_name + '-' + summary + '-' + uns_names
+        culster_name = "MetaChat_group_spatial-"  + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix
     else:
-        culster_name = "MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names
+        culster_name = "MetaChat_group-" + group_name + "-" + database_name + '-' + summary + '-' + uns_names + suffix
     
     # ==== Prepare data ====
     matrix_condition_A = adata_A.uns[culster_name]['communication_matrix'].copy()
@@ -752,13 +878,15 @@ def plot_group_communication_compare_hierarchy_diagram(
     
     classes = sorted(set(matrix_condition_A.index).union(set(matrix_condition_B.index)))
 
-    expanded_matrix_condition_A = pd.DataFrame(0, index=classes, columns=classes)
-    expanded_matrix_condition_B = pd.DataFrame(0, index=classes, columns=classes)
+    # Fill values are float so that writing the sub-matrices below does not
+    # trigger an implicit int64 -> float64 conversion.
+    expanded_matrix_condition_A = pd.DataFrame(0.0, index=classes, columns=classes)
+    expanded_matrix_condition_B = pd.DataFrame(0.0, index=classes, columns=classes)
     expanded_matrix_condition_A.loc[matrix_condition_A.index, matrix_condition_A.columns] = matrix_condition_A
     expanded_matrix_condition_B.loc[matrix_condition_B.index, matrix_condition_B.columns] = matrix_condition_B
 
-    expanded_pvalue_condition_A = pd.DataFrame(1, index=classes, columns=classes)
-    expanded_pvalue_condition_B = pd.DataFrame(1, index=classes, columns=classes)
+    expanded_pvalue_condition_A = pd.DataFrame(1.0, index=classes, columns=classes)
+    expanded_pvalue_condition_B = pd.DataFrame(1.0, index=classes, columns=classes)
     expanded_pvalue_condition_A.loc[pvalue_condition_A.index, pvalue_condition_A.columns] = pvalue_condition_A
     expanded_pvalue_condition_B.loc[pvalue_condition_B.index, pvalue_condition_B.columns] = pvalue_condition_B
 
@@ -889,13 +1017,131 @@ def plot_group_communication_compare_hierarchy_diagram(
     ax.arrow(2.35, len(classes) + 0.8, 1.1, 0, head_width=0.3, head_length=0.15, fc='#4F9B79', ec='#4F9B79', linewidth=2)
     ax.arrow(5.65, len(classes) + 0.8, -1.1, 0, head_width=0.3, head_length=0.15, fc='#253071', ec='#253071', linewidth=2)
     ax.text(2.9,len(classes) + 1.4, condition_name_A, ha='center', va='center', fontsize=14) 
-    ax.text(5.1,len(classes) + 1.4, condition_name_B, ha='center', va='center', fontsize=14) 
-    
+    ax.text(5.1,len(classes) + 1.4, condition_name_B, ha='center', va='center', fontsize=14)
+
+    # An explicit `title` is used verbatim; auto-generated ones name the sensor selection.
+    if title is None:
+        if uns_names != "total-total":
+            title = prettify_label(uns_names, name_map=name_map, style=label)
+        elif _sensor_type_label(sensor_type):
+            title = "total"
+        if title is not None and _sensor_type_label(sensor_type):
+            title = f"{title} ({_sensor_type_label(sensor_type)})"
+    if title is not None:
+        ax.set_title(title)
+
     # ==== Save ====
     if plot_savepath:
         plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
 
     return ax
+
+def plot_rank_MCC_dotplot(
+    adata: anndata.AnnData,
+    key: str = 'rank_genes_groups',
+    n_genes: int = 5,
+    label: str = None,
+    groupby: str = None,
+    standard_scale: str = 'var',
+    cmap: str = 'RdBu_r',
+    swap_axes: bool = False,
+    rotation: float = 45,
+    plot_savepath: str = None,
+    **kwargs
+):
+    """
+    Dot plot of the top ranked MCC signals per group, labelled by metabolite name.
+
+    Thin wrapper around :func:`scanpy.pl.rank_genes_groups_dotplot` for AnnData objects
+    whose variables are MCC signals (e.g. ``'s-HMDB0000122-SLC2A6'``). Every HMDB
+    accession in the variable names is replaced by the metabolite name before plotting,
+    so the axis reads ``'s-Fructose 6-phosphate-SLC2A6'`` instead.
+
+    The renaming is applied to an internal copy: the ``adata`` passed in is never
+    modified, and its expression matrix is shared rather than duplicated.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        AnnData whose ``.var_names`` are MCC signal names and whose ``.uns[key]``
+        holds the output of :func:`scanpy.tl.rank_genes_groups`.
+    key : str, default='rank_genes_groups'
+        Key in ``.uns`` holding the ranking to plot.
+    n_genes : int, default=5
+        Number of top signals shown per group.
+    label : str, {'name', 'hmdb', 'both'}, optional
+        How HMDB accessions are rendered. Defaults to ``mc.settings.metabolite_labels``;
+        ``'hmdb'`` leaves the names untouched.
+    groupby : str, optional
+        Grouping in ``.obs``. Taken from the stored ranking parameters when omitted.
+    standard_scale : {'var', 'group', None}, default='var'
+        Passed through to scanpy.
+    cmap : str, default='RdBu_r'
+        Colormap passed through to scanpy.
+    swap_axes : bool, default=False
+        Passed through to scanpy.
+    rotation : float, default=45
+        Rotation of the signal tick labels, which are long; they are right-aligned so
+        that each label ends at its column.
+    plot_savepath : str, optional
+        File path to save the figure. The format is inferred from the extension.
+    **kwargs
+        Any further arguments of :func:`scanpy.pl.rank_genes_groups_dotplot`.
+
+    Returns
+    -------
+    dict[str, matplotlib.axes.Axes]
+        The axes dictionary returned by scanpy.
+    """
+
+    if key not in adata.uns.keys():
+        raise KeyError(f"'{key}' is not in adata.uns. Please run scanpy.tl.rank_genes_groups first.")
+
+    name_map = build_hmdb_name_map(adata=adata)
+    rename = {v: prettify_label(v, name_map=name_map, style=label) for v in adata.var_names}
+
+    if groupby is None:
+        groupby = adata.uns[key].get('params', {}).get('groupby', None)
+        if groupby is None:
+            raise ValueError("`groupby` could not be read from the stored ranking; please pass it explicitly.")
+
+    # Work on a copy so the caller's object keeps its original variable names. X is
+    # shared by reference because plotting only reads it.
+    adata_plot = anndata.AnnData(X=adata.X, obs=adata.obs.copy(), var=adata.var.copy())
+    adata_plot.var_names = [rename[v] for v in adata.var_names]
+    if adata_plot.var_names.has_duplicates:
+        print("Warning: metabolite names are not unique after renaming; duplicates were made unique.")
+        adata_plot.var_names_make_unique()
+
+    uns_ranking = _copy.deepcopy(adata.uns[key])
+    names = uns_ranking['names']
+    uns_ranking['names'] = np.rec.fromarrays(
+        [[rename.get(x, x) for x in names[g]] for g in names.dtype.names],
+        names=list(names.dtype.names))
+    adata_plot.uns[key] = uns_ranking
+    for uns_key in adata.uns.keys():          # carry over dendrograms so scanpy reuses them
+        if uns_key.startswith('dendrogram_'):
+            adata_plot.uns[uns_key] = _copy.deepcopy(adata.uns[uns_key])
+    if groupby in adata.obs.columns and groupby + '_colors' in adata.uns.keys():
+        adata_plot.uns[groupby + '_colors'] = adata.uns[groupby + '_colors']
+
+    axes = sc.pl.rank_genes_groups_dotplot(
+        adata_plot, key=key, n_genes=n_genes, groupby=groupby,
+        standard_scale=standard_scale, cmap=cmap, swap_axes=swap_axes,
+        show=False, **kwargs)
+
+    tick_axis = 'y' if swap_axes else 'x'
+    for ax in plt.gcf().axes:
+        ax.tick_params(axis=tick_axis, labelrotation=rotation)
+        if tick_axis == 'x':
+            for tick in ax.get_xticklabels():
+                tick.set_horizontalalignment('right')
+
+    if plot_savepath:
+        plt.savefig(plot_savepath, dpi=300, bbox_inches="tight")
+
+    return axes
+
 
 def plot_MSpair_contribute_group(
     adata: anndata.AnnData,
@@ -906,6 +1152,7 @@ def plot_MSpair_contribute_group(
     cmap: str = "green",
     group_cmap: dict = None,
     figsize: tuple = (4,6),
+    label: str = None,
     ax: Optional[mpl.axes.Axes] = None,
     plot_savepath: str = None
 ):
@@ -928,7 +1175,9 @@ def plot_MSpair_contribute_group(
     group_name : str
         Column name in ``adata.obs`` specifying the cell group or cluster identity.
     metabolite_name : str
-        HMDB ID of the metabolite to visualize.
+        Metabolite to visualize, given either as an HMDB ID (e.g. ``"HMDB0000220"``)
+        or as a metabolite name (e.g. ``"Palmitic acid"``); names are resolved to
+        the HMDB ID before any lookup.
     summary : {"sender", "receiver"}, default="sender"
         Whether to visualize sender- or receiver-side contributions.
     cmap : {"green", "red", "blue"}, default="green"
@@ -940,6 +1189,10 @@ def plot_MSpair_contribute_group(
         Mapping from group names to colors. If ``None``, derived automatically from ``adata.uns[group_name + '_colors']``.
     figsize : tuple of float, default=(4, 6)
         Figure size (width, height).
+    label : str, {"name", "hmdb", "both"}, optional
+        How HMDB IDs are rendered in the row labels. Defaults to
+        ``mc.settings.metabolite_labels``. Only the drawn labels change; the
+        underlying data stays keyed by HMDB ID.
     ax : matplotlib.axes.Axes, optional
         Existing Matplotlib axis to draw the heatmap on. If ``None``, a new figure is created.
     plot_savepath : str, optional
@@ -969,6 +1222,9 @@ def plot_MSpair_contribute_group(
     
     # ==== Prepare data ====
     df_metasen = adata.uns['df_metasen_filtered']
+    name_map = build_hmdb_name_map(adata=adata)
+    # Accept a metabolite name on input, but index by HMDB ID from here on.
+    metabolite_name = resolve_metabolite_name(metabolite_name, name_map=name_map)
     name_sensor = df_metasen.loc[df_metasen['HMDB.ID'] == metabolite_name, 'Sensor.Gene'].tolist()
 
     if summary == 'sender':
@@ -1003,8 +1259,12 @@ def plot_MSpair_contribute_group(
         group_cmap = [group_cmap_dict[g] for g in df_contribute.index]
     
     # ==== Draw plot ====
+    # Relabel only the copy handed to seaborn; df_contribute keeps HMDB IDs.
+    df_plot = df_contribute.T
+    df_plot.index = prettify_labels(df_plot.index, name_map=name_map, style=label)
+
     sns.clustermap(
-        df_contribute.T,
+        df_plot,
         row_cluster = False, 
         col_cluster = False, 
         col_colors = group_cmap, 
@@ -1020,11 +1280,12 @@ def plot_MSpair_contribute_group(
     return ax
 
 def plot_summary_pathway(
-    ms_result: pd.DataFrame = None,
+    ms_result = None,
     metapathway_rank: pd.DataFrame = None,
     senspathway_rank: pd.DataFrame = None,
     plot_metapathway_index: list = None,
     plot_senspathway_index: list = None,
+    split_style: str = 'opacity',
     figsize: tuple = (10,10),
     plot_savepath: str = None
 ):
@@ -1037,10 +1298,14 @@ def plot_summary_pathway(
 
     Parameters
     ----------
-    ms_result : pandas.DataFrame
+    ms_result : pandas.DataFrame or dict[str, pandas.DataFrame]
         A matrix of pathway-level metabolic communication scores.  
         Rows correspond to metabolite pathways, columns to sensor pathways.
         Typically generated from :func:`mc.tl.summary_pathway`.
+        A dict of such matrices, as returned by
+        :func:`mc.tl.split_ms_result_by_sensor_type`, splits every link into one
+        sub-ribbon per sensor mechanism; total ribbon widths are unchanged, so the
+        diagram stays comparable to the undivided one.
     metapathway_rank : pandas.DataFrame
         DataFrame containing metabolite pathway rankings.
     senspathway_rank : pandas.DataFrame
@@ -1049,6 +1314,11 @@ def plot_summary_pathway(
         Indices (in ``metapathway_rank``) of metabolite pathways to include in the Sankey diagram.
     plot_senspathway_index : list of int
         Indices (in ``senspathway_rank``) of sensor pathways to include in the Sankey diagram.
+    split_style : {'opacity', 'hue'}, default='opacity'
+        How the sub-ribbons are distinguished when ``ms_result`` is a dict.
+        ``'opacity'`` keeps the metabolite pathway colors and fades successive
+        mechanisms, which preserves the link colors of the undivided diagram;
+        ``'hue'`` gives each mechanism its own color instead. Ignored otherwise.
     figsize : tuple of float, default=(10, 10)
         Figure size (width, height) in inches.
     plot_savepath : str, optional
@@ -1076,6 +1346,17 @@ def plot_summary_pathway(
 
     palette_2 = sns.color_palette("YlGnBu",len(plot_senspathway_index))
     hex_colors_target = [mcolors.to_hex(color) for color in palette_2][::-1]
+
+    # A dict of per-mechanism matrices is summed for the layout; the parts are kept to
+    # split each link afterwards, so total ribbon widths match the undivided diagram.
+    ms_parts = None
+    if isinstance(ms_result, dict):
+        if len(ms_result) == 0:
+            raise ValueError("ms_result is an empty dict; nothing to plot.")
+        if split_style not in ('opacity', 'hue'):
+            raise ValueError(f"Unknown split_style '{split_style}'. Choose 'opacity' or 'hue'.")
+        ms_parts = {k: v.copy() for k, v in ms_result.items()}
+        ms_result = sum(ms_parts.values())
 
     usename_metapathway = list(metapathway_rank.iloc[plot_metapathway_index]["Metabolite.Pathway"])
     usename_senspathway = list(senspathway_rank.iloc[plot_senspathway_index]["Sensor.Pathway"])
@@ -1121,8 +1402,51 @@ def plot_summary_pathway(
         color = np.array(result_all_melted["color_link"]).tolist()
     )
 
+    annotations = []
+    if ms_parts is not None:
+        mech_names = list(ms_parts.keys())
+        mech_hue = sns.color_palette("Set1", max(len(mech_names), 3)).as_hex()
+        # Later mechanisms fade out, so the first one reads as the dominant category.
+        alphas = np.linspace(0.95, 0.25, len(mech_names)) if len(mech_names) > 1 else [0.9]
+
+        def _rgba(hex_color, alpha):
+            r, g, b = mcolors.to_rgb(hex_color)
+            return f"rgba({r*255:.0f},{g*255:.0f},{b*255:.0f},{alpha:.2f})"
+
+        src, tgt, val, col = [], [], [], []
+        for k in range(len(LINKS["source"])):
+            i_meta = LINKS["source"][k]
+            met = usename_metapathway[i_meta]
+            sen = usename_senspathway[LINKS["target"][k] - len(usename_metapathway)]
+            shares = [float(ms_parts[m].loc[met, sen]) if (met in ms_parts[m].index and sen in ms_parts[m].columns)
+                      else 0.0 for m in mech_names]
+            total = sum(shares)
+            if total <= 0:
+                continue
+            for i_m, m in enumerate(mech_names):
+                if shares[i_m] <= 0:
+                    continue
+                src.append(LINKS["source"][k])
+                tgt.append(LINKS["target"][k])
+                val.append(LINKS["value"][k] * shares[i_m] / total)
+                base = LINKS["color"][k] if split_style == 'opacity' else mech_hue[i_m]
+                col.append(_rgba(base, alphas[i_m] if split_style == 'opacity' else 0.75))
+        LINKS = dict(source=src, target=tgt, value=val, color=col)
+
+        for i_m, m in enumerate(mech_names):
+            base = hex_colors_source[0] if split_style == 'opacity' else mech_hue[i_m]
+            r, g, b = mcolors.to_rgb(base)
+            al = alphas[i_m] if split_style == 'opacity' else 0.9
+            annotations.append(dict(
+                x=0.5 + (i_m - (len(mech_names) - 1) / 2) * 0.22, y=-0.10,
+                xref='paper', yref='paper', showarrow=False, font=dict(size=13),
+                text=f"<span style='color:rgba({r*255:.0f},{g*255:.0f},{b*255:.0f},{al:.2f})'>"
+                     f"&#9608;&#9608;</span> {m}"))
+
     data = go.Sankey(node = NODES, link = LINKS)
     fig = go.Figure(data)
+    if annotations:
+        fig.update_layout(annotations=annotations, margin=dict(b=70))
     fig.show(config={"width": figsize[0], "height": figsize[1]})
 
     if plot_savepath:
@@ -1133,6 +1457,7 @@ def plot_metapathway_pair_contribution_bubbleplot(
     pathway_name: str,
     smallest_size: float = 10,
     cmap: str = 'blue',
+    group_sensor_by_type: bool = False,
     plot_title: str = None,
     figsize: tuple = (12, 5),
     ax: Optional[mpl.axes.Axes] = None,
@@ -1157,6 +1482,12 @@ def plot_metapathway_pair_contribution_bubbleplot(
         Base bubble size for missing (NA) or zero communication scores.
     cmap : {"blue", "green", "red"}, default="blue"
         Color gradient preset defining the color scale for communication scores.
+    group_sensor_by_type : bool, default=False
+        Whether to order the sensor axis by signaling mechanism (receptor, nuclear
+        receptor, dually annotated, transporter) and label each block, so that
+        receptor- and transporter-mediated contributions can be read off separately.
+        Requires the ``'Sensor.Type'`` column, which :func:`mc.tl.summary_pathway`
+        carries through when the database provides it.
     plot_title : str, optional
         Custom title for the figure.
     figsize : tuple of float, default=(12, 5)
@@ -1207,6 +1538,33 @@ def plot_metapathway_pair_contribution_bubbleplot(
     row_sums = matrix.sum(axis=1)
     metabolites = row_sums.sort_values(ascending=True).index.tolist()
     sensors = matrix.columns.tolist()
+
+    # ==== Optionally order the sensor axis by signaling mechanism ====
+    # Dually annotated sensors are placed between the receptor and transporter runs, and
+    # both spans are drawn over them, so the overlap is shown rather than resolved.
+    sensor_spans = []
+    if group_sensor_by_type:
+        if 'Sensor.Type' not in df.columns:
+            raise KeyError(
+                "group_sensor_by_type=True requires a 'Sensor.Type' column in the pair "
+                "contributions. Please re-run mc.tl.summary_pathway with a database that "
+                "provides sensor annotations."
+            )
+        type_of = {g: str(t).strip().lower() for g, t in zip(df['Sensor.Gene'], df['Sensor.Type'])}
+        type_order = ['nuclear receptor', 'receptor', 'receptor,transporter', 'transporter']
+        sensors = sorted(sensors, key=lambda g: (
+            type_order.index(type_of.get(g, '')) if type_of.get(g, '') in type_order else len(type_order),
+            g))
+        idx = {t: [j for j, g in enumerate(sensors) if type_of.get(g, '') == t] for t in type_order}
+        dual = idx['receptor,transporter']
+        # (positions, label, row, color); receptor and transporter both cover the dual run
+        for members, lab, row, col in [
+            (idx['nuclear receptor'], 'nuclear receptor', 1, '#8172B2'),
+            (idx['receptor'] + dual, 'receptor', 1, '#C0392B'),
+            (dual + idx['transporter'], 'transporter', 0, '#3B8EA5'),
+        ]:
+            if members:
+                sensor_spans.append((min(members), max(members), lab, row, col))
 
     # ==== Construct plotting DataFrame ====
     data = []
@@ -1267,9 +1625,24 @@ def plot_metapathway_pair_contribution_bubbleplot(
     ax.set_xlim(-0.5, len(sensors)-0.5)
     ax.set_xlabel("Sensors")
     ax.set_ylabel("Metabolites")
-    ax.set_title(plot_title or f"Metabolite–Sensor contributions in {pathway_name}")
+    ax.set_title(plot_title or f"Metabolite–Sensor contributions in {pathway_name}",
+                 pad=42 if sensor_spans else None)
     for spine in ax.spines.values():
         spine.set_visible(False)
+
+    # ==== Sensor mechanism bands ====
+    if sensor_spans:
+        trans = mpl.transforms.blended_transform_factory(ax.transData, ax.transAxes)
+        h, gap = 0.042, 0.012
+        for i0, i1, lab, row, col in sensor_spans:
+            y0 = 1.015 + row * (h + gap)
+            ax.add_patch(patches.FancyBboxPatch(
+                (i0 - 0.42, y0), (i1 - i0) + 0.84, h,
+                boxstyle="round,pad=0,rounding_size=0.02",
+                transform=trans, facecolor=col, alpha=0.30,
+                edgecolor=col, linewidth=1.0, clip_on=False, zorder=3))
+            ax.text((i0 + i1) / 2, y0 + h / 2, lab, transform=trans,
+                    ha='center', va='center', fontsize='small', color=col, clip_on=False, zorder=4)
 
     legend_elements = [
         Line2D([], [], marker='o', linestyle='', markersize=np.sqrt(smallest_size),
@@ -1571,6 +1944,8 @@ def plot_DEG_volcano(
     cbar_pad: float = 0.2,
     title: str = "Volcano Plot",
     show_labels: bool = True,
+    adata: Optional[anndata.AnnData] = None,
+    label: str = None,
     ax: Optional[mpl.axes.Axes] = None,
     plot_savepath: str = None
 ):
@@ -1614,8 +1989,15 @@ def plot_DEG_volcano(
         Title of the figure.
     show_labels : bool, default=True
         Whether to show text labels for significant genes.
+    adata : anndata.AnnData, optional
+        Object whose ``uns['df_metasen_filtered']`` is used to resolve HMDB IDs
+        to metabolite names. The packaged databases are used when omitted.
+    label : str, {"name", "hmdb", "both"}, optional
+        How HMDB IDs are rendered in the point annotations. Defaults to
+        ``mc.settings.metabolite_labels``. Has no effect when
+        ``show_labels=False``.
     ax : matplotlib.axes.Axes, optional
-        Existing Matplotlib axis to draw on.  
+        Existing Matplotlib axis to draw on.
         If None, a new figure and axis are created.
     plot_savepath : str, optional
         File path to save the figure (e.g. ``'results/volcano_plot.pdf'``).  
@@ -1685,13 +2067,20 @@ def plot_DEG_volcano(
             (deg_result['neg_log10_pValue'] > label_thresh_neglog10)
         ]
 
+        # Annotations are the only place HMDB IDs surface here; the DataFrame
+        # itself stays keyed by accession.
+        name_map = build_hmdb_name_map(adata=adata)
+        shown_names = prettify_labels(
+            sig_df[name_col].astype(str), name_map=name_map, style=label
+        )
+
         texts = []
-        for _, row in sig_df.iterrows():
+        for (_, row), shown in zip(sig_df.iterrows(), shown_names):
             texts.append(
                 ax.text(
                     row[logfc_col],
                     row['neg_log10_pValue'],
-                    str(row[name_col]),
+                    shown,
                     fontsize=label_fontsize
                 )
             )
@@ -1717,6 +2106,7 @@ def plot_3d_feature(
     aspectratio: tuple = (1.1, 1.0, 1.3),
     show_axes: bool = True,
     figsize: tuple = (9, 9),
+    label: str = None,
     plot_savepath: str = None
 ):
     """
@@ -1733,7 +2123,9 @@ def plot_3d_feature(
     feature : str
         Name of the feature to visualize. It can be:
         - A column name in ``adata.obs`` (categorical or continuous);
-        - A gene name in ``adata.var_names`` or ``adata.raw.var_names``.
+        - A gene name in ``adata.var_names`` or ``adata.raw.var_names``;
+        - An HMDB ID, or the corresponding metabolite name (resolved to the
+          HMDB ID before lookup).
     spatial_key : str, default='spatial_3d'
         Key in ``adata.obsm`` containing the 3D spatial coordinates (shape: ``(n_obs, 3)``).
     cmap_continuous : str, default='Viridis'
@@ -1752,8 +2144,12 @@ def plot_3d_feature(
         Whether to display 3D axis lines and labels.
     figsize : tuple of float, default=(9, 9)
         Figure size in inches (controls pixel width/height of the Plotly figure).
+    label : str, {"name", "hmdb", "both"}, optional
+        How an HMDB `feature` is rendered in the plot title. Defaults to
+        ``mc.settings.metabolite_labels``. Only the title changes; the feature
+        is always looked up in ``adata`` by its HMDB ID.
     plot_savepath : str, optional
-        Path to save the 3D figure (e.g. ``"results/3D_feature_geneA.pdf"``).  
+        Path to save the 3D figure (e.g. ``"results/3D_feature_geneA.pdf"``).
         If None, the figure is displayed interactively.
 
     Returns
@@ -1791,6 +2187,13 @@ def plot_3d_feature(
         return x.reshape(-1)
 
     is_obs_feature = feature in adata.obs.columns
+    if not is_obs_feature:
+        # Accept a metabolite name on input, but index adata by HMDB ID.
+        name_map = build_hmdb_name_map(adata=adata)
+        feature = resolve_metabolite_name(feature, name_map=name_map)
+        feature_label = prettify_label(feature, name_map=name_map, style=label)
+        # 'gene' is the wrong word once the var axis holds metabolites.
+        feature_kind = "metabolite" if is_hmdb_id(feature) else "gene"
     gene_vec = None
     if not is_obs_feature:
         if use_raw and getattr(adata, "raw", None) is not None and feature in adata.raw.var_names:
@@ -1858,7 +2261,7 @@ def plot_3d_feature(
             df, x="x_3d", y="y_3d", z="z_3d",
             color="feature",
             color_continuous_scale="Viridis",
-            title=f"3D Spatial - gene: {feature}",
+            title=f"3D Spatial - {feature_kind}: {feature_label}",
         )
         for trace in fig.data:
             trace.opacity = opacity if isinstance(opacity, (int, float)) else 0.6

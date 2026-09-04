@@ -66,6 +66,7 @@ def plot_cell_signaling(
     arrow_color = "tab:blue",
     arrow_width = 0.005,
     largest_arrow = 0.05,
+    quiver_scale = None,
 
     # ==== 5. Save / axes ====
     title = None,
@@ -179,10 +180,10 @@ def plot_cell_signaling(
                 if background_legend:
                     ax.legend(markerscale=2.0, loc=[1.0,0.0])
         if plot_method == "cell":
-            scale = auto_quiver_scale(X_vec, V_cell, frac=largest_arrow)
+            scale = quiver_scale if quiver_scale is not None else auto_quiver_scale(X_vec, V_cell, frac=largest_arrow)
             ax.quiver(X_vec[:,0], X_vec[:,1], V_cell[:,0], V_cell[:,1], scale=scale, angles='xy', scale_units='xy', width=arrow_width, color=arrow_color, pivot=quiver_pivot)
         elif plot_method == "grid":
-            scale = auto_quiver_scale(grid_pts_plot, V_grid_plot, frac=largest_arrow)
+            scale = quiver_scale if quiver_scale is not None else auto_quiver_scale(grid_pts_plot, V_grid_plot, frac=largest_arrow)
             ax.quiver(grid_pts_plot[:,0], grid_pts_plot[:,1], V_grid_plot[:,0], V_grid_plot[:,1], scale=scale, angles='xy', scale_units='xy', width=arrow_width, color=arrow_color, pivot=quiver_pivot)
     
     elif background == 'image':
@@ -194,12 +195,16 @@ def plot_cell_signaling(
         sf = spatial_data['scalefactors']['tissue_hires_scalef']
         ax.imshow(img, origin='lower')
         if plot_method == "cell":
-            scale = auto_quiver_scale(X_vec, V_cell, frac=largest_arrow)
+            scale = quiver_scale if quiver_scale is not None else auto_quiver_scale(X_vec, V_cell, frac=largest_arrow)
             ax.quiver(X_vec[:,0]*sf, X_vec[:,1]*sf, V_cell[:,0]*sf, V_cell[:,1]*sf, scale=scale, angles='xy', scale_units='xy', width=arrow_width, color=arrow_color, pivot=quiver_pivot)
         elif plot_method == "grid":
-            scale = auto_quiver_scale(grid_pts_plot, V_grid_plot, frac=largest_arrow)
+            scale = quiver_scale if quiver_scale is not None else auto_quiver_scale(grid_pts_plot, V_grid_plot, frac=largest_arrow)
             ax.quiver(grid_pts_plot[:,0]*sf, grid_pts_plot[:,1]*sf, V_grid_plot[:,0]*sf, V_grid_plot[:,1]*sf, scale=scale, angles='xy', scale_units='xy', width=arrow_width, color=arrow_color, pivot=quiver_pivot)
     
+    # Expose the scale actually used so several panels can be forced onto a
+    # common one (pass it back in as `quiver_scale`).
+    ax.metachat_quiver_scale_ = scale if plot_method in ("cell", "grid") else None
+
     ax.set_title(title)
     if background == 'summary':
         cbar = plt.colorbar(sc, ax=ax, fraction=0.046, pad=0.04)
