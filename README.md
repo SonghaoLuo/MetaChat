@@ -18,7 +18,7 @@ For more basic tutorial and real data examples, please see MetaChat documentatio
 
 ### Analysis pipeline
 
-<img width="2000" height="7914" alt="Table2" src="https://github.com/user-attachments/assets/d018be0e-fad2-4c74-b91e-4c0d929851c1" />
+<img width="2000" alt="Table2" src="https://github.com/user-attachments/assets/d018be0e-fad2-4c74-b91e-4c0d929851c1" />
 
 ## Installation
 ### System requirements
