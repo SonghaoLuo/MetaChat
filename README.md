@@ -38,4 +38,4 @@ if you use `conda`, `r-base=4.3.2` may not included in the channels. Instead, yo
 
 
 ## Reference
-Luo S., Almet A.A., Zhao W., He C., Tsai Y.-C., Ozaki H., Sugita B.K., Du K., Shen X., Cao Y., Yang Q., Watanabe M., Nie Q.* Spatial metabolic communication flow of cells.
+Luo S., Almet A.A., Zhao W., He C., Tsai Y.-C., Ozaki H., Sugita B.K., Du K., Shen X., Cao Y., Yang Q., Watanabe M., Nie Q.* Screening spatial metabolic communication of cells from spatial multi-omics with MetaChat.
