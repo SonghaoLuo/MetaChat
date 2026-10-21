@@ -1,0 +1,22 @@
+# Byte-compiled / optimised files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Packaging and build artefacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Sphinx output
+docs/_build/
+
+# Editor and OS cruft
+.DS_Store
+.ipynb_checkpoints/
+*.swp
+
+# Local backups
+*.bak
+*.bak_*

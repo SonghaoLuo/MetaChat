@@ -1086,6 +1086,7 @@ def communication_responseGenes(
     group_name: str = None,
     subgroup: list = None,
     summary: str = 'receiver',
+    sensor_type: str = 'all',
     var_genes = None,
     n_deg_genes: int = None,
     nknots: int = 6,
@@ -1117,6 +1118,12 @@ def communication_responseGenes(
         Subset of groups to include.
     summary : {'sender', 'receiver'}, default='receiver'
         Specify whether to analyze sender or receiver side.
+    sensor_type : str, default='all'
+        Restrict the analysis to sensors acting through a given mechanism. One of
+        ``'all'``, ``'receptor'``, ``'receptor_strict'``, ``'receptor_NR'``,
+        ``'nuclear_receptor'`` (alias ``'NR'``) or ``'transporter'``;
+        see :func:`filter_sensor_type`.
+        Must match the ``sensor_type`` used in :func:`summary_communication`.
     n_var_genes
         The number of most variable genes to test.
     var_genes
@@ -1210,7 +1217,9 @@ def communication_responseGenes(
         sum_name = ms_pairs_name
         obsm_name = ''
 
-    comm_sum = adata_processed.obsm['MetaChat-' + database_name + "-sum-" + summary + obsm_name][summary_abbr + '-' + sum_name].values.reshape(-1,1)
+    sensor_type = _resolve_sensor_type(sensor_type)
+    suffix = _sensor_type_suffix(sensor_type)
+    comm_sum = adata_processed.obsm['MetaChat-' + database_name + "-sum-" + summary + obsm_name + suffix][summary_abbr + '-' + sum_name].values.reshape(-1,1)
     cell_weight = np.ones_like(comm_sum).reshape(-1,1)
 
     # send adata to R
