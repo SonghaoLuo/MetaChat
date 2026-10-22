@@ -18,7 +18,7 @@ This section provides tutorials for applying MetaChat to real datasets.
    3D Transcriptomics Dataset from Whole Mouse Brain <4_mouse_brain_3D/index>
 
 
-.. image:: ../../_static/image/analysis_pipeline.png
+.. image:: ../_static/image/analysis_pipeline.png
    :alt: Example of MetaChat multi-omics dataset
    :align: center
    :width: 800px
