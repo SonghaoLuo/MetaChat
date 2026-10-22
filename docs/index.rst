@@ -55,6 +55,7 @@ build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt
 New
 ===
 
+- Oct 21, 2026: We released MetaChat version 1.0.0. This version updated lots of functions in MetaChat.
 - Oct 24, 2025: We released MetaChat version 0.0.6. This version updated lots of functions in MetaChat.
 - Jun 26, 2024: We released MetaChat version 0.0.2. This version standardizes function names and fixes some bugs.
 
@@ -81,7 +82,7 @@ MetaChat's features
 
 Reference
 =========
-Luo S., Almet A.A., Zhao W., He C., Tsai Y.-C., Ozaki H., Sugita B.K., Du K., Shen X., Cao Y., Yang Q., Watanabe M., Nie Q.* Spatial metabolic communication flow of cells.
+Luo S., Almet A.A., Zhao W., He C., Tsai Y.-C., Ozaki H., Sugita B.K., Du K., Shen X., Cao Y., Yang Q., Watanabe M., Nie Q.* Screening spatial metabolic communication of cells from spatial multi-omics with MetaChat.
 
 .. contents:: Table of Contents
    :local:
