@@ -6,19 +6,19 @@ It contains many intuitive visualization and downstream analysis tools, provides
 ### Metabolic cell communication
 Metabolic cell-cell communication (MCC) occurs when sensor proteins in the receiver cells detect metabolites in their environment, activating intracellular signaling events. There are three major potential sensors of metabolites: surface receptors, nuclear receptors, and transporters. Metabolites secreted from cells are either transported over short-range distances (a few cells) via diffusion through extracellular space, or over long-range distances via the bloodstream and the cerebrospinal fluid (CSF).
 
-<img width="600" alt="image" src="https://github.com/SonghaoLuo/MetaChat/assets/138028157/f08f21de-eeae-4626-8fbe-c26a307ec225">
+<img width="600" alt="Metabolic cell communication" src="https://raw.githubusercontent.com/SonghaoLuo/MetaChat/main/docs/_static/image/metabolic_cell_communication.png">
 
 ### MetaChatDB
 MetaChatDB is a literature-supported database for metabolite-sensor interactions for both human and mouse. All the metabolite-sensor interactions are reported based on peer-reviewed publications. Specifically, we manually build MetaChatDB by integrating three high-quality databases (PDB, HMDB, UniProt) that are being continually updated.
 
-<img width="700" alt="image2" src="https://github.com/user-attachments/assets/1601f7f1-0997-4bdf-96da-5d2ae1fd28a2" />
+<img width="700" alt="MetaChatDB" src="https://raw.githubusercontent.com/SonghaoLuo/MetaChat/main/docs/_static/image/MetaChatDB.jpg" />
 
 ### Documentation, and Tutorials
 For more basic tutorial and real data examples, please see MetaChat documentation that is available through the link https://metachat.readthedocs.io/en/latest/.
 
 ### Analysis pipeline
 
-<img width="2000" alt="Table2" src="https://github.com/user-attachments/assets/d018be0e-fad2-4c74-b91e-4c0d929851c1" />
+<img width="2000" alt="Analysis pipeline" src="https://raw.githubusercontent.com/SonghaoLuo/MetaChat/main/docs/_static/image/analysis_pipeline.png" />
 
 ## Installation
 ### System requirements

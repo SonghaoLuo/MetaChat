@@ -21,6 +21,7 @@ Preprocessing: pp
 
    pp.MetaChatDB
    pp.generate_adata_met_compass
+   pp.generate_adata_met_compass_condition
    pp.generate_adata_met_scFEA
    pp.generate_adata_met_mebocost
    pp.global_intensity_scaling
@@ -46,6 +47,8 @@ Tools: tl
    tl.communication_group
    tl.communication_group_spatial
    tl.summary_pathway
+   tl.filter_sensor_type
+   tl.split_ms_result_by_sensor_type
    tl.communication_responseGenes
    tl.communication_responseGenes_cluster
    tl.communication_responseGenes_keggEnrich
@@ -67,6 +70,7 @@ Plotting: pl
    pl.plot_MSpair_contribute_group
    pl.plot_summary_pathway
    pl.plot_metapathway_pair_contribution_bubbleplot
+   pl.plot_rank_MCC_dotplot
    pl.plot_communication_responseGenes
    pl.plot_communication_responseGenes_keggEnrich
    pl.plot_DEG_volcano

@@ -3,7 +3,7 @@ import warnings
 import sys
 warnings.filterwarnings("ignore", category=UserWarning)
 
-__version__ = "1.0.0"
+__version__ = "1.0.0.post1"
 
 from ._settings import settings
 from ._utils import build_hmdb_name_map, prettify_label, prettify_labels
